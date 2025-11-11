@@ -25,7 +25,7 @@ import { CalendarIcon, User as UserIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { pl, enUS } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
@@ -87,67 +87,58 @@ export default function EditProfilePage() {
       reader.readAsDataURL(file);
     }
   };
-
-  const updateAuthAndFirestore = (photoUrlToSave: string | null) => {
-    if (!auth.currentUser) return;
   
-    const profileUpdates: { displayName?: string; photoURL?: string } = {};
-    if (displayName !== auth.currentUser.displayName) {
-      profileUpdates.displayName = displayName;
-    }
-    if (photoUrlToSave && photoUrlToSave !== auth.currentUser.photoURL) {
-      profileUpdates.photoURL = photoUrlToSave;
-    }
-  
-    if (Object.keys(profileUpdates).length > 0) {
-      updateProfile(auth.currentUser, profileUpdates).then(() => {
-        auth.currentUser?.reload();
-      });
-    }
-  
-    const userDocRef = doc(firestore, 'users', auth.currentUser.uid);
-    const firestoreData: {displayName: string, photoURL?: string | null, gender: string, birthDate: string | null} = {
-      displayName: displayName,
-      gender,
-      birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
-    };
-    if (photoUrlToSave) {
-        firestoreData.photoURL = photoUrlToSave;
-    }
-  
-    setDocumentNonBlocking(userDocRef, firestoreData, { merge: true });
-  };
-
   const handleSave = () => {
     if (!user || !firestore || !auth.currentUser) return;
   
     setIsSaving(true);
   
-    const firestoreData = {
-      displayName: displayName,
-      gender,
-      birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
+    const processSave = (photoUrlToSave: string | null) => {
+      const profileUpdates: { displayName?: string; photoURL?: string } = {};
+      if (displayName !== user.displayName) {
+        profileUpdates.displayName = displayName;
+      }
+      if (photoUrlToSave && photoUrlToSave !== user.photoURL) {
+        profileUpdates.photoURL = photoUrlToSave;
+      }
+  
+      if (Object.keys(profileUpdates).length > 0) {
+        updateProfile(auth.currentUser!, profileUpdates).then(() => {
+          auth.currentUser?.reload();
+        });
+      }
+  
+      const firestoreData: any = {
+        displayName: displayName,
+        gender,
+        birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
+      };
+
+      if (photoUrlToSave) {
+        firestoreData.photoURL = photoUrlToSave;
+      }
+  
+      setDocumentNonBlocking(doc(firestore, 'users', user.uid), firestoreData, { merge: true });
+  
+      toast({
+        title: t('editProfileSuccessTitle'),
+        description: t('editProfileSuccessDescription'),
+      });
+  
+      router.push('/profile');
     };
-    setDocumentNonBlocking(doc(firestore, 'users', user.uid), firestoreData, { merge: true });
   
     if (newPhoto) {
       const storage = getStorage();
       const storageRef = ref(storage, `profile-pictures/${user.uid}`);
       uploadString(storageRef, newPhoto, 'data_url').then(snapshot => {
         getDownloadURL(snapshot.ref).then(downloadURL => {
-          updateAuthAndFirestore(downloadURL);
+          processSave(downloadURL);
         });
       });
     } else {
-        updateAuthAndFirestore(user.photoURL);
+      processSave(user.photoURL);
     }
-  
-    toast({
-      title: t('editProfileSuccessTitle'),
-      description: t('editProfileSuccessDescription'),
-    });
-  
-    router.push('/profile');
   };
 
 
@@ -227,17 +218,17 @@ export default function EditProfilePage() {
             <Label htmlFor="birthDate">{t('profileBirthDate')}</Label>
              <Popover>
                 <PopoverTrigger asChild>
-                  <Button
+                <Button
                     variant={"outline"}
                     className={cn(
-                      "w-[200px] justify-start text-left font-normal",
-                      !birthDate && "text-muted-foreground"
+                    "w-[240px] justify-start text-left font-normal",
+                    !birthDate && "text-muted-foreground"
                     )}
                     disabled={isSaving}
-                  >
+                >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {birthDate ? format(birthDate, "PPP", { locale: language === 'pl' ? pl : undefined }) : <span>{t('editProfileBirthDatePlaceholder')}</span>}
-                  </Button>
+                    {birthDate ? format(birthDate, "PPP", { locale: language === 'pl' ? pl : enUS }) : <span>{t('editProfileBirthDatePlaceholder')}</span>}
+                </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
@@ -248,7 +239,7 @@ export default function EditProfilePage() {
                     captionLayout="dropdown-buttons"
                     fromYear={1900}
                     toYear={new Date().getFullYear()}
-                    locale={language === 'pl' ? pl : undefined}
+                    locale={language === 'pl' ? pl : enUS}
                   />
                 </PopoverContent>
               </Popover>
