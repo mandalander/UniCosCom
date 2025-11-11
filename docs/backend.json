@@ -1,5 +1,4 @@
 {
-  "entities": {},
   "auth": {
     "providers": [
       "password",
@@ -7,40 +6,11 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "roles_admin",
-          "schema": {
-            "$ref": "#/backend/entities/roles_admin"
-          },
-          "description": "Collection to store admin roles. Document existence grants admin privileges. Authorization is based solely on the existence of the document with the user's UID as the document ID.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The UID of the user."
-            }
-          ]
-        }
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/backend/entities/user"
       },
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "user",
-          "schema": {
-            "$ref": "#/backend/entities/user"
-          },
-          "description": "Collection to store user profiles.  Authorization relies on path-based ownership (only the user can read/write their own profile).",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The UID of the user."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The error `Firebase: Error (auth/operation-not-allowed)` indicates that the anonymous authentication method is not enabled for the Firebase project. Since the application uses anonymous authentication, we need to ensure it is enabled in the Firebase console. This fix does not impact the Firestore data structure, as it's an authentication configuration issue. Therefore, I won't suggest a Firestore Data Structure here."
+      "description": "Collection to store user profiles. Authorization relies on path-based ownership (only the user can read/write their own profile)."
+    }
   }
 }
