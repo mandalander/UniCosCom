@@ -15,7 +15,6 @@
  * - Write operations without authentication are strictly forbidden.
  * - Data validation is limited to authorization-critical fields to enable flexible prototyping.
  *
- * FORCING A RULE REFRESH.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -42,25 +41,16 @@ service cloud.firestore {
     }
 
     /**
-     * @description Defines PUBLIC READ rules for the 'communities' collection.
+     * @description Defines rules for the 'communities' collection.
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
       // Allow public read access to all communities
       allow read: if true;
-    }
-
-    /**
-     * @description Defines WRITE rules for the 'communities' collection.
-     * @path /communities/{communityId}
-     */
-    match /communities/{communityId} {
-        // Disallow public writes.
-        allow write: if false;
-        // Allow authenticated users to create communities
-        allow create: if request.auth != null && request.resource.data.creatorId == request.auth.uid;
-        // Allow the community owner to update or delete it
-        allow update, delete: if request.auth != null && resource.data.creatorId == request.auth.uid;
+      // Allow authenticated users to create communities
+      allow create: if request.auth != null && request.resource.data.creatorId == request.auth.uid;
+      // Allow the community owner to update or delete it
+      allow update, delete: if request.auth != null && resource.data.creatorId == request.auth.uid;
     }
 
     // ---- Helper functions ----
@@ -98,15 +88,6 @@ service cloud.firestore {
      */
     function isAdmin(userId) {
       return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(userId));
-    }
-
-    /**
-     * @description Checks if the current user is the owner of a community.
-     * @param {string} communityId The ID of the community document.
-     * @return {bool} True if the user is the owner, false otherwise.
-     */
-    function isCommunityOwner(communityId) {
-      return isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
   }
 }
