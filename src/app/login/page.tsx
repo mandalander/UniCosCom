@@ -1,35 +1,38 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useLanguage } from "../components/language-provider";
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   return (
     <div className="flex items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Logowanie</CardTitle>
+          <CardTitle className="text-2xl">{t('loginTitle')}</CardTitle>
           <CardDescription>
-            Podaj swój e-mail poniżej, aby zalogować się na swoje konto.
+            {t('loginDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('emailLabel')}</Label>
             <Input id="email" type="email" placeholder="m@example.com" required />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Hasło</Label>
+            <Label htmlFor="password">{t('passwordLabel')}</Label>
             <Input id="password" type="password" required />
           </div>
           <Button type="submit" className="w-full">
-            Zaloguj się
+            {t('login')}
           </Button>
            <div className="mt-4 text-center text-sm">
-            Nie masz konta?{' '}
+            {t('noAccount')}{' '}
             <Link href="#" className="underline">
-              Zarejestruj się
+              {t('register')}
             </Link>
           </div>
         </CardContent>

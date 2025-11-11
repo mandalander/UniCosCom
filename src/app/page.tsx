@@ -1,24 +1,27 @@
+'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "./components/language-provider";
 
 export default function Home() {
+  const { t } = useLanguage();
   return (
     <div className="container mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-bold tracking-tight">Witaj w Nawigatorze Aplikacji</CardTitle>
+          <CardTitle className="text-3xl font-bold tracking-tight">{t('homeTitle')}</CardTitle>
           <CardDescription>
-            To jest przykładowa aplikacja demonstrująca responsywny układ z górnym paskiem nawigacyjnym i zwijanym paskiem bocznym.
+            {t('homeDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p>
-            Użyj ikony menu w lewym górnym rogu, aby otworzyć i zamknąć pasek boczny. Pasek boczny zawiera linki nawigacyjne do różnych sekcji aplikacji.
+            {t('homeContent1')}
           </p>
           <p className="mt-4">
-            Przycisk logowania w prawym górnym rogu zazwyczaj prowadzi do strony uwierzytelniania.
+            {t('homeContent2')}
           </p>
           <p className="mt-4">
-            Ten interfejs został zbudowany przy użyciu Next.js, TypeScript, Tailwind CSS i komponentów ShadCN UI, aby był nowoczesny, responsywny i dostępny.
+            {t('homeContent3')}
           </p>
         </CardContent>
       </Card>

@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AppSidebar } from './components/app-sidebar';
 import { TopNavBar } from './components/top-nav-bar';
 import { ThemeProvider } from './components/theme-provider';
+import { LanguageProvider } from './components/language-provider';
 
 export const metadata: Metadata = {
   title: 'Nawigator Aplikacji',
@@ -30,14 +31,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <TopNavBar />
-              <div className="p-4 sm:p-6 lg:p-8">{children}</div>
-            </SidebarInset>
-          </SidebarProvider>
-          <Toaster />
+          <LanguageProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <TopNavBar />
+                <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+              </SidebarInset>
+            </SidebarProvider>
+            <Toaster />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

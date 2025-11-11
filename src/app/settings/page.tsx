@@ -12,10 +12,11 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '../components/language-provider';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const [language, setLanguage] = useState('pl');
+  const { language, setLanguage, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -53,49 +54,49 @@ export default function SettingsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Ustawienia</CardTitle>
+        <CardTitle>{t('settingsTitle')}</CardTitle>
         <CardDescription>
-          Zarządzaj ustawieniami konta i aplikacji.
+          {t('settingsDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
         <div className="flex items-center justify-between">
-          <Label>Motyw</Label>
+          <Label>{t('theme')}</Label>
           <div className="flex gap-2">
             <Button
               variant={theme === 'light' ? 'default' : 'outline'}
               onClick={() => setTheme('light')}
             >
-              Jasny
+              {t('light')}
             </Button>
             <Button
               variant={theme === 'dark' ? 'default' : 'outline'}
               onClick={() => setTheme('dark')}
             >
-              Ciemny
+              {t('dark')}
             </Button>
             <Button
               variant={theme === 'system' ? 'default' : 'outline'}
               onClick={() => setTheme('system')}
             >
-              Systemowy
+              {t('system')}
             </Button>
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <Label>Język</Label>
+          <Label>{t('language')}</Label>
           <div className="flex gap-2">
             <Button
               variant={language === 'en' ? 'default' : 'outline'}
               onClick={() => setLanguage('en')}
             >
-              Angielski
+              {t('english')}
             </Button>
             <Button
               variant={language === 'pl' ? 'default' : 'outline'}
               onClick={() => setLanguage('pl')}
             >
-              Polski
+              {t('polish')}
             </Button>
           </div>
         </div>

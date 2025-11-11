@@ -1,14 +1,17 @@
+'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "../components/language-provider";
 
 export default function ExplorePage() {
+  const { t } = useLanguage();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Eksploruj</CardTitle>
-        <CardDescription>Tutaj możesz odkrywać nowe treści.</CardDescription>
+        <CardTitle>{t('exploreTitle')}</CardTitle>
+        <CardDescription>{t('exploreDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Treść strony eksploracji pojawi się tutaj.</p>
+        <p>{t('exploreContent')}</p>
       </CardContent>
     </Card>
   )
