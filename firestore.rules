@@ -55,11 +55,13 @@ service cloud.firestore {
     }
 
     match /communities/{communityId} {
+      // Allow public read access for everyone (get and list)
       allow read: if true;
-    }
-
-    match /communities/{communityId} {
+      
+      // Allow authenticated users to create communities
       allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
+      
+      // Allow the original creator to update or delete
       allow update, delete: if isCommunityOwner(communityId);
     }
 
@@ -101,6 +103,7 @@ service cloud.firestore {
     }
 
     function isCommunityOwner(communityId) {
+      // Important: Use `resource` for existing documents (update, delete)
       return isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
   }
