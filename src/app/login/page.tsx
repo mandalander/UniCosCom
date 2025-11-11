@@ -9,15 +9,16 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Link from 'next/link';
 import { useLanguage } from '../components/language-provider';
 import { useState } from 'react';
 import {
   useAuth,
   initiateEmailSignUp,
   initiateEmailSignIn,
+  initiateSignInWithProvider,
 } from '@/firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -25,6 +26,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const auth = useAuth();
+  const router = useRouter();
 
   const handleAuthAction = () => {
     if (isRegistering) {
@@ -32,16 +34,13 @@ export default function LoginPage() {
     } else {
       initiateEmailSignIn(auth, email, password);
     }
+    router.push('/');
   };
 
   const handleGoogleSignIn = () => {
     const provider = new GoogleAuthProvider();
-    // Do not await this, let it run in the background
-    signInWithPopup(auth, provider).catch((error) => {
-      // The error is expected if the provider is not enabled.
-      // We will log it to the console for debugging but not crash the app.
-      console.error("Google Sign-In Error:", error);
-    });
+    initiateSignInWithProvider(auth, provider);
+    router.push('/');
   };
 
   return (
