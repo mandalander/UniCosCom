@@ -1,15 +1,22 @@
 'use client';
 
+import { useMemo } from 'react';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "./language-provider";
-import { communities as placeholderCommunities } from "@/lib/placeholder-data";
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { Community } from "@/lib/placeholder-data";
 
 export function CommunityList() {
   const { t } = useLanguage();
-  const communities: Community[] = placeholderCommunities;
-  const isLoading = false;
-  const error = null;
+  const firestore = useFirestore();
+
+  const communitiesQuery = useMemoFirebase(
+    () => (firestore ? query(collection(firestore, 'communities'), orderBy('createdAt', 'desc')) : null),
+    [firestore]
+  );
+
+  const { data: communities, isLoading, error } = useCollection<Community>(communitiesQuery);
 
   return (
     <div className="space-y-4">
