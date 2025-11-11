@@ -12,15 +12,9 @@ import {
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const menuItems = [
     { href: '/', label: 'Główna', icon: Home },
@@ -28,10 +22,6 @@ export function AppSidebar() {
     { href: '/profile', label: 'Profil', icon: User },
     { href: '/settings', label: 'Ustawienia', icon: Settings },
   ];
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <Sidebar>
