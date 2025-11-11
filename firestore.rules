@@ -45,6 +45,6 @@ service cloud.firestore {
       allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userId);
     }
-    // Re-trigger provisioning
+    // Re-trigger provisioning to enable auth providers.
   }
 }
