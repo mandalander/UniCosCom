@@ -20,30 +20,21 @@ service cloud.firestore {
     /**
      * @description Controls access to user profiles stored under /users/{userId}.
      * @path /users/{userId}
-     * @allow (create) - A user can create their profile if their auth UID matches the {userId}.
-     * @allow (get, update, delete) - A user can read, update, or delete their own profile if their auth UID matches the {userId}.
-     * @deny (create) - A user cannot create a profile for another user (mismatched UID).
-     * @deny (get, update, delete) - A user cannot read, update, or delete another user's profile (mismatched UID).
-     * @principle Enforces document ownership for writes.
+     * @allow (get) - A user can read their own profile.
+     * @allow (write) - A user can create or update their own profile.
+     * @allow (delete) - A user can delete their own profile.
+     * @deny (list) - Listing all users is denied.
+     * @principle Enforces document ownership.
      */
     match /users/{userId} {
-      // Helpers
-      function isSignedIn() {
-        return request.auth != null;
+      // Helper to check if the requester is the owner of the document.
+      function isOwner() {
+        return request.auth != null && request.auth.uid == userId;
       }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isExistingOwner(userId) {
-        return isOwner(userId) && exists(path);
-      }
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      
+      // Allow read, write (create, update), and delete only for the owner.
+      allow read, write, delete: if isOwner();
+      allow list: if false; // Explicitly deny listing all users.
     }
   }
 }
