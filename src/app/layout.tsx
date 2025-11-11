@@ -7,6 +7,7 @@ import { TopNavBar } from './components/top-nav-bar';
 import { ThemeProvider } from './components/theme-provider';
 import { LanguageProvider } from './components/language-provider';
 import { FirebaseClientProvider } from '@/firebase';
+import { UserDataSync } from './components/user-data-sync';
 
 export const metadata: Metadata = {
   title: 'Nawigator Aplikacji',
@@ -34,6 +35,7 @@ export default function RootLayout({
         >
           <LanguageProvider>
             <FirebaseClientProvider>
+              <UserDataSync />
               <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
