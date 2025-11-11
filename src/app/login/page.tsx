@@ -78,7 +78,7 @@ export default function LoginPage() {
             {isRegistering ? t('register') : t('login')}
           </Button>
           <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-            {t('signInWithGoogle')}
+            {isRegistering ? t('signUpWithGoogle') : t('signInWithGoogle')}
           </Button>
           <div className="mt-4 text-center text-sm">
             {isRegistering ? t('alreadyHaveAccount') : t('noAccount')}{' '}

@@ -21,6 +21,7 @@ export const translations = {
     alreadyHaveAccount: 'Masz już konto?',
     register: 'Zarejestruj się',
     signInWithGoogle: 'Zaloguj się z Google',
+    signUpWithGoogle: 'Zarejestruj się z Google',
 
     // Home Page
     homeTitle: 'Witaj w Nawigatorze Aplikacji',
@@ -106,6 +107,7 @@ export const translations = {
     alreadyHaveAccount: 'Already have an account?',
     register: 'Sign up',
     signInWithGoogle: 'Sign in with Google',
+    signUpWithGoogle: 'Sign up with Google',
 
     // Home Page
     homeTitle: 'Welcome to the App Navigator',
