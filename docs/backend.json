@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date and time the user registered.",
+          "format": "date-time"
+        },
+        "googleId": {
+          "type": "string",
+          "description": "The unique user ID provided by Google OAuth for login purposes."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "registrationDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. The userId parameter is the Firebase Authentication UID. This enforces path-based ownership, so each user can only access their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The data structure is designed to store user information. It uses a path-based ownership model for user data, ensuring data isolation and ease of security rule implementation. Specifically, each user has their own document under the `/users/{userId}` collection, where `userId` corresponds to the Firebase Authentication UID. This approach achieves authorization independence by eliminating the need for `get()` calls in security rules, as access control can be directly based on the path. This structure also simplifies list operations, as listing users does not require access to sensitive data within user documents. The `User` entity includes fields like `email`, `registrationDate`, and `googleId`. This design facilitates straightforward security rules that grant each user access only to their own data."
+  }
+}

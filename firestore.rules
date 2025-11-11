@@ -1,0 +1,49 @@
+/**
+ * @file Firestore Security Rules
+ * @description This ruleset enforces a strict user-ownership model for the /users/{userId} collection.
+ *
+ * Data Structure:
+ * All user data is stored under the /users/{userId} path, where {userId} corresponds to the Firebase Authentication UID.
+ *
+ * Key Security Decisions:
+ * - Users can only access their own profile data.
+ * - Listing all users is implicitly denied, as list operations on /users are not permitted.
+ * - Data validation is relaxed in this prototyping phase to allow rapid iteration. Only critical authorization fields are validated.
+ *
+ * Denormalization for Authorization:
+ * The /users/{userId} path directly reflects the authenticated user's UID, eliminating the need for `get()` calls to verify ownership.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user profiles stored under /users/{userId}.
+     * @path /users/{userId}
+     * @allow (create) - A user can create their profile if their auth UID matches the {userId}.
+     * @allow (get, update, delete) - A user can read, update, or delete their own profile if their auth UID matches the {userId}.
+     * @deny (create) - A user cannot create a profile for another user (mismatched UID).
+     * @deny (get, update, delete) - A user cannot read, update, or delete another user's profile (mismatched UID).
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId} {
+      // Helpers
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
