@@ -93,52 +93,59 @@ export default function EditProfilePage() {
   
     setIsSaving(true);
   
-    const processSave = (photoUrlToSave: string | null) => {
-      const profileUpdates: { displayName?: string; photoURL?: string } = {};
-      if (displayName !== user.displayName) {
-        profileUpdates.displayName = displayName;
-      }
-      if (photoUrlToSave && photoUrlToSave !== user.photoURL) {
-        profileUpdates.photoURL = photoUrlToSave;
-      }
-  
-      if (Object.keys(profileUpdates).length > 0) {
-        updateProfile(auth.currentUser!, profileUpdates).then(() => {
-          auth.currentUser?.reload();
-        });
-      }
-  
-      const firestoreData: any = {
-        displayName: displayName,
-        gender,
-        birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
-      };
-
-      if (photoUrlToSave) {
-        firestoreData.photoURL = photoUrlToSave;
-      }
-  
-      setDocumentNonBlocking(doc(firestore, 'users', user.uid), firestoreData, { merge: true });
-  
-      toast({
-        title: t('editProfileSuccessTitle'),
-        description: t('editProfileSuccessDescription'),
-      });
-  
-      router.push('/profile');
+    // 1. Update non-image data immediately in a non-blocking way
+    const firestoreData: any = {
+      displayName: displayName,
+      gender,
+      birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
     };
   
+    if (Object.keys(firestoreData).length > 0) {
+      setDocumentNonBlocking(doc(firestore, 'users', user.uid), firestoreData, { merge: true });
+    }
+  
+    if (displayName !== user.displayName) {
+        if(auth.currentUser) {
+            updateProfile(auth.currentUser, { displayName });
+        }
+    }
+  
+    // 2. If there's a new photo, upload it in the background
     if (newPhoto) {
       const storage = getStorage();
       const storageRef = ref(storage, `profile-pictures/${user.uid}`);
+      
       uploadString(storageRef, newPhoto, 'data_url').then(snapshot => {
         getDownloadURL(snapshot.ref).then(downloadURL => {
-          processSave(downloadURL);
+          // 3. Once uploaded, update the photoURL in Auth and Firestore in the background
+          if (auth.currentUser) {
+            updateProfile(auth.currentUser, { photoURL: downloadURL }).then(() => {
+                auth.currentUser?.reload();
+            });
+          }
+          setDocumentNonBlocking(doc(firestore, 'users', user.uid), { photoURL: downloadURL }, { merge: true });
         });
+      }).catch(error => {
+        console.error("Error uploading photo:", error);
+        toast({
+            variant: "destructive",
+            title: t('editProfileErrorTitle'),
+            description: "Failed to upload new profile picture.",
+        });
+      }).finally(() => {
+        // This part is just for the case of upload finishing before navigation
+        setIsSaving(false); 
       });
     } else {
-      processSave(user.photoURL);
+        setIsSaving(false);
     }
+  
+    // 4. Immediately give feedback and navigate away
+    toast({
+      title: t('editProfileSuccessTitle'),
+      description: t('editProfileSuccessDescription'),
+    });
+    router.push('/profile');
   };
 
 
