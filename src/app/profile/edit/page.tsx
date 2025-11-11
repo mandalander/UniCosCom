@@ -178,13 +178,15 @@ export default function EditProfilePage() {
       // 1. Delete profile picture from Storage
       if (userProfile?.photoURL) {
         const storage = getStorage();
-        const photoRef = ref(storage, `profile-pictures/${user.uid}`);
-        try {
-          await deleteObject(photoRef);
-        } catch (storageError: any) {
-          // Ignore "object-not-found" error
-          if (storageError.code !== 'storage/object-not-found') {
-            throw storageError; // Re-throw other errors
+        // Check if photoURL is a Firebase Storage URL
+        if (userProfile.photoURL.includes('firebasestorage.googleapis.com')) {
+          const photoRef = ref(storage, userProfile.photoURL);
+          try {
+            await deleteObject(photoRef);
+          } catch (storageError: any) {
+            if (storageError.code !== 'storage/object-not-found') {
+              console.warn("Could not delete profile picture, it might have been already deleted:", storageError);
+            }
           }
         }
       }
@@ -379,7 +381,7 @@ export default function EditProfilePage() {
                           {t('deleteAccountDialogDescription')}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
-                      <AlertDialogFooter>
+                      <AlertDialogFooter onClick={(e) => e.preventDefault()}>
                         <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeleting}>
                           {t('deleteAccountConfirm')}
@@ -395,3 +397,5 @@ export default function EditProfilePage() {
     </div>
   );
 }
+
+    
