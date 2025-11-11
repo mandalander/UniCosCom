@@ -37,7 +37,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 export default function EditProfilePage() {
@@ -229,158 +230,168 @@ export default function EditProfilePage() {
   
   return (
     <div className="space-y-6">
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('editProfileTitle')}</CardTitle>
-        <CardDescription>{t('editProfileDescription')}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-6">
-          <div className="grid gap-4 items-center">
-            <Label>{t('profilePhoto')}</Label>
-            <div className='flex items-center gap-4'>
-                <Avatar className="h-20 w-20">
-                    <AvatarImage src={newPhotoDataUrl || photoURL || undefined} />
-                    <AvatarFallback>{getInitials(displayName, user?.email)}</AvatarFallback>
-                </Avatar>
-                <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isSaving}>
-                    {t('changePhoto')}
-                </Button>
-                <Input 
-                    ref={fileInputRef}
-                    type="file" 
-                    className="hidden" 
-                    accept="image/png, image/jpeg"
-                    onChange={handleFileChange}
-                />
-            </div>
-          </div>
-          <div className="grid gap-2">
-              <Label htmlFor="displayName">{t('profileDisplayName')}</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={t('profileDisplayName')}
-                disabled={isSaving}
-              />
-            </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="firstName">{t('profileFirstName')}</Label>
-              <Input
-                id="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder={t('editProfileFirstNamePlaceholder')}
-                disabled={isSaving}
-              />
-            </div>
-             <div className="grid gap-2">
-              <Label htmlFor="lastName">{t('profileLastName')}</Label>
-              <Input
-                id="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder={t('editProfileLastNamePlaceholder')}
-                disabled={isSaving}
-              />
-            </div>
-          </div>
+      <header>
+        <h1 className="text-3xl font-bold">{t('editProfileTitle')}</h1>
+        <p className="text-muted-foreground">{t('editProfileDescription')}</p>
+      </header>
 
-          <div className="grid gap-2">
-            <Label>{t('gender')}</Label>
-            <RadioGroup
-              value={gender}
-              onValueChange={setGender}
-              className="flex gap-4"
-              disabled={isSaving}
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="male" id="male" />
-                <Label htmlFor="male">{t('genderMale')}</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="female" id="female" />
-                <Label htmlFor="female">{t('genderFemale')}</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="other" id="other" />
-                <Label htmlFor="other">{t('genderOther')}</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          
-          <div className="grid gap-2">
-            <Label htmlFor="birthDate">{t('profileBirthDate')}</Label>
-             <Popover>
-                <PopoverTrigger asChild>
-                <Button
-                    variant={"outline"}
-                    className={cn(
-                    "w-[240px] justify-start text-left font-normal",
-                    !birthDate && "text-muted-foreground"
-                    )}
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="profile">{t('editProfileTabProfile')}</TabsTrigger>
+          <TabsTrigger value="danger-zone">{t('editProfileTabDangerZone')}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="profile">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="grid gap-6">
+                <div className="grid gap-4 items-center">
+                  <Label>{t('profilePhoto')}</Label>
+                  <div className='flex items-center gap-4'>
+                      <Avatar className="h-20 w-20">
+                          <AvatarImage src={newPhotoDataUrl || photoURL || undefined} />
+                          <AvatarFallback>{getInitials(displayName, user?.email)}</AvatarFallback>
+                      </Avatar>
+                      <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isSaving}>
+                          {t('changePhoto')}
+                      </Button>
+                      <Input 
+                          ref={fileInputRef}
+                          type="file" 
+                          className="hidden" 
+                          accept="image/png, image/jpeg"
+                          onChange={handleFileChange}
+                      />
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="displayName">{t('profileDisplayName')}</Label>
+                    <Input
+                      id="displayName"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder={t('profileDisplayName')}
+                      disabled={isSaving}
+                    />
+                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="firstName">{t('profileFirstName')}</Label>
+                    <Input
+                      id="firstName"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder={t('editProfileFirstNamePlaceholder')}
+                      disabled={isSaving}
+                    />
+                  </div>
+                   <div className="grid gap-2">
+                    <Label htmlFor="lastName">{t('profileLastName')}</Label>
+                    <Input
+                      id="lastName"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder={t('editProfileLastNamePlaceholder')}
+                      disabled={isSaving}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>{t('gender')}</Label>
+                  <RadioGroup
+                    value={gender}
+                    onValueChange={setGender}
+                    className="flex gap-4"
                     disabled={isSaving}
-                >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {birthDate ? format(birthDate, "PPP", { locale: language === 'pl' ? pl : enUS }) : <span>{t('editProfileBirthDatePlaceholder')}</span>}
-                </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={birthDate}
-                    onSelect={setBirthDate}
-                    initialFocus
-                    captionLayout="dropdown-buttons"
-                    fromYear={1900}
-                    toYear={new Date().getFullYear()}
-                    locale={language === 'pl' ? pl : enUS}
-                  />
-                </PopoverContent>
-              </Popover>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="border-t px-6 py-4">
-        <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? t('editProfileSaving') : t('editProfileSave')}
-        </Button>
-      </CardFooter>
-    </Card>
-
-    <Card className="border-destructive">
-      <CardHeader>
-          <CardTitle>{t('dangerZone')}</CardTitle>
-          <CardDescription>{t('dangerZoneDescription')}</CardDescription>
-      </CardHeader>
-      <CardContent>
-          <div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" disabled={isDeleting}>
-                  {isDeleting ? t('deleteAccountDeleting') : t('deleteAccountButton')}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{t('deleteAccountDialogTitle')}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t('deleteAccountDialogDescription')}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeleting}>
-                    {t('deleteAccountConfirm')}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-      </CardContent>
-    </Card>
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="male" id="male" />
+                      <Label htmlFor="male">{t('genderMale')}</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="female" id="female" />
+                      <Label htmlFor="female">{t('genderFemale')}</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="other" id="other" />
+                      <Label htmlFor="other">{t('genderOther')}</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="birthDate">{t('profileBirthDate')}</Label>
+                   <Popover>
+                      <PopoverTrigger asChild>
+                      <Button
+                          variant={"outline"}
+                          className={cn(
+                          "w-[240px] justify-start text-left font-normal",
+                          !birthDate && "text-muted-foreground"
+                          )}
+                          disabled={isSaving}
+                      >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {birthDate ? format(birthDate, "PPP", { locale: language === 'pl' ? pl : enUS }) : <span>{t('editProfileBirthDatePlaceholder')}</span>}
+                      </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={birthDate}
+                          onSelect={setBirthDate}
+                          initialFocus
+                          captionLayout="dropdown-buttons"
+                          fromYear={1900}
+                          toYear={new Date().getFullYear()}
+                          locale={language === 'pl' ? pl : enUS}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="border-t px-6 py-4">
+              <Button onClick={handleSave} disabled={isSaving}>
+                {isSaving ? t('editProfileSaving') : t('editProfileSave')}
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        <TabsContent value="danger-zone">
+          <Card className="border-destructive">
+            <CardHeader>
+                <CardTitle>{t('dangerZone')}</CardTitle>
+                <CardDescription>{t('dangerZoneDescription')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" disabled={isDeleting}>
+                        {isDeleting ? t('deleteAccountDeleting') : t('deleteAccountButton')}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t('deleteAccountDialogTitle')}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t('deleteAccountDialogDescription')}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeleting}>
+                          {t('deleteAccountConfirm')}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

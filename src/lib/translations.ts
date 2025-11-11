@@ -55,7 +55,9 @@ export const translations = {
 
     // Edit Profile Page
     editProfileTitle: 'Edytuj profil',
-    editProfileDescription: 'Zaktualizuj swoje dane profilowe.',
+    editProfileDescription: 'Zaktualizuj swoje dane profilowe i zarządzaj kontem.',
+    editProfileTabProfile: 'Profil',
+    editProfileTabDangerZone: 'Strefa niebezpieczna',
     profilePhoto: 'Zdjęcie profilowe',
     changePhoto: 'Zmień zdjęcie',
     editProfileFirstNamePlaceholder: 'Wpisz swoje imię',
@@ -160,7 +162,9 @@ export const translations = {
     
     // Edit Profile Page
     editProfileTitle: 'Edit Profile',
-    editProfileDescription: 'Update your profile information.',
+    editProfileDescription: 'Update your profile information and manage your account.',
+    editProfileTabProfile: 'Profile',
+    editProfileTabDangerZone: 'Danger Zone',
     profilePhoto: 'Profile Photo',
     changePhoto: 'Change Photo',
     editProfileFirstNamePlaceholder: 'Enter your first name',
