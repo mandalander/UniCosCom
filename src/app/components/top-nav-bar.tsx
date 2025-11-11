@@ -10,7 +10,7 @@ export function TopNavBar() {
       </div>
       <div className="flex items-center gap-4">
         <Button asChild variant="default">
-          <Link href="/login">Log In</Link>
+          <Link href="/login">Zaloguj się</Link>
         </Button>
       </div>
     </header>

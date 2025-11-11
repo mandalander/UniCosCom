@@ -7,8 +7,8 @@ import { TopNavBar } from './components/top-nav-bar';
 import { ThemeProvider } from './components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'App Navigator',
-  description: 'An application with top and side navigation.',
+  title: 'Nawigator Aplikacji',
+  description: 'Aplikacja z górną i boczną nawigacją.',
 };
 
 export default function RootLayout({

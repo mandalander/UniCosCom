@@ -17,10 +17,10 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   const menuItems = [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/explore', label: 'Explore', icon: Compass },
-    { href: '/profile', label: 'Profile', icon: User },
-    { href: '/settings', label: 'Settings', icon: Settings },
+    { href: '/', label: 'Główna', icon: Home },
+    { href: '/explore', label: 'Eksploruj', icon: Compass },
+    { href: '/profile', label: 'Profil', icon: User },
+    { href: '/settings', label: 'Ustawienia', icon: Settings },
   ];
 
   return (
@@ -41,7 +41,7 @@ export function AppSidebar() {
                 <path d="M2 17l10 5 10-5"></path>
                 <path d="M2 12l10 5 10-5"></path>
             </svg>
-            <h2 className="text-lg font-semibold text-sidebar-foreground">App Navigator</h2>
+            <h2 className="text-lg font-semibold text-sidebar-foreground">Nawigator Aplikacji</h2>
         </Button>
       </SidebarHeader>
       <SidebarContent>

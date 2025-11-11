@@ -4,11 +4,11 @@ export default function ExplorePage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Explore</CardTitle>
-        <CardDescription>This is where you can explore new content.</CardDescription>
+        <CardTitle>Eksploruj</CardTitle>
+        <CardDescription>Tutaj możesz odkrywać nowe treści.</CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Content for the explore page goes here.</p>
+        <p>Treść strony eksploracji pojawi się tutaj.</p>
       </CardContent>
     </Card>
   )

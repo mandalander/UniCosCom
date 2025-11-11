@@ -4,11 +4,11 @@ export default function ProfilePage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>My Profile</CardTitle>
-        <CardDescription>This is your personal profile page.</CardDescription>
+        <CardTitle>Mój profil</CardTitle>
+        <CardDescription>To jest Twoja osobista strona profilowa.</CardDescription>
       </CardHeader>
       <CardContent>
-        <p>User profile information will be displayed here.</p>
+        <p>Informacje o profilu użytkownika zostaną wyświetlone tutaj.</p>
       </CardContent>
     </Card>
   )

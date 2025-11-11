@@ -5,20 +5,20 @@ export default function Home() {
     <div className="container mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-bold tracking-tight">Welcome to App Navigator</CardTitle>
+          <CardTitle className="text-3xl font-bold tracking-tight">Witaj w Nawigatorze Aplikacji</CardTitle>
           <CardDescription>
-            This is a sample application demonstrating a responsive layout with a top navigation bar and a collapsible sidebar.
+            To jest przykładowa aplikacja demonstrująca responsywny układ z górnym paskiem nawigacyjnym i zwijanym paskiem bocznym.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p>
-            Use the menu icon in the top-left corner to open and close the sidebar. The sidebar provides navigation links to different sections of the application.
+            Użyj ikony menu w lewym górnym rogu, aby otworzyć i zamknąć pasek boczny. Pasek boczny zawiera linki nawigacyjne do różnych sekcji aplikacji.
           </p>
           <p className="mt-4">
-            The login button in the top-right corner would typically lead to an authentication page.
+            Przycisk logowania w prawym górnym rogu zazwyczaj prowadzi do strony uwierzytelniania.
           </p>
           <p className="mt-4">
-            This interface is built with Next.js, TypeScript, Tailwind CSS, and ShadCN UI components, designed to be modern, responsive, and accessible.
+            Ten interfejs został zbudowany przy użyciu Next.js, TypeScript, Tailwind CSS i komponentów ShadCN UI, aby był nowoczesny, responsywny i dostępny.
           </p>
         </CardContent>
       </Card>
