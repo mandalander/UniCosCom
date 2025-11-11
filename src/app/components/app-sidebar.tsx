@@ -41,7 +41,7 @@ export function AppSidebar() {
                 <path d="M2 17l10 5 10-5"></path>
                 <path d="M2 12l10 5 10-5"></path>
             </svg>
-            <h2 className="text-lg font-semibold text-sidebar-foreground">Nawigator Aplikacji</h2>
+            <h2 className="text-lg font-semibold text-sidebar-foreground">App Navigator</h2>
         </Button>
       </SidebarHeader>
       <SidebarContent>
