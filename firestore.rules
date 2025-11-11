@@ -8,11 +8,6 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Allow public read access to all documents
-    match /{document=**} {
-      allow read: if true;
-    }
 
     /**
      * @description Grants admin privileges based on the existence of a document in the /roles_admin collection.
@@ -36,14 +31,13 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for the 'communities' collection.
+     * Only authenticated users can create communities.
+     * Only the owner can update or delete their community.
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
-      // Allow public read access to all communities and community documents
-      allow get, list: if true;
-      // Allow authenticated users to create communities
+      allow read: if true;
       allow create: if request.auth != null && request.resource.data.creatorId == request.auth.uid;
-      // Allow the community owner to update or delete it
       allow update, delete: if request.auth != null && resource.data.creatorId == request.auth.uid;
     }
 
