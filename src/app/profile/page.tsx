@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Card,
@@ -16,7 +17,8 @@ import { doc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon } from 'lucide-react';
+import { User as UserIcon, Link as LinkIcon, Twitter, Linkedin, Github } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
@@ -93,7 +95,7 @@ export default function ProfilePage() {
             </div>
           </div>
         ) : user ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
                 <div className="flex items-center space-x-4">
                     <Avatar className="h-16 w-16">
                         <AvatarImage src={displayPhotoUrl ?? undefined} alt={displayName} />
@@ -109,15 +111,24 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                <div className="space-y-2 pt-4">
-                    <p>
-                    <strong>{t('profileDisplayName')}:</strong> {userProfile?.displayName || t('profileNotSet')}
-                    </p>
+                {userProfile?.bio && (
+                    <div>
+                        <h3 className="font-semibold text-lg mb-2">{t('profileBio')}</h3>
+                        <p className="text-muted-foreground whitespace-pre-wrap">{userProfile.bio}</p>
+                    </div>
+                )}
+                
+                <Separator />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                     <p>
                     <strong>{t('profileFirstName')}:</strong> {displayFirstName || t('profileNotSet')}
                     </p>
                     <p>
                     <strong>{t('profileLastName')}:</strong> {displayLastName || t('profileNotSet')}
+                    </p>
+                    <p>
+                    <strong>{t('profileDisplayName')}:</strong> {userProfile?.displayName || t('profileNotSet')}
                     </p>
                     <p>
                     <strong>{t('profileGender')}:</strong> {userProfile?.gender ? t(`gender${userProfile.gender.charAt(0).toUpperCase() + userProfile.gender.slice(1)}` as any) : t('profileNotSet')}
@@ -126,8 +137,42 @@ export default function ProfilePage() {
                     <strong>{t('profileBirthDate')}:</strong> {userProfile?.birthDate ? formatDate(userProfile.birthDate) : t('profileNotSet')}
                     </p>
                     <p>
+                    <strong>{t('profileLocation')}:</strong> {userProfile?.location || t('profileNotSet')}
+                    </p>
+                    <p>
                     <strong>{t('profileJoinedDate')}:</strong> {formatCreationDate(user.metadata.creationTime)}
                     </p>
+                </div>
+
+                <div className="space-y-4">
+                    {(userProfile?.website || userProfile?.twitter || userProfile?.linkedin || userProfile?.github) && <Separator />}
+                    
+                    <div className="flex flex-wrap gap-4 items-center">
+                        {userProfile?.website && (
+                            <a href={userProfile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
+                                <LinkIcon size={16} />
+                                <span>{t('profileWebsite')}</span>
+                            </a>
+                        )}
+                        {userProfile?.twitter && (
+                            <a href={userProfile.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
+                                <Twitter size={16} />
+                                <span>{t('profileTwitter')}</span>
+                            </a>
+                        )}
+                        {userProfile?.linkedin && (
+                            <a href={userProfile.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
+                                <Linkedin size={16} />
+                                <span>{t('profileLinkedIn')}</span>
+                            </a>
+                        )}
+                        {userProfile?.github && (
+                            <a href={userProfile.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
+                                <Github size={16} />
+                                <span>{t('profileGitHub')}</span>
+                            </a>
+                        )}
+                    </div>
                 </div>
           </div>
         ) : (
@@ -144,3 +189,5 @@ export default function ProfilePage() {
     </Card>
   );
 }
+
+    

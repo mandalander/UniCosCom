@@ -1,3 +1,4 @@
+
 export const translations = {
   pl: {
     // App Sidebar
@@ -51,6 +52,9 @@ export const translations = {
     profileBirthDate: 'Data urodzenia',
     profileJoinedDate: 'Data dołączenia',
     profileNotSet: 'Nie ustawiono',
+    profileBio: 'Biografia',
+    profileLocation: 'Lokalizacja',
+    profileWebsite: 'Strona internetowa',
     editProfile: 'Edytuj profil',
 
     // Edit Profile Page
@@ -74,6 +78,13 @@ export const translations = {
     editProfileSuccessDescription: 'Twój profil został zaktualizowany.',
     editProfileErrorTitle: 'Błąd',
     editProfileErrorDescription: 'Nie udało się zaktualizować profilu.',
+    editProfileBioPlaceholder: 'Napisz coś o sobie...',
+    editProfileLocationPlaceholder: 'np. Warszawa, Polska',
+    editProfileWebsitePlaceholder: 'https://twoja-strona.com',
+    profileTwitter: 'Twitter (X)',
+    profileLinkedIn: 'LinkedIn',
+    profileGitHub: 'GitHub',
+    editProfileSocialLinksPlaceholder: 'Link do Twojego profilu',
 
     // Security & Privacy
     securityPrivacyDescription: 'Zarządzaj swoimi ustawieniami bezpieczeństwa i prywatności.',
@@ -162,6 +173,9 @@ export const translations = {
     profileBirthDate: 'Birth Date',
     profileJoinedDate: 'Joined on',
     profileNotSet: 'Not set',
+    profileBio: 'Biography',
+    profileLocation: 'Location',
+    profileWebsite: 'Website',
     editProfile: 'Edit Profile',
     
     // Edit Profile Page
@@ -185,6 +199,13 @@ export const translations = {
     editProfileSuccessDescription: 'Your profile has been updated.',
     editProfileErrorTitle: 'Error',
     editProfileErrorDescription: 'Failed to update profile.',
+    editProfileBioPlaceholder: 'Write something about yourself...',
+    editProfileLocationPlaceholder: 'e.g. Warsaw, Poland',
+    editProfileWebsitePlaceholder: 'https://your-website.com',
+    profileTwitter: 'Twitter (X)',
+    profileLinkedIn: 'LinkedIn',
+    profileGitHub: 'GitHub',
+    editProfileSocialLinksPlaceholder: 'Your profile link',
     
     // Security & Privacy
     securityPrivacyDescription: 'Manage your security and privacy settings.',
@@ -220,3 +241,5 @@ export const translations = {
     metaDescription: 'Application with top and side navigation.',
   },
 };
+
+    

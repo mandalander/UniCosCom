@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -21,7 +22,7 @@ import { useLanguage } from '@/app/components/language-provider';
 import { useToast } from '@/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, User as UserIcon } from 'lucide-react';
+import { CalendarIcon, User as UserIcon, Twitter, Linkedin, Github } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -39,6 +40,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from '@/components/ui/textarea';
 
 
 export default function EditProfilePage() {
@@ -57,6 +59,12 @@ export default function EditProfilePage() {
   const [birthDate, setBirthDate] = useState<Date | undefined>();
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [newPhotoDataUrl, setNewPhotoDataUrl] = useState<string | null>(null);
+  const [bio, setBio] = useState('');
+  const [location, setLocation] = useState('');
+  const [website, setWebsite] = useState('');
+  const [twitter, setTwitter] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [github, setGithub] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -85,6 +93,12 @@ export default function EditProfilePage() {
       if(userProfile.photoURL) {
         setPhotoURL(userProfile.photoURL);
       }
+      setBio(userProfile.bio || '');
+      setLocation(userProfile.location || '');
+      setWebsite(userProfile.website || '');
+      setTwitter(userProfile.twitter || '');
+      setLinkedin(userProfile.linkedin || '');
+      setGithub(userProfile.github || '');
     } else if (user) {
         setDisplayName(user.displayName || '');
         const nameParts = user.displayName?.split(' ') || ['', ''];
@@ -143,6 +157,12 @@ export default function EditProfilePage() {
         gender: gender,
         birthDate: birthDate ? format(birthDate, 'yyyy-MM-dd') : null,
         photoURL: finalPhotoUrl,
+        bio,
+        location,
+        website,
+        twitter,
+        linkedin,
+        github,
         updatedAt: serverTimestamp(),
       };
   
@@ -300,6 +320,42 @@ export default function EditProfilePage() {
                 </div>
 
                 <div className="grid gap-2">
+                  <Label htmlFor="bio">{t('profileBio')}</Label>
+                  <Textarea
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder={t('editProfileBioPlaceholder')}
+                    disabled={isSaving}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="location">{t('profileLocation')}</Label>
+                        <Input
+                            id="location"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder={t('editProfileLocationPlaceholder')}
+                            disabled={isSaving}
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="website">{t('profileWebsite')}</Label>
+                        <Input
+                            id="website"
+                            type="url"
+                            value={website}
+                            onChange={(e) => setWebsite(e.target.value)}
+                            placeholder={t('editProfileWebsitePlaceholder')}
+                            disabled={isSaving}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid gap-2">
                   <Label>{t('gender')}</Label>
                   <RadioGroup
                     value={gender}
@@ -352,6 +408,41 @@ export default function EditProfilePage() {
                       </PopoverContent>
                     </Popover>
                 </div>
+                
+                <div className="space-y-4">
+                  <Label>{t('profileSocialLinks')}</Label>
+                  <div className="flex items-center gap-2">
+                    <Linkedin size={18} className="text-muted-foreground" />
+                    <Input
+                      id="linkedin"
+                      value={linkedin}
+                      onChange={(e) => setLinkedin(e.target.value)}
+                      placeholder={t('editProfileSocialLinksPlaceholder')}
+                      disabled={isSaving}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Twitter size={18} className="text-muted-foreground" />
+                    <Input
+                      id="twitter"
+                      value={twitter}
+                      onChange={(e) => setTwitter(e.target.value)}
+                      placeholder={t('editProfileSocialLinksPlaceholder')}
+                      disabled={isSaving}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Github size={18} className="text-muted-foreground" />
+                    <Input
+                      id="github"
+                      value={github}
+                      onChange={(e) => setGithub(e.target.value)}
+                      placeholder={t('editProfileSocialLinksPlaceholder')}
+                      disabled={isSaving}
+                    />
+                  </div>
+                </div>
+
               </div>
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
@@ -409,3 +500,5 @@ export default function EditProfilePage() {
     </div>
   );
 }
+
+    
