@@ -31,15 +31,15 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for the 'communities' collection.
-     * Anyone can read communities.
-     * Only authenticated users can create communities.
+     * Logged-in users can read communities.
+     * Only authenticated users who are the creator can create communities.
      * Only the owner can update or delete their community.
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
-      allow read: if true;
-      allow create: if request.auth != null && request.resource.data.creatorId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.creatorId == request.auth.uid;
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
 
     // ---- Helper functions ----
