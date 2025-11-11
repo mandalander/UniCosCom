@@ -1,5 +1,5 @@
 /**
- * @fileoverview Firestore Security Rules for Prototyping.
+ * @fileoverview Firestore Security Rules for Prototyper.
  *
  * Core Philosophy:
  * This ruleset prioritizes strict user-ownership and admin-based authorization.
@@ -45,8 +45,8 @@ service cloud.firestore {
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
-      // Allow public read access to all communities
-      allow read: if true;
+      // Allow public read access to all communities and community documents
+      allow get, list: if true;
       // Allow authenticated users to create communities
       allow create: if request.auth != null && request.resource.data.creatorId == request.auth.uid;
       // Allow the community owner to update or delete it
