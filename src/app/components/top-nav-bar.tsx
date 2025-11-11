@@ -6,6 +6,16 @@ import { useLanguage } from './language-provider';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { User as UserIcon } from 'lucide-react';
 
 export function TopNavBar() {
   const { t } = useLanguage();
@@ -18,6 +28,16 @@ export function TopNavBar() {
     router.push('/');
   };
 
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      return name.charAt(0).toUpperCase();
+    }
+    if (email) {
+      return email.charAt(0).toUpperCase();
+    }
+    return <UserIcon className="h-5 w-5" />;
+  };
+
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-sidebar px-4 sm:px-6">
       <div className="flex items-center gap-4">
@@ -25,11 +45,39 @@ export function TopNavBar() {
       </div>
       <div className="flex items-center gap-4">
         {isUserLoading ? (
-          <div className="h-10 w-24 animate-pulse rounded-md bg-muted" />
+          <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
         ) : user ? (
-          <Button onClick={handleLogout} variant="default">
-            {t('logout')}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName ?? user.email ?? 'User'} />
+                  <AvatarFallback>
+                    {getInitials(user.displayName, user.email)}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user.displayName}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/profile">{t('profile')}</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                {t('logout')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <Button asChild variant="default">
             <Link href="/login">{t('login')}</Link>

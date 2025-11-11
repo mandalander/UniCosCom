@@ -14,21 +14,31 @@ import {
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
 import { useEffect, useState } from 'react';
+import { useUser } from '@/firebase';
 
 export function AppSidebar() {
   const pathname = usePathname();
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
+  const { user } = useUser();
 
-  const menuItems = [
-    { href: '/', label: t('main'), icon: Home },
-    { href: '/explore', label: t('explore'), icon: Compass },
-    { href: '/settings', label: t('settings'), icon: Settings },
+  const allMenuItems = [
+    { href: '/', label: t('main'), icon: Home, requiresAuth: false },
+    { href: '/explore', label: t('explore'), icon: Compass, requiresAuth: false },
+    { href: '/profile', label: t('profile'), icon: User, requiresAuth: true },
+    { href: '/settings', label: t('settings'), icon: Settings, requiresAuth: false },
   ];
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const menuItems = allMenuItems.filter(item => {
+    if (item.requiresAuth && !user) {
+      return false;
+    }
+    return true;
+  });
 
   if (!mounted) {
     return <Sidebar />;
