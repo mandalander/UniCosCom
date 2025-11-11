@@ -238,8 +238,9 @@ export default function EditProfilePage() {
       </header>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile">{t('editProfileTabProfile')}</TabsTrigger>
+          <TabsTrigger value="security">{t('editProfileTabSecurity')}</TabsTrigger>
           <TabsTrigger value="danger-zone">{t('editProfileTabDangerZone')}</TabsTrigger>
         </TabsList>
         <TabsContent value="profile">
@@ -360,6 +361,17 @@ export default function EditProfilePage() {
             </CardFooter>
           </Card>
         </TabsContent>
+        <TabsContent value="security">
+           <Card>
+            <CardHeader>
+                <CardTitle>{t('editProfileTabSecurity')}</CardTitle>
+                <CardDescription>{t('securityPrivacyDescription')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+               {/* Content for Security & Privacy will go here */}
+            </CardContent>
+          </Card>
+        </TabsContent>
         <TabsContent value="danger-zone">
           <Card className="border-destructive">
             <CardHeader>
@@ -397,5 +409,3 @@ export default function EditProfilePage() {
     </div>
   );
 }
-
-    

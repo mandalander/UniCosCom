@@ -57,6 +57,7 @@ export const translations = {
     editProfileTitle: 'Edytuj profil',
     editProfileDescription: 'Zaktualizuj swoje dane profilowe i zarządzaj kontem.',
     editProfileTabProfile: 'Profil',
+    editProfileTabSecurity: 'Bezpieczeństwo i prywatność',
     editProfileTabDangerZone: 'Strefa niebezpieczna',
     profilePhoto: 'Zdjęcie profilowe',
     changePhoto: 'Zmień zdjęcie',
@@ -74,6 +75,9 @@ export const translations = {
     editProfileErrorTitle: 'Błąd',
     editProfileErrorDescription: 'Nie udało się zaktualizować profilu.',
 
+    // Security & Privacy
+    securityPrivacyDescription: 'Zarządzaj swoimi ustawieniami bezpieczeństwa i prywatności.',
+    
     // Danger Zone
     dangerZone: 'Strefa niebezpieczna',
     dangerZoneDescription: 'Te działania są nieodwracalne. Prosimy o ostrożność.',
@@ -164,6 +168,7 @@ export const translations = {
     editProfileTitle: 'Edit Profile',
     editProfileDescription: 'Update your profile information and manage your account.',
     editProfileTabProfile: 'Profile',
+    editProfileTabSecurity: 'Security & Privacy',
     editProfileTabDangerZone: 'Danger Zone',
     profilePhoto: 'Profile Photo',
     changePhoto: 'Change Photo',
@@ -180,6 +185,9 @@ export const translations = {
     editProfileSuccessDescription: 'Your profile has been updated.',
     editProfileErrorTitle: 'Error',
     editProfileErrorDescription: 'Failed to update profile.',
+    
+    // Security & Privacy
+    securityPrivacyDescription: 'Manage your security and privacy settings.',
 
     // Danger Zone
     dangerZone: 'Danger Zone',
