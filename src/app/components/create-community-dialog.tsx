@@ -16,8 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from './language-provider';
-import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useUser } from '@/firebase';
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 export function CreateCommunityDialog({ children }: { children: React.ReactNode }) {
@@ -53,7 +53,7 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
 
     try {
       const communitiesColRef = collection(firestore, 'communities');
-      await addDocumentNonBlocking(communitiesColRef, {
+      await addDoc(communitiesColRef, {
         name: communityName,
         description: description,
         creatorId: user.uid,
