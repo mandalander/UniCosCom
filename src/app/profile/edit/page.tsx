@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { updateProfile } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { updateProfile, deleteUser } from 'firebase/auth';
+import { doc, serverTimestamp, setDoc, deleteDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -27,6 +27,17 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
 export default function EditProfilePage() {
@@ -46,6 +57,7 @@ export default function EditProfilePage() {
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [newPhotoDataUrl, setNewPhotoDataUrl] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
     if (!user || !firestore) return null;
@@ -67,7 +79,7 @@ export default function EditProfilePage() {
       setLastName(userProfile.lastName || '');
       setGender(userProfile.gender || '');
       if (userProfile.birthDate) {
-        setBirthDate(new Date(userProfile.birthDate));
+        setBirthDate(new Date(`${userProfile.birthDate}T00:00:00`));
       }
       if(userProfile.photoURL) {
         setPhotoURL(userProfile.photoURL);
@@ -156,6 +168,55 @@ export default function EditProfilePage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!user || !firestore || !auth.currentUser) return;
+
+    setIsDeleting(true);
+
+    try {
+      // 1. Delete profile picture from Storage
+      if (userProfile?.photoURL) {
+        const storage = getStorage();
+        const photoRef = ref(storage, `profile-pictures/${user.uid}`);
+        try {
+          await deleteObject(photoRef);
+        } catch (storageError: any) {
+          // Ignore "object-not-found" error
+          if (storageError.code !== 'storage/object-not-found') {
+            throw storageError; // Re-throw other errors
+          }
+        }
+      }
+
+      // 2. Delete user document from Firestore
+      await deleteDoc(doc(firestore, 'users', user.uid));
+
+      // 3. Delete user from Auth
+      await deleteUser(auth.currentUser);
+
+      toast({
+        title: t('deleteAccountSuccessTitle'),
+        description: t('deleteAccountSuccessDescription'),
+      });
+
+      router.push('/'); // Redirect to home page after deletion
+
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      let description = t('deleteAccountErrorDescription');
+      if (error.code === 'auth/requires-recent-login') {
+        description = t('deleteAccountErrorReauth');
+      }
+      toast({
+        variant: "destructive",
+        title: t('deleteAccountErrorTitle'),
+        description: description,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const isLoading = isUserLoading || isProfileLoading;
 
   if (isLoading && !user) {
@@ -167,6 +228,7 @@ export default function EditProfilePage() {
   }
   
   return (
+    <div className="space-y-6">
     <Card>
       <CardHeader>
         <CardTitle>{t('editProfileTitle')}</CardTitle>
@@ -287,5 +349,38 @@ export default function EditProfilePage() {
         </Button>
       </CardFooter>
     </Card>
+
+    <Card className="border-destructive">
+      <CardHeader>
+          <CardTitle>{t('dangerZone')}</CardTitle>
+          <CardDescription>{t('dangerZoneDescription')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+          <div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={isDeleting}>
+                  {isDeleting ? t('deleteAccountDeleting') : t('deleteAccountButton')}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('deleteAccountDialogTitle')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('deleteAccountDialogDescription')}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeleting}>
+                    {t('deleteAccountConfirm')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+      </CardContent>
+    </Card>
+    </div>
   );
 }

@@ -72,6 +72,21 @@ export const translations = {
     editProfileErrorTitle: 'Błąd',
     editProfileErrorDescription: 'Nie udało się zaktualizować profilu.',
 
+    // Danger Zone
+    dangerZone: 'Strefa niebezpieczna',
+    dangerZoneDescription: 'Te działania są nieodwracalne. Prosimy o ostrożność.',
+    deleteAccountButton: 'Usuń konto',
+    deleteAccountDeleting: 'Usuwanie...',
+    deleteAccountDialogTitle: 'Czy na pewno chcesz usunąć swoje konto?',
+    deleteAccountDialogDescription: 'To działanie jest nieodwracalne. Wszystkie Twoje dane zostaną trwale usunięte. Tej akcji nie można cofnąć.',
+    deleteAccountConfirm: 'Tak, usuń konto',
+    deleteAccountSuccessTitle: 'Konto usunięte',
+    deleteAccountSuccessDescription: 'Twoje konto zostało pomyślnie usunięte.',
+    deleteAccountErrorTitle: 'Błąd usuwania konta',
+    deleteAccountErrorDescription: 'Wystąpił błąd podczas usuwania konta.',
+    deleteAccountErrorReauth: 'Ta operacja wymaga niedawnego zalogowania. Zaloguj się ponownie i spróbuj jeszcze raz.',
+    cancel: 'Anuluj',
+
 
     // Settings Page
     settingsTitle: 'Ustawienia',
@@ -162,6 +177,20 @@ export const translations = {
     editProfileErrorTitle: 'Error',
     editProfileErrorDescription: 'Failed to update profile.',
 
+    // Danger Zone
+    dangerZone: 'Danger Zone',
+    dangerZoneDescription: 'These actions are irreversible. Please be careful.',
+    deleteAccountButton: 'Delete Account',
+    deleteAccountDeleting: 'Deleting...',
+    deleteAccountDialogTitle: 'Are you sure you want to delete your account?',
+    deleteAccountDialogDescription: 'This action is irreversible. All your data will be permanently deleted. This action cannot be undone.',
+    deleteAccountConfirm: 'Yes, delete account',
+    deleteAccountSuccessTitle: 'Account Deleted',
+    deleteAccountSuccessDescription: 'Your account has been successfully deleted.',
+    deleteAccountErrorTitle: 'Error Deleting Account',
+    deleteAccountErrorDescription: 'An error occurred while deleting your account.',
+    deleteAccountErrorReauth: 'This operation requires recent sign-in. Please log in again and retry.',
+    cancel: 'Cancel',
 
     // Settings Page
     settingsTitle: 'Settings',
