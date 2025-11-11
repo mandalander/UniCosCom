@@ -98,7 +98,6 @@ service cloud.firestore {
     }
 
     function isCommunityOwner(communityId) {
-      // Important: Use `resource` for existing documents (update, delete)
       return isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
   }
