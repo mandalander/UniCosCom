@@ -31,6 +31,7 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for the 'communities' collection.
+     * Anyone can read communities.
      * Only authenticated users can create communities.
      * Only the owner can update or delete their community.
      * @path /communities/{communityId}
