@@ -20,8 +20,7 @@ service cloud.firestore {
      */
     match /communities/{communityId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+      allow write: if isSignedIn() && isCommunityOwner(communityId);
     }
 
     // ---- Helper functions ----
@@ -41,6 +40,21 @@ service cloud.firestore {
      */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the requesting user is the owner of a community.
+     * This applies to creating, updating, or deleting a community.
+     * @param {string} communityId The ID of the community document.
+     * @return {bool} True if the user is the owner, false otherwise.
+     */
+    function isCommunityOwner(communityId) {
+      // For creating a new document (request.resource.data is the new data)
+      let isCreating = request.resource.data.creatorId == request.auth.uid;
+      // For updating/deleting an existing document (resource.data is the existing data)
+      let isUpdatingOrDeleting = resource.data.creatorId == request.auth.uid;
+      
+      return isCreating || isUpdatingOrDeleting;
     }
   }
 }
