@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function CommunityList() {
   const { t } = useLanguage();
   const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
+  const { isUserLoading } = useUser();
 
   const communitiesQuery = useMemoFirebase(
     () => {
