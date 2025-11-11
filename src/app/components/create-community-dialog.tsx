@@ -16,17 +16,69 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from './language-provider';
+import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
+import { collection, serverTimestamp } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 export function CreateCommunityDialog({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const { toast } = useToast();
+
   const [open, setOpen] = useState(false);
   const [communityName, setCommunityName] = useState('');
   const [description, setDescription] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = () => {
-    console.log('Creating community:', { communityName, description });
-    // TODO: Add logic to create community in Firestore
-    setOpen(false); // Close dialog on creation
+  const handleCreate = async () => {
+    if (!user || !firestore) {
+      toast({
+        variant: "destructive",
+        title: "Błąd",
+        description: "Musisz być zalogowany, aby utworzyć społeczność.",
+      });
+      return;
+    }
+    if (!communityName.trim()) {
+       toast({
+        variant: "destructive",
+        title: "Błąd",
+        description: "Nazwa społeczności nie może być pusta.",
+      });
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      const communitiesColRef = collection(firestore, 'communities');
+      await addDocumentNonBlocking(communitiesColRef, {
+        name: communityName,
+        description: description,
+        creatorId: user.uid,
+        createdAt: serverTimestamp(),
+      });
+
+      toast({
+        title: "Sukces!",
+        description: `Społeczność "${communityName}" została utworzona.`,
+      });
+      
+      setCommunityName('');
+      setDescription('');
+      setOpen(false);
+
+    } catch (error) {
+      console.error('Error creating community:', error);
+      toast({
+        variant: "destructive",
+        title: "Błąd",
+        description: "Nie udało się utworzyć społeczności.",
+      });
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -47,6 +99,7 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
               value={communityName}
               onChange={(e) => setCommunityName(e.target.value)}
               className="col-span-3"
+              disabled={isCreating}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -58,14 +111,17 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="col-span-3"
+              disabled={isCreating}
             />
           </div>
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">{t('cancel')}</Button>
+            <Button variant="outline" disabled={isCreating}>{t('cancel')}</Button>
           </DialogClose>
-          <Button onClick={handleCreate}>{t('createCommunity')}</Button>
+          <Button onClick={handleCreate} disabled={isCreating}>
+            {isCreating ? "Tworzenie..." : t('createCommunity')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
