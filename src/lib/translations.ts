@@ -117,6 +117,12 @@ export const translations = {
     english: 'Angielski',
     polish: 'Polski',
     
+    // Create Community Dialog
+    createCommunity: 'Utwórz',
+    createCommunityDescription: 'Wypełnij poniższe pola, aby utworzyć nową społeczność.',
+    communityName: 'Nazwa',
+    communityDescription: 'Opis',
+
     // Metadata
     metaTitle: 'Nawigator Aplikacji',
     metaDescription: 'Aplikacja z górną i boczną nawigacją.',
@@ -238,10 +244,14 @@ export const translations = {
     english: 'English',
     polish: 'Polish',
 
+    // Create Community Dialog
+    createCommunity: 'Create',
+    createCommunityDescription: 'Fill in the fields below to create a new community.',
+    communityName: 'Name',
+    communityDescription: 'Description',
+
     // Metadata
     metaTitle: 'App Navigator',
     metaDescription: 'Application with top and side navigation.',
   },
 };
-
-    

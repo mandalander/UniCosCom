@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
 import { useEffect, useState } from 'react';
 import { useUser } from '@/firebase';
+import { CreateCommunityDialog } from './create-community-dialog';
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -28,7 +29,6 @@ export function AppSidebar() {
     { href: '/explore', label: t('explore'), icon: Compass, requiresAuth: false },
   ];
   
-  const createCommunityMenuItem = { href: '/communities/create', label: t('createNewCommunity'), icon: PlusCircle, requiresAuth: false };
   const settingsMenuItem = { href: '/settings', label: t('settings'), icon: Settings, requiresAuth: false };
 
 
@@ -89,16 +89,12 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-              <SidebarMenuButton
-              asChild
-              isActive={pathname === createCommunityMenuItem.href}
-              tooltip={createCommunityMenuItem.label}
-              >
-              <Link href={createCommunityMenuItem.href}>
-                  <createCommunityMenuItem.icon />
-                  <span>{createCommunityMenuItem.label}</span>
-              </Link>
-              </SidebarMenuButton>
+              <CreateCommunityDialog>
+                <SidebarMenuButton tooltip={t('createNewCommunity')}>
+                  <PlusCircle />
+                  <span>{t('createNewCommunity')}</span>
+                </SidebarMenuButton>
+              </CreateCommunityDialog>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
