@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useDoc, setDocumentNonBlocking, useMemoFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
-import { doc, serverTimestamp } from 'firebase/firestore';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import {
@@ -42,7 +42,7 @@ export default function EditProfilePage() {
   const [gender, setGender] = useState('');
   const [birthDate, setBirthDate] = useState<Date | undefined>();
   const [photoURL, setPhotoURL] = useState<string | null>(null);
-  const [newPhoto, setNewPhoto] = useState<string | null>(null);
+  const [newPhotoDataUrl, setNewPhotoDataUrl] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
@@ -68,6 +68,9 @@ export default function EditProfilePage() {
       if (userProfile.birthDate) {
         setBirthDate(new Date(userProfile.birthDate));
       }
+      if(userProfile.photoURL) {
+        setPhotoURL(userProfile.photoURL);
+      }
     }
   }, [user, userProfile]);
 
@@ -87,8 +90,7 @@ export default function EditProfilePage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        setNewPhoto(result);
-        setPhotoURL(result); 
+        setNewPhotoDataUrl(result);
       };
       reader.readAsDataURL(file);
     }
@@ -96,62 +98,63 @@ export default function EditProfilePage() {
   
   const handleSave = async () => {
     if (!user || !firestore || !auth.currentUser) return;
-
+  
     setIsSaving(true);
-
-    const firestoreUpdateData: any = {
-        gender: gender,
-        birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
-        displayName: displayName,
-        updatedAt: serverTimestamp(),
-    };
-
-    setDocumentNonBlocking(doc(firestore, 'users', user.uid), firestoreUpdateData, { merge: true });
-
-    if (displayName !== user.displayName) {
-        await updateProfile(auth.currentUser, { displayName });
-    }
-
-    if (newPhoto) {
+  
+    try {
+      let finalPhotoUrl = user.photoURL;
+      
+      // 1. If a new photo is selected, upload it to Storage
+      if (newPhotoDataUrl) {
         const storage = getStorage();
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
-        
-        try {
-            const snapshot = await uploadString(storageRef, newPhoto, 'data_url');
-            const downloadURL = await getDownloadURL(snapshot.ref);
+        const snapshot = await uploadString(storageRef, newPhotoDataUrl, 'data_url');
+        finalPhotoUrl = await getDownloadURL(snapshot.ref);
+      }
+  
+      // 2. Update Firebase Auth profile (DisplayName and PhotoURL)
+      await updateProfile(auth.currentUser, {
+        displayName: displayName,
+        photoURL: finalPhotoUrl,
+      });
 
-            await updateProfile(auth.currentUser, { photoURL: downloadURL });
-            setDocumentNonBlocking(doc(firestore, 'users', user.uid), { photoURL: downloadURL, updatedAt: serverTimestamp() }, { merge: true });
-            
-        } catch (error) {
-            console.error("Error uploading photo:", error);
-            toast({
-                variant: "destructive",
-                title: t('editProfileErrorTitle'),
-                description: "Failed to upload new profile picture.",
-            });
-            setIsSaving(false);
-            return;
-        }
-    }
-
-    try {
-        await auth.currentUser.reload();
-    } catch (error) {
-        console.error("Error reloading user data:", error);
-    }
-
-    toast({
+      // 3. Prepare data for Firestore
+      const firestoreUpdateData: any = {
+        displayName: displayName,
+        gender: gender,
+        birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
+        photoURL: finalPhotoUrl,
+        updatedAt: serverTimestamp(),
+      };
+  
+      // 4. Update Firestore document
+      await setDoc(doc(firestore, 'users', user.uid), firestoreUpdateData, { merge: true });
+  
+      // 5. Reload user to get fresh data from auth service
+      await auth.currentUser.reload();
+  
+      toast({
         title: t('editProfileSuccessTitle'),
         description: t('editProfileSuccessDescription'),
-    });
-
-    router.push('/profile');
-};
+      });
+  
+      router.push('/profile');
+  
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast({
+        variant: "destructive",
+        title: t('editProfileErrorTitle'),
+        description: (error as Error).message || t('editProfileErrorDescription'),
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const isLoading = isUserLoading || isProfileLoading;
 
-  if (isLoading) {
+  if (isLoading && !userProfile) {
     return <div>{t('profileLoading')}</div>;
   }
 
@@ -171,7 +174,7 @@ export default function EditProfilePage() {
             <Label>{t('profilePhoto')}</Label>
             <div className='flex items-center gap-4'>
                 <Avatar className="h-20 w-20">
-                    <AvatarImage src={photoURL ?? undefined} />
+                    <AvatarImage src={newPhotoDataUrl || photoURL || undefined} />
                     <AvatarFallback>{getInitials(displayName, user.email)}</AvatarFallback>
                 </Avatar>
                 <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isSaving}>

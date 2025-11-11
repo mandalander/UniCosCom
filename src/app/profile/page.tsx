@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { doc } from 'firebase/firestore';
 import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { pl, enUS } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User as UserIcon } from 'lucide-react';
 
@@ -44,11 +44,16 @@ export default function ProfilePage() {
 
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), 'P', { locale: language === 'pl' ? pl : undefined });
+      // Add a time component to avoid timezone issues with new Date()
+      return format(new Date(`${dateString}T00:00:00`), 'P', { locale: language === 'pl' ? pl : enUS });
     } catch (e) {
       return dateString;
     }
   };
+
+  // Determine the correct photo URL, prioritizing the fresh data from Auth
+  const displayPhotoUrl = user?.photoURL ?? userProfile?.photoURL;
+  const displayDisplayName = user?.displayName || userProfile?.displayName || t('profileNoDisplayName');
 
   return (
     <Card>
@@ -76,12 +81,12 @@ export default function ProfilePage() {
             <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                     <Avatar className="h-16 w-16">
-                        <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName ?? 'Avatar'} />
-                        <AvatarFallback>{getInitials(user.displayName, user.email)}</AvatarFallback>
+                        <AvatarImage src={displayPhotoUrl ?? undefined} alt={displayDisplayName} />
+                        <AvatarFallback>{getInitials(displayDisplayName, user.email)}</AvatarFallback>
                     </Avatar>
                     <div className='space-y-1'>
                         <p className="text-xl font-semibold">
-                            {user.displayName || t('profileNoDisplayName')}
+                            {displayDisplayName}
                         </p>
                         <p className="text-sm text-muted-foreground">
                             {user.email}
