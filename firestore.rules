@@ -10,24 +10,16 @@ service cloud.firestore {
      * @path /users/{userId}
      */
     match /users/{userId} {
-      allow write: if isOwner(userId);
-      allow read: if isOwner(userId);
+      allow read, write: if isOwner(userId);
     }
 
     /**
-     * @description Defines read rules for the 'communities' collection.
+     * @description Defines rules for the 'communities' collection.
      * Authenticated users can read the list of communities.
+     * Only the creator can create, update or delete their community.
      */
     match /communities/{communityId} {
       allow read: if isSignedIn();
-    }
-
-    /**
-     * @description Defines write rules for the 'communities' collection.
-     * Only authenticated users who are the creator can create communities.
-     * Only the owner can update or delete their community.
-     */
-    match /communities/{communityId} {
       allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
