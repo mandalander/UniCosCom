@@ -23,6 +23,16 @@
         "googleId": {
           "type": "string",
           "description": "The unique user ID provided by Google OAuth for login purposes."
+        },
+        "gender": {
+          "type": "string",
+          "description": "The user's gender.",
+          "enum": ["male", "female", "other"]
+        },
+        "birthDate": {
+          "type": "string",
+          "description": "The user's date of birth.",
+          "format": "date"
         }
       },
       "required": [
