@@ -54,9 +54,11 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
     }
 
+    match /communities/{document=**} {
+      allow read: if true;
+    }
+
     match /communities/{communityId} {
-      allow get: if true;
-      allow list: if true;
       allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
       allow update, delete: if isCommunityOwner(communityId);
     }
