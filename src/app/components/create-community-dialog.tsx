@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from './language-provider';
-import { useFirestore, useUser } from '@/firebase';
+import { useFirestore, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,7 +31,7 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
   const [description, setDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!user || !firestore) {
       toast({
         variant: "destructive",
@@ -51,34 +51,37 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
 
     setIsCreating(true);
 
-    try {
-      const communitiesColRef = collection(firestore, 'communities');
-      await addDoc(communitiesColRef, {
-        name: communityName,
-        description: description,
-        creatorId: user.uid,
-        createdAt: serverTimestamp(),
-      });
+    const communitiesColRef = collection(firestore, 'communities');
+    const communityData = {
+      name: communityName,
+      description: description,
+      creatorId: user.uid,
+      createdAt: serverTimestamp(),
+    };
 
-      toast({
-        title: "Sukces!",
-        description: `Społeczność "${communityName}" została utworzona.`,
+    addDoc(communitiesColRef, communityData)
+      .then(() => {
+        toast({
+          title: "Sukces!",
+          description: `Społeczność "${communityName}" została utworzona.`,
+        });
+        
+        setCommunityName('');
+        setDescription('');
+        setOpen(false);
+      })
+      .catch((error) => {
+        const permissionError = new FirestorePermissionError({
+          path: communitiesColRef.path,
+          operation: 'create',
+          requestResourceData: communityData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        // We don't show a generic toast here, as the listener will handle it.
+      })
+      .finally(() => {
+        setIsCreating(false);
       });
-      
-      setCommunityName('');
-      setDescription('');
-      setOpen(false);
-
-    } catch (error) {
-      console.error('Error creating community:', error);
-      toast({
-        variant: "destructive",
-        title: "Błąd",
-        description: "Nie udało się utworzyć społeczności.",
-      });
-    } finally {
-      setIsCreating(false);
-    }
   };
 
   return (
