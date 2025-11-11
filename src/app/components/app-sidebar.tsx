@@ -29,10 +29,9 @@ export function AppSidebar() {
     { href: '/settings', label: 'Ustawienia', icon: Settings },
   ];
 
-  // To prevent hydration mismatch, we can return a skeleton or null on the server,
-  // and the actual content on the client. But a better approach is to make sure server
-  // and client render the same thing initially.
-  // The issue is that the text is different based on language, which is client-side state.
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Sidebar>
