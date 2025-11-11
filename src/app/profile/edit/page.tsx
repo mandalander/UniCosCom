@@ -38,7 +38,8 @@ export default function EditProfilePage() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [displayName, setDisplayName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState('');
   const [birthDate, setBirthDate] = useState<Date | undefined>();
   const [photoURL, setPhotoURL] = useState<string | null>(null);
@@ -59,11 +60,9 @@ export default function EditProfilePage() {
   }, [isUserLoading, user, router]);
 
   useEffect(() => {
-    if (user) {
-      setDisplayName(user.displayName || '');
-      setPhotoURL(user.photoURL || null);
-    }
     if (userProfile) {
+      setFirstName(userProfile.firstName || '');
+      setLastName(userProfile.lastName || '');
       setGender(userProfile.gender || '');
       if (userProfile.birthDate) {
         setBirthDate(new Date(userProfile.birthDate));
@@ -71,6 +70,12 @@ export default function EditProfilePage() {
       if(userProfile.photoURL) {
         setPhotoURL(userProfile.photoURL);
       }
+    } else if (user) {
+        // Fallback to displayName if firstName/lastName are not in profile
+        const nameParts = user.displayName?.split(' ') || ['', ''];
+        setFirstName(nameParts[0] || '');
+        setLastName(nameParts.slice(1).join(' ') || '');
+        setPhotoURL(user.photoURL || null);
     }
   }, [user, userProfile]);
 
@@ -104,7 +109,6 @@ export default function EditProfilePage() {
     try {
       let finalPhotoUrl = userProfile?.photoURL || user?.photoURL;
       
-      // 1. If a new photo is selected, upload it to Storage
       if (newPhotoDataUrl) {
         const storage = getStorage();
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
@@ -112,25 +116,25 @@ export default function EditProfilePage() {
         finalPhotoUrl = await getDownloadURL(snapshot.ref);
       }
   
-      // 2. Update Firebase Auth profile (DisplayName and PhotoURL)
+      const newDisplayName = `${firstName} ${lastName}`.trim();
+      
       await updateProfile(auth.currentUser, {
-        displayName: displayName,
+        displayName: newDisplayName,
         photoURL: finalPhotoUrl,
       });
 
-      // 3. Prepare data for Firestore
       const firestoreUpdateData: any = {
-        displayName: displayName,
+        firstName: firstName,
+        lastName: lastName,
+        displayName: newDisplayName,
         gender: gender,
         birthDate: birthDate ? format(birthDate, 'yyyy-MM-dd') : null,
         photoURL: finalPhotoUrl,
         updatedAt: serverTimestamp(),
       };
   
-      // 4. Update Firestore document
       await setDoc(doc(firestore, 'users', user.uid), firestoreUpdateData, { merge: true });
   
-      // 5. Reload user to get fresh data from auth service
       await auth.currentUser.reload();
   
       toast({
@@ -153,6 +157,8 @@ export default function EditProfilePage() {
   };
 
   const isLoading = isUserLoading || isProfileLoading;
+
+  const displayName = `${firstName} ${lastName}`.trim();
 
   if (isLoading && !user) {
     return <div>{t('profileLoading')}</div>;
@@ -189,15 +195,27 @@ export default function EditProfilePage() {
                 />
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="displayName">{t('profileDisplayName')}</Label>
-            <Input
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder={t('editProfileDisplayNamePlaceholder')}
-              disabled={isSaving}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="firstName">{t('profileFirstName')}</Label>
+              <Input
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder={t('editProfileFirstNamePlaceholder')}
+                disabled={isSaving}
+              />
+            </div>
+             <div className="grid gap-2">
+              <Label htmlFor="lastName">{t('profileLastName')}</Label>
+              <Input
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder={t('editProfileLastNamePlaceholder')}
+                disabled={isSaving}
+              />
+            </div>
           </div>
 
           <div className="grid gap-2">

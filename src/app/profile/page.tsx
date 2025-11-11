@@ -60,9 +60,12 @@ export default function ProfilePage() {
     }
   }
 
-  // Determine the correct photo URL, prioritizing the data from Firestore (userProfile)
   const displayPhotoUrl = userProfile?.photoURL ?? user?.photoURL;
-  const displayDisplayName = user?.displayName || userProfile?.displayName || t('profileNoDisplayName');
+  
+  const displayFirstName = userProfile?.firstName;
+  const displayLastName = userProfile?.lastName;
+  const displayFullName = [displayFirstName, displayLastName].filter(Boolean).join(' ') || user?.displayName || t('profileNoDisplayName');
+
 
   return (
     <Card>
@@ -82,6 +85,7 @@ export default function ProfilePage() {
             </div>
             <div className="space-y-2 pt-4">
                 <Skeleton className="h-4 w-[300px]" />
+                <Skeleton className="h-4 w-[250px]" />
                 <Skeleton className="h-4 w-[150px]" />
                 <Skeleton className="h-4 w-[180px]" />
                 <Skeleton className="h-4 w-[200px]" />
@@ -91,12 +95,12 @@ export default function ProfilePage() {
             <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                     <Avatar className="h-16 w-16">
-                        <AvatarImage src={displayPhotoUrl ?? undefined} alt={displayDisplayName} />
-                        <AvatarFallback>{getInitials(displayDisplayName, user.email)}</AvatarFallback>
+                        <AvatarImage src={displayPhotoUrl ?? undefined} alt={displayFullName} />
+                        <AvatarFallback>{getInitials(displayFullName, user.email)}</AvatarFallback>
                     </Avatar>
                     <div className='space-y-1'>
                         <p className="text-xl font-semibold">
-                            {displayDisplayName}
+                            {displayFullName}
                         </p>
                         <p className="text-sm text-muted-foreground">
                             {user.email}
@@ -106,7 +110,10 @@ export default function ProfilePage() {
 
                 <div className="space-y-2 pt-4">
                     <p>
-                    <strong>{t('profileId')}:</strong> {user.uid}
+                    <strong>{t('profileFirstName')}:</strong> {displayFirstName || t('profileNotSet')}
+                    </p>
+                    <p>
+                    <strong>{t('profileLastName')}:</strong> {displayLastName || t('profileNotSet')}
                     </p>
                     <p>
                     <strong>{t('profileGender')}:</strong> {userProfile?.gender ? t(`gender${userProfile.gender.charAt(0).toUpperCase() + userProfile.gender.slice(1)}` as any) : t('profileNotSet')}
