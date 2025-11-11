@@ -40,8 +40,22 @@ export const translations = {
     profileContent: 'Informacje o profilu użytkownika zostaną wyświetlone tutaj.',
     profileNotLoggedIn: 'Zaloguj się, aby zobaczyć swój profil.',
     profileLoading: 'Ładowanie profilu...',
+    profileDisplayName: 'Nazwa wyświetlana',
+    profileNoDisplayName: 'Brak',
     profileEmail: 'Email',
     profileId: 'ID Użytkownika',
+    editProfile: 'Edytuj profil',
+
+    // Edit Profile Page
+    editProfileTitle: 'Edytuj profil',
+    editProfileDescription: 'Zaktualizuj swoje dane profilowe.',
+    editProfileDisplayNamePlaceholder: 'Wpisz swoją nazwę wyświetlaną',
+    editProfileSave: 'Zapisz zmiany',
+    editProfileSaving: 'Zapisywanie...',
+    editProfileSuccessTitle: 'Sukces!',
+    editProfileSuccessDescription: 'Twój profil został zaktualizowany.',
+    editProfileErrorTitle: 'Błąd',
+    editProfileErrorDescription: 'Nie udało się zaktualizować profilu.',
 
 
     // Settings Page
@@ -101,8 +115,22 @@ export const translations = {
     profileContent: 'User profile information will be displayed here.',
     profileNotLoggedIn: 'Log in to see your profile.',
     profileLoading: 'Loading profile...',
+    profileDisplayName: 'Display Name',
+    profileNoDisplayName: 'Not set',
     profileEmail: 'Email',
     profileId: 'User ID',
+    editProfile: 'Edit Profile',
+    
+    // Edit Profile Page
+    editProfileTitle: 'Edit Profile',
+    editProfileDescription: 'Update your profile information.',
+    editProfileDisplayNamePlaceholder: 'Enter your display name',
+    editProfileSave: 'Save Changes',
+    editProfileSaving: 'Saving...',
+    editProfileSuccessTitle: 'Success!',
+    editProfileSuccessDescription: 'Your profile has been updated.',
+    editProfileErrorTitle: 'Error',
+    editProfileErrorDescription: 'Failed to update profile.',
 
 
     // Settings Page

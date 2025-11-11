@@ -3,12 +3,15 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { useLanguage } from '../components/language-provider';
 import { useUser } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const { t } = useLanguage();
@@ -30,6 +33,9 @@ export default function ProfilePage() {
         ) : user ? (
           <div className="space-y-2">
             <p>
+              <strong>{t('profileDisplayName')}:</strong> {user.displayName || t('profileNoDisplayName')}
+            </p>
+            <p>
               <strong>{t('profileEmail')}:</strong> {user.email}
             </p>
             <p>
@@ -40,6 +46,13 @@ export default function ProfilePage() {
           <p>{t('profileNotLoggedIn')}</p>
         )}
       </CardContent>
+      <CardFooter>
+        {user && !isUserLoading && (
+            <Button asChild>
+                <Link href="/profile/edit">{t('editProfile')}</Link>
+            </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }
