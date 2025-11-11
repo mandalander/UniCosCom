@@ -46,10 +46,8 @@ service cloud.firestore {
     match /communities/{communityId} {
       // Allow public read access to all communities
       allow read: if true;
-
       // Allow authenticated users to create communities
       allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
-      
       // Allow the community owner to update or delete it
       allow update, delete: if isCommunityOwner(communityId);
     }
