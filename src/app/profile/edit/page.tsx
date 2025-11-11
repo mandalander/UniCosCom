@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useDoc, setDocumentNonBlocking, useMemoFirebase } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
+import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -20,11 +21,13 @@ import { useLanguage } from '@/app/components/language-provider';
 import { useToast } from '@/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, User as UserIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 export default function EditProfilePage() {
   const { t, language } = useLanguage();
@@ -33,10 +36,13 @@ export default function EditProfilePage() {
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [displayName, setDisplayName] = useState('');
   const [gender, setGender] = useState('');
   const [birthDate, setBirthDate] = useState<Date | undefined>();
+  const [photoURL, setPhotoURL] = useState<string | null>(null);
+  const [newPhoto, setNewPhoto] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
@@ -49,6 +55,7 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName || '');
+      setPhotoURL(user.photoURL || null);
     }
     if (userProfile) {
       setGender(userProfile.gender || '');
@@ -58,18 +65,59 @@ export default function EditProfilePage() {
     }
   }, [user, userProfile]);
 
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      return name.charAt(0).toUpperCase();
+    }
+    if (email && email.length > 0) {
+      return email.charAt(0).toUpperCase();
+    }
+    return <UserIcon className="h-5 w-5" />;
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewPhoto(reader.result as string);
+        setPhotoURL(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = async () => {
-    if (!user || !firestore) return;
+    if (!user || !firestore || !auth.currentUser) return;
 
     setIsSaving(true);
     try {
-      if (auth.currentUser && auth.currentUser.displayName !== displayName) {
-        await updateProfile(auth.currentUser, { displayName });
+      let finalPhotoURL = user.photoURL;
+
+      if (newPhoto) {
+        const storage = getStorage();
+        const storageRef = ref(storage, `profile-pictures/${user.uid}`);
+        await uploadString(storageRef, newPhoto, 'data_url');
+        finalPhotoURL = await getDownloadURL(storageRef);
       }
+      
+      const profileUpdates: { displayName?: string, photoURL?: string } = {};
+      if (displayName !== user.displayName) {
+        profileUpdates.displayName = displayName;
+      }
+      if (finalPhotoURL !== user.photoURL) {
+        profileUpdates.photoURL = finalPhotoURL;
+      }
+
+      if (Object.keys(profileUpdates).length > 0) {
+        await updateProfile(auth.currentUser, profileUpdates);
+      }
+
 
       const userDocRef = doc(firestore, 'users', user.uid);
       const profileData = {
         displayName: displayName,
+        photoURL: finalPhotoURL,
         gender,
         birthDate: birthDate ? birthDate.toISOString().split('T')[0] : null,
       };
@@ -112,6 +160,25 @@ export default function EditProfilePage() {
       </CardHeader>
       <CardContent>
         <div className="grid gap-6">
+          <div className="grid gap-4 items-center">
+            <Label>{t('profilePhoto')}</Label>
+            <div className='flex items-center gap-4'>
+                <Avatar className="h-20 w-20">
+                    <AvatarImage src={photoURL ?? undefined} />
+                    <AvatarFallback>{getInitials(displayName, user.email)}</AvatarFallback>
+                </Avatar>
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isSaving}>
+                    {t('changePhoto')}
+                </Button>
+                <Input 
+                    ref={fileInputRef}
+                    type="file" 
+                    className="hidden" 
+                    accept="image/png, image/jpeg"
+                    onChange={handleFileChange}
+                />
+            </div>
+          </div>
           <div className="grid gap-2">
             <Label htmlFor="displayName">{t('profileDisplayName')}</Label>
             <Input

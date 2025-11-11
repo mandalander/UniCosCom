@@ -52,6 +52,8 @@ export const translations = {
     // Edit Profile Page
     editProfileTitle: 'Edytuj profil',
     editProfileDescription: 'Zaktualizuj swoje dane profilowe.',
+    profilePhoto: 'Zdjęcie profilowe',
+    changePhoto: 'Zmień zdjęcie',
     editProfileDisplayNamePlaceholder: 'Wpisz swoją nazwę wyświetlaną',
     editProfileBirthDatePlaceholder: 'Wybierz datę urodzenia',
     gender: 'Płeć',
@@ -135,6 +137,8 @@ export const translations = {
     // Edit Profile Page
     editProfileTitle: 'Edit Profile',
     editProfileDescription: 'Update your profile information.',
+    profilePhoto: 'Profile Photo',
+    changePhoto: 'Change Photo',
     editProfileDisplayNamePlaceholder: 'Enter your display name',
     editProfileBirthDatePlaceholder: 'Pick a date of birth',
     gender: 'Gender',

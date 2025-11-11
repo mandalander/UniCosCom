@@ -15,6 +15,8 @@ import Link from 'next/link';
 import { doc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User as UserIcon } from 'lucide-react';
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
@@ -29,6 +31,16 @@ export default function ProfilePage() {
   const { data: userProfile, isLoading: isProfileLoading } = useDoc(userDocRef);
 
   const isLoading = isUserLoading || isProfileLoading;
+
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      return name.charAt(0).toUpperCase();
+    }
+    if (email) {
+      return email.charAt(0).toUpperCase();
+    }
+    return <UserIcon className="h-5 w-5" />;
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -46,30 +58,48 @@ export default function ProfilePage() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-            <Skeleton className="h-4 w-[300px]" />
-            <Skeleton className="h-4 w-[150px]" />
-            <Skeleton className="h-4 w-[180px]" />
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+                <Skeleton className="h-16 w-16 rounded-full" />
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-[250px]" />
+                    <Skeleton className="h-4 w-[200px]" />
+                </div>
+            </div>
+            <div className="space-y-2 pt-4">
+                <Skeleton className="h-4 w-[300px]" />
+                <Skeleton className="h-4 w-[150px]" />
+                <Skeleton className="h-4 w-[180px]" />
+            </div>
           </div>
         ) : user ? (
-          <div className="space-y-2">
-            <p>
-              <strong>{t('profileDisplayName')}:</strong> {user.displayName || t('profileNoDisplayName')}
-            </p>
-            <p>
-              <strong>{t('profileEmail')}:</strong> {user.email}
-            </p>
-            <p>
-              <strong>{t('profileId')}:</strong> {user.uid}
-            </p>
-            <p>
-              <strong>{t('profileGender')}:</strong> {userProfile?.gender ? t(`gender${userProfile.gender.charAt(0).toUpperCase() + userProfile.gender.slice(1)}` as any) : t('profileNotSet')}
-            </p>
-             <p>
-              <strong>{t('profileBirthDate')}:</strong> {userProfile?.birthDate ? formatDate(userProfile.birthDate) : t('profileNotSet')}
-            </p>
+            <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                    <Avatar className="h-16 w-16">
+                        <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName ?? 'Avatar'} />
+                        <AvatarFallback>{getInitials(user.displayName, user.email)}</AvatarFallback>
+                    </Avatar>
+                    <div className='space-y-1'>
+                        <p className="text-xl font-semibold">
+                            {user.displayName || t('profileNoDisplayName')}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                            {user.email}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="space-y-2 pt-4">
+                    <p>
+                    <strong>{t('profileId')}:</strong> {user.uid}
+                    </p>
+                    <p>
+                    <strong>{t('profileGender')}:</strong> {userProfile?.gender ? t(`gender${userProfile.gender.charAt(0).toUpperCase() + userProfile.gender.slice(1)}` as any) : t('profileNotSet')}
+                    </p>
+                    <p>
+                    <strong>{t('profileBirthDate')}:</strong> {userProfile?.birthDate ? formatDate(userProfile.birthDate) : t('profileNotSet')}
+                    </p>
+                </div>
           </div>
         ) : (
           <p>{t('profileNotLoggedIn')}</p>
