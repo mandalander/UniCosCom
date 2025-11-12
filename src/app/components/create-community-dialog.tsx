@@ -16,12 +16,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from './language-provider';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { collection, serverTimestamp } from 'firebase/firestore';
 
 export function CreateCommunityDialog({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
   const { user } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
@@ -30,7 +32,7 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = async () => {
-    if (!user) {
+    if (!user || !firestore) {
       toast({
         variant: "destructive",
         title: "Błąd",
@@ -49,18 +51,35 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
 
     setIsCreating(true);
 
-    // Simulate creation delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const communitiesColRef = collection(firestore, 'communities');
+      const communityData = {
+        name: communityName,
+        description: description,
+        creatorId: user.uid,
+        createdAt: serverTimestamp(),
+      };
+      
+      await addDocumentNonBlocking(communitiesColRef, communityData);
 
-    toast({
-      title: "Sukces! (Symulacja)",
-      description: `Społeczność "${communityName}" została utworzona. Ta funkcja jest obecnie demonstracyjna.`,
-    });
-    
-    setCommunityName('');
-    setDescription('');
-    setIsCreating(false);
-    setOpen(false);
+      toast({
+        title: "Sukces!",
+        description: `Społeczność "${communityName}" została utworzona.`,
+      });
+      
+      setCommunityName('');
+      setDescription('');
+      setOpen(false);
+
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Błąd tworzenia społeczności",
+        description: "Wystąpił nieoczekiwany błąd.",
+      });
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (

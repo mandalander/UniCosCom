@@ -2,23 +2,27 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "./language-provider";
-import { communities as staticCommunities } from '@/lib/placeholder-data';
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, query, orderBy } from "firebase/firestore";
+
+type Community = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: any;
+};
 
 export function CommunityList() {
   const { t } = useLanguage();
-  const [communities, setCommunities] = useState<typeof staticCommunities | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const firestore = useFirestore();
 
-  useEffect(() => {
-    // Simulate fetching data
-    setTimeout(() => {
-      setCommunities(staticCommunities);
-      setIsLoading(false);
-    }, 500);
-  }, []);
+  const communitiesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'communities'), orderBy('createdAt', 'desc'));
+  }, [firestore]);
 
+  const { data: communities, isLoading } = useCollection<Community>(communitiesQuery);
 
   if (isLoading) {
     return (
