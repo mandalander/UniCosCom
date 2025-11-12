@@ -14,15 +14,14 @@ service cloud.firestore {
     }
 
     /**
-     * @description Defines rules for the 'communities' collection and all its subcollections.
-     * Allows any signed-in user to read any document.
+     * @description Defines rules for the 'communities' collection.
+     * Allows any signed-in user to read the list of communities or individual community documents.
      * Allows creation of new communities for any signed-in user.
      * Allows updates and deletes only by the original creator of a community document.
      */
-    match /communities/{document=**} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+    match /communities/{communityId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if isCreator(communityId);
     }
 
 
@@ -43,6 +42,15 @@ service cloud.firestore {
      */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the requesting user is the creator of the community.
+     * @param {string} communityId The ID of the community document.
+     * @return {bool} True if the user is the creator, false otherwise.
+     */
+    function isCreator(communityId) {
+      return isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
   }
 }
