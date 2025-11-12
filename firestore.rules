@@ -19,7 +19,9 @@ service cloud.firestore {
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
+      // Allow public read access for both single documents (get) and collections (list)
       allow read: if true;
+      
       allow create: if isSignedIn() 
                       && request.resource.data.creatorId == request.auth.uid 
                       && isCommunityDataValid(request.resource.data);
