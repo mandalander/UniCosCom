@@ -7,6 +7,7 @@ import { communities as placeholderCommunities } from "@/lib/placeholder-data";
 export function CommunityList() {
   const { t } = useLanguage();
 
+  // Using placeholder data directly
   const communities = placeholderCommunities;
   const isLoading = false;
 

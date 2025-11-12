@@ -16,13 +16,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from './language-provider';
-import { useFirestore, useUser, errorEmitter, FirestorePermissionError, addDocumentNonBlocking } from '@/firebase';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 export function CreateCommunityDialog({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
-  const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
 
@@ -32,7 +30,7 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = async () => {
-    if (!user || !firestore) {
+    if (!user) {
       toast({
         variant: "destructive",
         title: "Błąd",
@@ -51,32 +49,18 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
 
     setIsCreating(true);
 
-    const communitiesColRef = collection(firestore, 'communities');
-    const communityData = {
-      name: communityName,
-      description: description,
-      creatorId: user.uid,
-      createdAt: serverTimestamp(),
-    };
+    // Simulate creation delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    try {
-      await addDocumentNonBlocking(communitiesColRef, communityData);
-      
-      toast({
-        title: "Sukces!",
-        description: `Społeczność "${communityName}" została utworzona.`,
-      });
-      
-      setCommunityName('');
-      setDescription('');
-      setOpen(false);
-    } catch (error) {
-        // The non-blocking function will emit the error, so we don't need to do it here.
-        // We also don't show a generic toast, as the listener will handle it.
-        console.error("This should not be reached if non-blocking logic is correct", error);
-    } finally {
-        setIsCreating(false);
-    }
+    toast({
+      title: "Sukces! (Symulacja)",
+      description: `Społeczność "${communityName}" została utworzona. Ta funkcja jest obecnie demonstracyjna.`,
+    });
+    
+    setCommunityName('');
+    setDescription('');
+    setIsCreating(false);
+    setOpen(false);
   };
 
   return (
