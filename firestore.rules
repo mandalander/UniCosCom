@@ -103,7 +103,7 @@ service cloud.firestore {
              && data.name is string && data.name.size() > 0 && data.name.size() < 50
              && data.description is string && data.description.size() < 500
              && data.creatorId is string && data.creatorId.size() > 0
-             && (data.createdAt == request.time || data.createdAt is timestamp);
+             && data.createdAt is timestamp;
     }
 
     /**
