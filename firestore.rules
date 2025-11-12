@@ -14,20 +14,19 @@ service cloud.firestore {
     }
     
     /**
-     * @description Allow public read access to the list of all communities.
-     *              This rule is CRITICAL for the main page to display communities.
+     * @description Allow public read access (list) to the entire 'communities' collection.
+     *              This is CRITICAL for the main page to display the list of communities.
      */
     match /communities {
-      allow get, list: if true;
+      allow list: if true;
     }
-    
+
     /**
      * @description Defines rules for individual 'community' documents and their subcollections.
-     *              - Restricts write operations to authenticated users with specific roles (creator/author).
-     *              - Read access for individual documents is inherited from the collection-level rule.
      */
     match /communities/{communityId} {
-      // Read access is handled by the '/communities' match block above.
+      // Allow reading a single community document.
+      allow get: if true;
       
       // Allow creating a community if the user is signed in, the creatorId matches, and the data is valid.
       allow create: if isSignedIn() 
