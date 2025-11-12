@@ -23,7 +23,7 @@ service cloud.firestore {
 
     /**
      * @description Write access is granted to signed-in users for creating, updating, and deleting
-     * community-related documents.
+     * community-related documents. This rule applies to the main community documents.
      */
     match /communities/{communityId} {
       allow write: if isSignedIn();
