@@ -5,6 +5,7 @@ import { useLanguage } from "./language-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
+import Link from 'next/link';
 
 type Community = {
   id: string;
@@ -50,14 +51,16 @@ export function CommunityList() {
       {communities && communities.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {communities.map((community) => (
-            <Card key={community.id}>
-              <CardHeader>
-                <CardTitle>{community.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{community.description}</p>
-              </CardContent>
-            </Card>
+            <Link key={community.id} href={`/community/${community.id}`} passHref>
+              <Card className="h-full cursor-pointer hover:bg-muted/50 transition-colors">
+                <CardHeader>
+                  <CardTitle>{community.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground line-clamp-2">{community.description}</p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       ) : (
