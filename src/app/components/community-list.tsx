@@ -2,25 +2,28 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "./language-provider";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { communities as staticCommunities } from '@/lib/placeholder-data';
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
 
 export function CommunityList() {
   const { t } = useLanguage();
-  const firestore = useFirestore();
+  const [communities, setCommunities] = useState<typeof staticCommunities | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const communitiesColRef = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'communities');
-  }, [firestore]);
+  useEffect(() => {
+    // Simulate fetching data
+    setTimeout(() => {
+      setCommunities(staticCommunities);
+      setIsLoading(false);
+    }, 500);
+  }, []);
 
-  const { data: communities, isLoading, error } = useCollection(communitiesColRef);
 
   if (isLoading) {
     return (
        <div className="space-y-4">
-        <h2 className="text-2xl font-bold">{t('homeTitle')}</h2>
+        <h2 className="text-2xl font-bold">Społeczności</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(3)].map((_, i) => (
             <Card key={i}>
@@ -33,15 +36,6 @@ export function CommunityList() {
             </Card>
           ))}
         </div>
-      </div>
-    )
-  }
-  
-  if (error) {
-    return (
-      <div className="text-red-500">
-        <p>Błąd ładowania społeczności:</p>
-        <p className="text-sm">{error.message}</p>
       </div>
     )
   }
