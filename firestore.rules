@@ -14,11 +14,12 @@ service cloud.firestore {
     }
 
     /**
-     * @description Defines rules for the 'communities' collection.
+     * @description Defines rules for the 'communities' collection and its subcollections.
      * Read access is public. Write access is restricted.
      */
     match /communities/{communityId} {
       allow get: if true;
+      allow list: if true;
       allow create: if isSignedIn() 
                       && request.resource.data.creatorId == request.auth.uid 
                       && isCommunityDataValid(request.resource.data);
@@ -48,10 +49,6 @@ service cloud.firestore {
           allow delete: if isCommentAuthor(commentId);
         }
       }
-    }
-    
-    match /communities/{communityId} {
-      allow list: if true;
     }
 
 
