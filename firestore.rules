@@ -12,21 +12,18 @@ service cloud.firestore {
     match /users/{userId} {
       allow write: if isOwner(userId);
     }
-    
-    /**
-     * @description Allow public listing of communities.
-     * @path /communities
-     */
-    match /communities {
-      allow list: if true;
-    }
 
     /**
-     * @description Defines rules for individual community documents.
+     * @description Defines rules for the 'communities' collection.
+     * Allows public read access for listing and getting communities,
+     * but restricts write access.
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
+      // Allow public read access (get, list) to everyone.
       allow read: if true;
+
+      // Rules for creating, updating, and deleting communities.
       allow create: if isSignedIn() 
                       && request.resource.data.creatorId == request.auth.uid 
                       && isCommunityDataValid(request.resource.data);
