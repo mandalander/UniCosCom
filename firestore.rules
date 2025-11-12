@@ -14,17 +14,21 @@ service cloud.firestore {
     }
     
     /**
-     * @description Public read access for the communities collection and its subcollections.
-     *              Write access is restricted based on specific conditions.
+     * @description Allows public listing of the communities collection.
      */
-    match /communities/{document=**} {
-      allow read: if true;
-      allow write: if (
-        (request.method == 'create' && isCommunityDataValid(request.resource.data) && request.resource.data.creatorId == request.auth.uid) ||
-        ((request.method == 'update' || request.method == 'delete') && isCreator(get(/databases/$(database)/documents/communities/$(request.path.split('/')[3]))) && isCommunityDataValid(request.resource.data))
-      );
+    match /communities {
+      allow list: if true;
     }
     
+    /**
+     * @description Defines rules for individual communities and their subcollections.
+     */
+    match /communities/{communityId} {
+      allow get: if true;
+      allow create: if isSignedIn() && isCommunityDataValid(request.resource.data) && request.resource.data.creatorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && isCreator(get(/databases/$(database)/documents/communities/$(communityId))) && isCommunityDataValid(request.resource.data);
+    }
+
     /**
      * @description Defines rules for posts within a community.
      */
