@@ -13,30 +13,9 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     
-    /**
-     * @description Allow public read access for all community-related data.
-     * This includes the list of communities, individual communities, posts, and comments.
-     */
     match /communities/{document=**} {
       allow read: if true;
-    }
-
-    /**
-     * @description Write access is granted to signed-in users for creating, updating, and deleting
-     * community-related documents. This rule applies to the main community documents.
-     */
-    match /communities/{communityId} {
       allow write: if isSignedIn();
-    }
-
-    match /communities/{communityId}/posts/{postId} {
-        allow create: if isSignedIn() && isPostDataValid(request.resource.data) && request.resource.data.authorId == request.auth.uid;
-        allow update, delete: if isSignedIn() && isAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId))) && isPostDataValid(request.resource.data);
-    }
-
-    match /communities/{communityId}/posts/{postId}/comments/{commentId} {
-        allow create: if isSignedIn() && isCommentDataValid(request.resource.data) && request.resource.data.authorId == request.auth.uid;
-        allow update, delete: if isSignedIn() && isCommentAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId)/comments/$(commentId))) && isCommentDataValid(request.resource.data);
     }
 
     // ---- Helper functions ----
