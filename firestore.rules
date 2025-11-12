@@ -15,12 +15,12 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for the 'communities' collection.
-     * Allows public read access for listing and getting communities.
+     * Allows public read access (get, list) for everyone.
      * Allows creation of new communities for any signed-in user.
      * Allows updates and deletes only by the original creator of a community document.
      */
     match /communities/{communityId} {
-      allow read: if true;
+      allow get, list: if true;
       allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
       allow update, delete: if isCreator(communityId);
     }
