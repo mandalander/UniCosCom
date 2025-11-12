@@ -14,7 +14,7 @@ service cloud.firestore {
     }
 
     match /communities/{document=**} {
-      allow read, write: if true;
+      allow read, write: if isSignedIn();
     }
 
 
