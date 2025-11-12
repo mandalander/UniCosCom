@@ -13,10 +13,13 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     
+    // Allow public read access to all communities and their sub-documents.
     match /communities/{document=**} {
       allow read: if true;
     }
     
+    // Allow authenticated users to create, update, and delete communities.
+    // This single rule covers the "create" operation on the collection.
     match /communities/{communityId} {
        allow write: if isSignedIn();
     }
