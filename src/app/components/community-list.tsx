@@ -28,7 +28,10 @@ export function CommunityList() {
   if (isLoading) {
     return (
        <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Społeczności</h2>
+        <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold">Społeczności</h2>
+            <Skeleton className="h-6 w-12" />
+        </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(3)].map((_, i) => (
             <Card key={i}>
@@ -47,7 +50,10 @@ export function CommunityList() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Społeczności</h2>
+       <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold">Społeczności</h2>
+            {communities && <span className="text-2xl font-bold text-muted-foreground">({communities.length})</span>}
+      </div>
       {communities && communities.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {communities.map((community) => (
