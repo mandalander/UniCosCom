@@ -15,12 +15,11 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for the 'communities' collection.
-     * Public read access (get, list) is allowed for all users.
-     * Write access is restricted to authenticated users based on specific conditions.
+     * Public read access is allowed. Write access is restricted.
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
-      // Allow public read access for getting single documents and listing the collection.
+      // Allow public read access for getting documents and listing the collection.
       allow read: if true;
       
       // Allow creating a community if the user is signed in, the creatorId matches, and the data is valid.
