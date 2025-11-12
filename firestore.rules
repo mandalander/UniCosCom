@@ -16,13 +16,16 @@ service cloud.firestore {
     /**
      * @description Defines rules for the 'communities' collection.
      * - Public Read Access: Anyone can read (`get`, `list`) the communities.
-     * - Create: Any signed-in user can create a community, but they must be the creator.
+     * - Create: Any signed-in user can create a community, but they must be the creator and provide valid data.
      * - Update/Delete: Only the original creator of a community can update or delete it.
      */
     match /communities/{communityId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
-      allow update, delete: if isCreator(communityId);
+      allow create: if isSignedIn() 
+                      && request.resource.data.creatorId == request.auth.uid 
+                      && isCommunityDataValid(request.resource.data);
+      allow update: if isCreator(communityId) && isCommunityDataValid(request.resource.data);
+      allow delete: if isCreator(communityId);
     }
 
 
@@ -52,6 +55,20 @@ service cloud.firestore {
      */
     function isCreator(communityId) {
       return isSignedIn() && get(/databases/$(database)/documents/communities/$(communityId)).data.creatorId == request.auth.uid;
+    }
+
+    /**
+     * @description Validates the data for a community document.
+     * @param {map} data The resource data from the request.
+     * @return {bool} True if the data is valid, false otherwise.
+     */
+    function isCommunityDataValid(data) {
+      return data.keys().hasAll(['name', 'description', 'creatorId', 'createdAt'])
+             && data.size() == 4
+             && data.name is string && data.name.size() > 0
+             && data.description is string
+             && data.creatorId is string && data.creatorId.size() > 0
+             && data.createdAt == request.time;
     }
   }
 }
