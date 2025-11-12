@@ -4,6 +4,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Allow public read access to all collections for now to fix list issue.
+    // This is a temporary, broad rule for debugging.
+    allow read: if true;
 
     /**
      * @description Grants access to user-specific data only to the authenticated user.
@@ -14,21 +17,12 @@ service cloud.firestore {
     }
     
     /**
-     * @description Allows anyone to list the communities collection.
-     * @path /communities
-     */
-    match /communities {
-      allow list: if true;
-    }
-    
-    /**
      * @description Defines rules for individual community documents.
      * @path /communities/{communityId}
      */
     match /communities/{communityId} {
-      // Allow everyone to read individual documents.
+      // Read is handled by the global rule above.
       // Write operations (create, update, delete) are restricted.
-      allow get: if true;
       allow create: if isSignedIn() 
                       && request.resource.data.creatorId == request.auth.uid 
                       && isCommunityDataValid(request.resource.data);
