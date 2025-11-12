@@ -12,35 +12,42 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if isOwner(userId);
     }
-    
+
     /**
-     * @description Allows public read access to the entire communities collection and all subcollections.
-     *              Write access is restricted by more specific rules below.
+     * @description Allows anyone to list the communities collection.
+     *              This is necessary for the main page community list.
      */
-    match /communities/{document=**} {
-      allow read: if true;
+    match /communities {
+      allow list: if true;
     }
     
     /**
-     * @description Defines rules for creating individual communities.
+     * @description Defines rules for individual community documents.
      */
     match /communities/{communityId} {
+      allow get: if true;
       allow create: if isSignedIn() && isCommunityDataValid(request.resource.data) && request.resource.data.creatorId == request.auth.uid;
       allow update, delete: if isSignedIn() && isCreator(get(/databases/$(database)/documents/communities/$(communityId))) && isCommunityDataValid(request.resource.data);
     }
 
     /**
      * @description Defines rules for posts within a community.
+     *              Reading is public.
      */
     match /communities/{communityId}/posts/{postId} {
+        allow get: if true;
+        allow list: if true;
         allow create: if isSignedIn() && isPostDataValid(request.resource.data) && request.resource.data.authorId == request.auth.uid;
         allow update, delete: if isSignedIn() && isAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId))) && isPostDataValid(request.resource.data);
     }
 
     /**
      * @description Defines rules for comments on a post.
+     *              Reading is public.
      */
     match /communities/{communityId}/posts/{postId}/comments/{commentId} {
+        allow get: if true;
+        allow list: if true;
         allow create: if isSignedIn() && isCommentDataValid(request.resource.data) && request.resource.data.authorId == request.auth.uid;
         allow update, delete: if isSignedIn() && isCommentAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId)/comments/$(commentId))) && isCommentDataValid(request.resource.data);
     }
