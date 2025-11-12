@@ -20,12 +20,8 @@ service cloud.firestore {
      * Allows updates and deletes only by the original creator of a community document.
      */
     match /communities/{communityId} {
-      allow get, create: if isSignedIn();
+      allow read, create: if isSignedIn();
       allow update, delete: if isCreator(communityId);
-    }
-    
-    match /communities {
-        allow list: if isSignedIn();
     }
 
 
