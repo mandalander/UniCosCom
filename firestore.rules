@@ -15,8 +15,12 @@ service cloud.firestore {
     
     match /communities/{document=**} {
       allow read: if true;
-      allow write: if isSignedIn();
     }
+    
+    match /communities/{communityId} {
+       allow write: if isSignedIn();
+    }
+
 
     // ---- Helper functions ----
 
