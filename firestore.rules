@@ -25,8 +25,7 @@ service cloud.firestore {
      * @description Defines write rules for community documents.
      */
     match /communities/{communityId} {
-      allow create: if isSignedIn() && isCommunityDataValid(request.resource.data) && request.resource.data.creatorId == request.auth.uid;
-      allow update, delete: if isSignedIn() && isCreator(get(/databases/$(database)/documents/communities/$(communityId))) && isCommunityDataValid(request.resource.data);
+      allow write: if isSignedIn() && isCommunityDataValid(request.resource.data);
     }
 
     /**
@@ -97,12 +96,15 @@ service cloud.firestore {
      * @return {bool} True if the data is valid, false otherwise.
      */
     function isCommunityDataValid(data) {
+      let isCreating = resource == null;
+      let existingData = isCreating ? null : resource.data;
+      
       return data.keys().hasAll(['name', 'description', 'creatorId', 'createdAt'])
              && (data.size() == 4 || (data.size() == 5 && data.keys().has('updatedAt')))
              && data.name is string && data.name.size() > 0 && data.name.size() < 50
              && data.description is string && data.description.size() < 500
-             && data.creatorId is string && data.creatorId.size() > 0
-             && (data.createdAt is timestamp || request.time == request.time);
+             && data.creatorId is string && data.creatorId == request.auth.uid
+             && (isCreating ? data.createdAt == request.time : data.createdAt == existingData.createdAt);
     }
 
     /**
