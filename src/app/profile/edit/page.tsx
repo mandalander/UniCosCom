@@ -3,9 +3,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { updateProfile, deleteUser } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import {
@@ -165,8 +165,10 @@ export default function EditProfilePage() {
         github,
         updatedAt: serverTimestamp(),
       };
+
+      if (!userDocRef) return;
   
-      await setDoc(doc(firestore, 'users', user.uid), firestoreUpdateData, { merge: true });
+      setDocumentNonBlocking(userDocRef, firestoreUpdateData, { merge: true });
   
       await auth.currentUser.reload();
   
@@ -212,7 +214,9 @@ export default function EditProfilePage() {
       }
 
       // 2. Delete user document from Firestore
-      await deleteDoc(doc(firestore, 'users', user.uid));
+      if(userDocRef) {
+        deleteDocumentNonBlocking(userDocRef);
+      }
 
       // 3. Delete user from Auth
       await deleteUser(auth.currentUser);
@@ -500,5 +504,3 @@ export default function EditProfilePage() {
     </div>
   );
 }
-
-    
