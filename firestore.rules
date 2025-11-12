@@ -19,7 +19,8 @@ service cloud.firestore {
      * Only the creator can create, update or delete their community document.
      */
     match /communities/{communityId} {
-      allow read, create: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
 
