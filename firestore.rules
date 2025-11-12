@@ -14,17 +14,17 @@ service cloud.firestore {
     }
     
     /**
-     * @description Allows public listing of the communities collection.
+     * @description Allows public read access to the entire communities collection and all subcollections.
+     *              Write access is restricted by more specific rules below.
      */
-    match /communities {
-      allow list: if true;
+    match /communities/{document=**} {
+      allow read: if true;
     }
     
     /**
-     * @description Defines rules for individual communities and their subcollections.
+     * @description Defines rules for creating individual communities.
      */
     match /communities/{communityId} {
-      allow get: if true;
       allow create: if isSignedIn() && isCommunityDataValid(request.resource.data) && request.resource.data.creatorId == request.auth.uid;
       allow update, delete: if isSignedIn() && isCreator(get(/databases/$(database)/documents/communities/$(communityId))) && isCommunityDataValid(request.resource.data);
     }
@@ -33,7 +33,6 @@ service cloud.firestore {
      * @description Defines rules for posts within a community.
      */
     match /communities/{communityId}/posts/{postId} {
-        allow read: if true;
         allow create: if isSignedIn() && isPostDataValid(request.resource.data) && request.resource.data.authorId == request.auth.uid;
         allow update, delete: if isSignedIn() && isAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId))) && isPostDataValid(request.resource.data);
     }
@@ -42,7 +41,6 @@ service cloud.firestore {
      * @description Defines rules for comments on a post.
      */
     match /communities/{communityId}/posts/{postId}/comments/{commentId} {
-        allow read: if true;
         allow create: if isSignedIn() && isCommentDataValid(request.resource.data) && request.resource.data.authorId == request.auth.uid;
         allow update, delete: if isSignedIn() && isCommentAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId)/comments/$(commentId))) && isCommentDataValid(request.resource.data);
     }
