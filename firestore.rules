@@ -18,8 +18,8 @@ service cloud.firestore {
      * Read access is public. Write access is restricted.
      */
     match /communities/{communityId} {
-      // Public access to read communities
-      allow get, list: if true;
+      // Public access to read communities and their subcollections
+      allow read: if true;
 
       // Rules for writing, updating, and deleting communities
       allow create: if isSignedIn() 
