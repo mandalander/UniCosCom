@@ -21,7 +21,7 @@ service cloud.firestore {
      */
     match /communities/{communityId} {
       allow read, create: if isSignedIn();
-      allow update, delete: if isCreator(communityId);
+      allow update, delete: if isCreator();
     }
 
 
@@ -46,10 +46,12 @@ service cloud.firestore {
 
     /**
      * @description Checks if the requesting user is the creator of the community.
-     * @param {string} communityId The ID of the community document.
      * @return {bool} True if the user is the creator, false otherwise.
      */
-    function isCreator(communityId) {
+    function isCreator() {
+      // For 'update' and 'delete', resource is the existing document.
+      // For 'create', request.resource is the new document.
+      // Let's ensure we check the existing document's creatorId.
       return isSignedIn() && resource.data.creatorId == request.auth.uid;
     }
   }
