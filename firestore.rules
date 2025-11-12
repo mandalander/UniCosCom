@@ -17,9 +17,16 @@ service cloud.firestore {
      * @description Allow public read access (list) for the entire 'communities' collection.
      * This is necessary for the initial fetching/listing of all communities.
      */
+    match /communities {
+      allow list: if true;
+    }
+
+    /**
+     * @description Defines rules for individual community documents and their subcollections.
+     */
     match /communities/{communityId} {
-      // Allow reading single documents and all subcollections publicly.
-      allow read: if true;
+      // Allow reading single documents publicly.
+      allow get: if true;
         
       // Allow creating a community if the user is signed in, the creatorId matches, and the data is valid.
       allow create: if isSignedIn() 
@@ -37,7 +44,8 @@ service cloud.firestore {
        * @description Defines rules for the 'posts' subcollection within a community.
        */
       match /posts/{postId} {
-        // Public read access for posts is inherited from parent
+        // Public read access for posts is inherited from parent (get)
+        allow read: if true;
         
         allow create: if isSignedIn() 
                         && request.resource.data.authorId == request.auth.uid 
@@ -49,7 +57,8 @@ service cloud.firestore {
          * @description Defines rules for the 'comments' subcollection within a post.
          */
         match /comments/{commentId} {
-          // Public read access for comments is inherited from parent
+          // Public read access for comments is inherited from parent (get)
+          allow read: if true;
 
           allow create: if isSignedIn()
                           && request.resource.data.authorId == request.auth.uid
