@@ -24,7 +24,9 @@ service cloud.firestore {
     }
 
     match /communities/{communityId} {
-        allow write: if isSignedIn() && isCommunityDataValid(request.resource.data);
+      allow create: if isSignedIn() && isCommunityDataValid(request.resource.data);
+      allow update: if isSignedIn() && isCommunityDataValid(request.resource.data);
+      allow delete: if isSignedIn();
     }
 
     match /communities/{communityId}/posts/{postId} {
@@ -88,7 +90,7 @@ service cloud.firestore {
              && data.name is string && data.name.size() > 0 && data.name.size() < 50
              && data.description is string && data.description.size() < 500
              && data.creatorId is string && data.creatorId == request.auth.uid
-             && (isCreating ? data.createdAt == request.time : data.createdAt == existingData.createdAt);
+             && (isCreating ? request.resource.data.createdAt == request.time : data.createdAt == existingData.createdAt);
     }
 
     /**
