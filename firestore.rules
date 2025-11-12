@@ -16,13 +16,15 @@ service cloud.firestore {
     /**
      * @description Allow public read access for all community-related data.
      * This includes the list of communities, individual communities, posts, and comments.
-     * Write access is granted to signed-in users for creating, updating, and deleting
-     * community-related documents, with data validation.
      */
     match /communities/{document=**} {
       allow read: if true;
     }
 
+    /**
+     * @description Write access is granted to signed-in users for creating, updating, and deleting
+     * community-related documents, with data validation.
+     */
     match /communities/{communityId} {
       allow create: if isSignedIn() && isCommunityDataValid(request.resource.data);
       allow update: if isSignedIn() && isCommunityDataValid(request.resource.data);
