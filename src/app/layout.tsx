@@ -10,8 +10,8 @@ import { FirebaseClientProvider } from '@/firebase';
 import { UserDataSync } from './components/user-data-sync';
 
 export const metadata: Metadata = {
-  title: 'UniCosCom',
-  description: 'Aplikacja dla społeczności UniCosCom.',
+  title: 'Unicoscom',
+  description: 'Unicoscom - Unikalny Kosmos Komunikacji i Społeczności.',
 };
 
 export default function RootLayout({

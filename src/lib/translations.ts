@@ -6,7 +6,7 @@ export const translations = {
     explore: 'Eksploruj',
     profile: 'Profil',
     settings: 'Ustawienia',
-    appNavigator: 'UniCosCom',
+    appNavigator: 'Unicoscom',
     createNewCommunity: 'Utwórz nową społeczność',
 
     // Top Nav Bar
@@ -26,7 +26,7 @@ export const translations = {
     signUpWithGoogle: 'Zarejestruj się z Google',
 
     // Home Page
-    homeTitle: 'Witaj w UniCosCom',
+    homeTitle: 'Witaj w Unicoscom',
     homeDescription: 'To jest przykładowa aplikacja demonstrująca responsywny układ z górnym paskiem nawigacyjnym i zwijanym paskiem bocznym.',
     homeContent1: 'Użyj ikony menu w lewym górnym rogu, aby otworzyć i zamknąć pasek boczny. Pasek boczny zawiera linki nawigacyjne do różnych sekcji aplikacji.',
     homeContent2: 'Przycisk logowania w prawym górnym rogu zazwyczaj prowadzi do strony uwierzytelniania.',
@@ -124,8 +124,8 @@ export const translations = {
     communityDescription: 'Opis',
 
     // Metadata
-    metaTitle: 'UniCosCom',
-    metaDescription: 'Aplikacja dla społeczności UniCosCom.',
+    metaTitle: 'Unicoscom',
+    metaDescription: 'Unicoscom - Unikalny Kosmos Komunikacji i Społeczności.',
 
   },
   en: {
@@ -134,7 +134,7 @@ export const translations = {
     explore: 'Explore',
     profile: 'Profile',
     settings: 'Settings',
-    appNavigator: 'UniCosCom',
+    appNavigator: 'Unicoscom',
     createNewCommunity: 'Create new community',
 
     // Top Nav Bar
@@ -154,7 +154,7 @@ export const translations = {
     signUpWithGoogle: 'Sign up with Google',
 
     // Home Page
-    homeTitle: 'Welcome to UniCosCom',
+    homeTitle: 'Welcome to Unicoscom',
     homeDescription: 'This is a sample application demonstrating a responsive layout with a top navigation bar and a collapsible sidebar.',
     homeContent1: 'Use the menu icon in the top left to open and close the sidebar. The sidebar contains navigation links to different sections of the application.',
     homeContent2: 'The login button in the top right usually leads to an authentication page.',
@@ -251,7 +251,7 @@ export const translations = {
     communityDescription: 'Description',
 
     // Metadata
-    metaTitle: 'UniCosCom',
-    metaDescription: 'An application for the UniCosCom community.',
+    metaTitle: 'Unicoscom',
+    metaDescription: 'Unicoscom - The Unique Cosmos of Communication and Community.',
   },
 };
