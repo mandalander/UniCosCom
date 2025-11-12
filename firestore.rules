@@ -14,13 +14,20 @@ service cloud.firestore {
     }
     
     /**
-     * @description Defines rules for the 'communities' collection and its subcollections.
-     *              - Allows public read access to all communities and their nested content.
+     * @description Allow public read access to the list of all communities.
+     *              This rule is CRITICAL for the main page to display communities.
+     */
+    match /communities {
+      allow get, list: if true;
+    }
+    
+    /**
+     * @description Defines rules for individual 'community' documents and their subcollections.
      *              - Restricts write operations to authenticated users with specific roles (creator/author).
+     *              - Read access for individual documents is inherited from the collection-level rule.
      */
     match /communities/{communityId} {
-      // Allow public read access to any single community document and list of communities.
-      allow read: if true;
+      // Read access is handled by the '/communities' match block above.
       
       // Allow creating a community if the user is signed in, the creatorId matches, and the data is valid.
       allow create: if isSignedIn() 
@@ -38,7 +45,7 @@ service cloud.firestore {
        * @description Defines rules for the 'posts' subcollection within a community.
        */
       match /posts/{postId} {
-        // read is inherited from the parent rule `allow read: if true;`
+        allow read: if true;
         allow create: if isSignedIn() 
                         && request.resource.data.authorId == request.auth.uid 
                         && isPostDataValid(request.resource.data);
@@ -49,7 +56,7 @@ service cloud.firestore {
          * @description Defines rules for the 'comments' subcollection within a post.
          */
         match /comments/{commentId} {
-          // read is inherited from the parent rule `allow read: if true;`
+          allow read: if true;
           allow create: if isSignedIn()
                           && request.resource.data.authorId == request.auth.uid
                           && isCommentDataValid(request.resource.data);
