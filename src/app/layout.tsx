@@ -10,8 +10,8 @@ import { FirebaseClientProvider } from '@/firebase';
 import { UserDataSync } from './components/user-data-sync';
 
 export const metadata: Metadata = {
-  title: 'Nawigator Aplikacji',
-  description: 'Aplikacja z górną i boczną nawigacją.',
+  title: 'UniCosCom',
+  description: 'Aplikacja dla społeczności UniCosCom.',
 };
 
 export default function RootLayout({

@@ -6,7 +6,7 @@ export const translations = {
     explore: 'Eksploruj',
     profile: 'Profil',
     settings: 'Ustawienia',
-    appNavigator: 'Nawigator Aplikacji',
+    appNavigator: 'UniCosCom',
     createNewCommunity: 'Utwórz nową społeczność',
 
     // Top Nav Bar
@@ -26,7 +26,7 @@ export const translations = {
     signUpWithGoogle: 'Zarejestruj się z Google',
 
     // Home Page
-    homeTitle: 'Witaj w Nawigatorze Aplikacji',
+    homeTitle: 'Witaj w UniCosCom',
     homeDescription: 'To jest przykładowa aplikacja demonstrująca responsywny układ z górnym paskiem nawigacyjnym i zwijanym paskiem bocznym.',
     homeContent1: 'Użyj ikony menu w lewym górnym rogu, aby otworzyć i zamknąć pasek boczny. Pasek boczny zawiera linki nawigacyjne do różnych sekcji aplikacji.',
     homeContent2: 'Przycisk logowania w prawym górnym rogu zazwyczaj prowadzi do strony uwierzytelniania.',
@@ -124,8 +124,8 @@ export const translations = {
     communityDescription: 'Opis',
 
     // Metadata
-    metaTitle: 'Nawigator Aplikacji',
-    metaDescription: 'Aplikacja z górną i boczną nawigacją.',
+    metaTitle: 'UniCosCom',
+    metaDescription: 'Aplikacja dla społeczności UniCosCom.',
 
   },
   en: {
@@ -134,7 +134,7 @@ export const translations = {
     explore: 'Explore',
     profile: 'Profile',
     settings: 'Settings',
-    appNavigator: 'App Navigator',
+    appNavigator: 'UniCosCom',
     createNewCommunity: 'Create new community',
 
     // Top Nav Bar
@@ -154,7 +154,7 @@ export const translations = {
     signUpWithGoogle: 'Sign up with Google',
 
     // Home Page
-    homeTitle: 'Welcome to the App Navigator',
+    homeTitle: 'Welcome to UniCosCom',
     homeDescription: 'This is a sample application demonstrating a responsive layout with a top navigation bar and a collapsible sidebar.',
     homeContent1: 'Use the menu icon in the top left to open and close the sidebar. The sidebar contains navigation links to different sections of the application.',
     homeContent2: 'The login button in the top right usually leads to an authentication page.',
@@ -251,7 +251,7 @@ export const translations = {
     communityDescription: 'Description',
 
     // Metadata
-    metaTitle: 'App Navigator',
-    metaDescription: 'Application with top and side navigation.',
+    metaTitle: 'UniCosCom',
+    metaDescription: 'An application for the UniCosCom community.',
   },
 };
