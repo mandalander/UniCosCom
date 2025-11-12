@@ -14,20 +14,15 @@ service cloud.firestore {
     }
     
     /**
-     * @description Public read access for listing the communities collection.
+     * @description Public read access for the communities collection and its subcollections.
+     *              Write access is restricted based on specific conditions.
      */
-    match /communities {
-      allow list: if true;
-    }
-    
-    /**
-     * @description Defines rules for creating, updating, and deleting communities.
-     *              Also allows public read for individual documents.
-     */
-    match /communities/{communityId} {
-      allow get: if true;
-      allow create: if isSignedIn() && isCommunityDataValid(request.resource.data) && request.resource.data.creatorId == request.auth.uid;
-      allow update, delete: if isSignedIn() && isCreator(get(/databases/$(database)/documents/communities/$(communityId))) && isCommunityDataValid(request.resource.data);
+    match /communities/{document=**} {
+      allow read: if true;
+      allow write: if (
+        (request.method == 'create' && isCommunityDataValid(request.resource.data) && request.resource.data.creatorId == request.auth.uid) ||
+        ((request.method == 'update' || request.method == 'delete') && isCreator(get(/databases/$(database)/documents/communities/$(request.path.split('/')[3]))) && isCommunityDataValid(request.resource.data))
+      );
     }
     
     /**
