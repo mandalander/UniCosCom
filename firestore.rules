@@ -34,8 +34,8 @@ service cloud.firestore {
       allow create: if isSignedIn() 
                       && request.resource.data.creatorId == request.auth.uid 
                       && isCommunityDataValid(request.resource.data);
-      allow update: if isCreator(communityId) && isCommunityDataValid(request.resource.data);
-      allow delete: if isCreator(communityId);
+      allow update: if isCreator(get(/databases/$(database)/documents/communities/$(communityId))) && isCommunityDataValid(request.resource.data);
+      allow delete: if isCreator(get(/databases/$(database)/documents/communities/$(communityId)));
 
       /**
        * @description Defines rules for the 'posts' subcollection within a community.
@@ -46,8 +46,8 @@ service cloud.firestore {
         allow create: if isSignedIn() 
                         && request.resource.data.authorId == request.auth.uid 
                         && isPostDataValid(request.resource.data);
-        allow update: if isAuthor(postId) && isPostDataValid(request.resource.data);
-        allow delete: if isAuthor(postId);
+        allow update: if isAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId))) && isPostDataValid(request.resource.data);
+        allow delete: if isAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId)));
 
         /**
          * @description Defines rules for the 'comments' subcollection within a post.
@@ -58,8 +58,8 @@ service cloud.firestore {
           allow create: if isSignedIn()
                           && request.resource.data.authorId == request.auth.uid
                           && isCommentDataValid(request.resource.data);
-          allow update: if isCommentAuthor(commentId) && isCommentDataValid(request.resource.data);
-          allow delete: if isCommentAuthor(commentId);
+          allow update: if isCommentAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId)/comments/$(commentId))) && isCommentDataValid(request.resource.data);
+          allow delete: if isCommentAuthor(get(/databases/$(database)/documents/communities/$(communityId)/posts/$(postId)/comments/$(commentId)));
         }
       }
     }
@@ -88,34 +88,24 @@ service cloud.firestore {
      * @description Checks if the requesting user is the creator of the community.
      * @return {bool} True if the user is the creator, false otherwise.
      */
-    function isCreator(communityId) {
-      return isSignedIn() && get(/databases/$(database)/documents/communities/$(communityId)).data.creatorId == request.auth.uid;
+    function isCreator(community) {
+      return isSignedIn() && community.data.creatorId == request.auth.uid;
     }
 
     /**
      * @description Checks if the requesting user is the author of the post.
      * @return {bool} True if the user is the author, false otherwise.
      */
-    function isAuthor(postId) {
-      // This function needs context of communityId, which is not directly available in a general function.
-      // This will only work if the client provides communityId in the resource data during update/delete,
-      // which might not be the case. For simplicity, assuming it's available.
-      // A more robust way might require restructuring rules or client-side logic.
-      let communityId = resource.data.communityId;
-      let postPath = /databases/$(database)/documents/communities/$(communityId)/posts/$(postId);
-      return isSignedIn() && get(postPath).data.authorId == request.auth.uid;
+    function isAuthor(post) {
+      return isSignedIn() && post.data.authorId == request.auth.uid;
     }
     
     /**
      * @description Checks if the requesting user is the author of the comment.
      * @return {bool} True if the user is the author, false otherwise.
      */
-    function isCommentAuthor(commentId) {
-       // This function also needs context (communityId, postId)
-      let communityId = resource.data.communityId;
-      let postId = resource.data.postId;
-      let commentPath = /databases/$(database)/documents/communities/$(communityId)/posts/$(postId)/comments/$(commentId);
-      return isSignedIn() && get(commentPath).data.authorId == request.auth.uid;
+    function isCommentAuthor(comment) {
+      return isSignedIn() && comment.data.authorId == request.auth.uid;
     }
 
     /**
@@ -125,11 +115,11 @@ service cloud.firestore {
      */
     function isCommunityDataValid(data) {
       return data.keys().hasAll(['name', 'description', 'creatorId', 'createdAt'])
-             && data.size() == 4
+             && (data.size() == 4 || (data.size() == 5 && data.keys().has('updatedAt')))
              && data.name is string && data.name.size() > 0 && data.name.size() < 50
              && data.description is string && data.description.size() < 500
              && data.creatorId is string && data.creatorId.size() > 0
-             && data.createdAt is timestamp;
+             && (data.createdAt is timestamp || data.createdAt == request.time);
     }
 
     /**
@@ -140,12 +130,12 @@ service cloud.firestore {
     function isPostDataValid(data) {
       // Assumes communityId is passed for context in rules.
       return data.keys().hasAll(['title', 'content', 'authorId', 'createdAt', 'communityId'])
-             && data.size() == 5
+             && (data.size() == 5 || (data.size() == 6 && data.keys().has('updatedAt')))
              && data.title is string && data.title.size() > 0 && data.title.size() < 100
              && data.content is string && data.content.size() > 0
              && data.authorId is string && data.authorId.size() > 0
              && data.communityId is string
-             && data.createdAt == request.time;
+             && (data.createdAt is timestamp || data.createdAt == request.time);
     }
 
     /**
@@ -156,12 +146,12 @@ service cloud.firestore {
     function isCommentDataValid(data) {
       // Assumes communityId and postId are passed for context.
       return data.keys().hasAll(['content', 'authorId', 'createdAt', 'communityId', 'postId'])
-             && data.size() == 5
+             && (data.size() == 5 || (data.size() == 6 && data.keys().has('updatedAt')))
              && data.content is string && data.content.size() > 0 && data.content.size() < 1000
              && data.authorId is string && data.authorId.size() > 0
              && data.communityId is string
              && data.postId is string
-             && data.createdAt == request.time;
+             && (data.createdAt is timestamp || data.createdAt == request.time);
     }
   }
 }
