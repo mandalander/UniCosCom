@@ -15,9 +15,10 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for the 'communities' collection.
+     * Read access is public. Write access is restricted.
      */
     match /communities/{communityId} {
-      allow get, list: if true;
+      allow read: if true;
       allow create: if isSignedIn() 
                       && request.resource.data.creatorId == request.auth.uid 
                       && isCommunityDataValid(request.resource.data);
@@ -28,7 +29,7 @@ service cloud.firestore {
        * @description Defines rules for the 'posts' subcollection within a community.
        */
       match /posts/{postId} {
-        allow get, list: if true;
+        allow read: if true;
         allow create: if isSignedIn() 
                         && request.resource.data.authorId == request.auth.uid 
                         && isPostDataValid(request.resource.data);
@@ -39,7 +40,7 @@ service cloud.firestore {
          * @description Defines rules for the 'comments' subcollection within a post.
          */
         match /comments/{commentId} {
-          allow get, list: if true;
+          allow read: if true;
           allow create: if isSignedIn()
                           && request.resource.data.authorId == request.auth.uid
                           && isCommentDataValid(request.resource.data);
