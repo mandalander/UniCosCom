@@ -19,7 +19,7 @@ service cloud.firestore {
      */
     match /communities/{communityId} {
       // Public access to read communities
-      allow read: if true;
+      allow get, list: if true;
 
       // Rules for writing, updating, and deleting communities
       allow create: if isSignedIn() 
@@ -110,7 +110,7 @@ service cloud.firestore {
              && data.name is string && data.name.size() > 0 && data.name.size() < 50
              && data.description is string && data.description.size() < 500
              && data.creatorId is string && data.creatorId.size() > 0
-             && data.createdAt == request.time;
+             && (data.createdAt == request.time || data.createdAt is timestamp);
     }
 
     /**
