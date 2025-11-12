@@ -15,10 +15,11 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for the 'communities' collection.
-     * Authenticated users can read the list of all communities and individual documents.
-     * Only the creator can create, update or delete their community document.
+     * Allows any signed-in user to read the entire collection (list) and individual documents.
+     * Allows creation of new communities for any signed-in user.
+     * Allows updates and deletes only by the original creator of the community.
      */
-    match /communities/{communityId} {
+    match /communities/{document=**} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
