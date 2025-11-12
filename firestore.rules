@@ -15,13 +15,15 @@ service cloud.firestore {
     
     /**
      * @description Allow public listing of all communities.
+     * This rule applies ONLY to the collection itself.
      */
     match /communities {
-        allow list: if true;
+      allow list: if true;
     }
 
     /**
      * @description Defines read and write rules for individual community documents.
+     * This rule applies to documents within the communities collection.
      */
     match /communities/{communityId} {
       allow get: if true;
