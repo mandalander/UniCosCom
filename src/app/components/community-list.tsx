@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "./language-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from 'next/link';
-import { communities as placeholderCommunities } from '@/lib/placeholder-data';
-import { useState, useEffect } from "react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, query, orderBy } from "firebase/firestore";
 
 type Community = {
   id: string;
@@ -16,16 +16,14 @@ type Community = {
 
 export function CommunityList() {
   const { t } = useLanguage();
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const firestore = useFirestore();
 
-  useEffect(() => {
-    // Simulate fetching data
-    setTimeout(() => {
-      setCommunities(placeholderCommunities);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+  const communitiesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'communities'), orderBy('createdAt', 'desc'));
+  }, [firestore]);
+
+  const { data: communities, isLoading } = useCollection<Community>(communitiesQuery);
 
   if (isLoading) {
     return (
