@@ -132,7 +132,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
               <CreateCommunityDialog>
-                <SidebarMenuButton tooltip={t('createNewCommunity')} disabled={!user}>
+                <SidebarMenuButton tooltip={t('createNewCommunity')}>
                   <PlusCircle />
                   <span>{t('createNewCommunity')}</span>
                 </SidebarMenuButton>

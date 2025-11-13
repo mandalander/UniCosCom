@@ -32,7 +32,7 @@ type Post = {
 export default function CommunityPage() {
   const { id: communityId } = useParams<{ id: string }>();
   const { t, language } = useLanguage();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
   const communityDocRef = useMemoFirebase(() => {
@@ -58,7 +58,7 @@ export default function CommunityPage() {
     return name ? name.charAt(0).toUpperCase() : <User className="h-5 w-5" />;
   };
 
-  const isLoading = isCommunityLoading || arePostsLoading;
+  const isLoading = isCommunityLoading || arePostsLoading || isUserLoading;
 
   if (isLoading) {
     return (
@@ -97,7 +97,7 @@ export default function CommunityPage() {
           <CardTitle>{t('createNewPost')}</CardTitle>
         </CardHeader>
         <CardContent>
-          {user ? <CreatePostForm communityId={communityId} /> : <p>{t('logInToCreatePost')}</p>}
+           <CreatePostForm communityId={communityId} />
         </CardContent>
       </Card>
       

@@ -19,12 +19,14 @@ import { useLanguage } from './language-provider';
 import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { collection, serverTimestamp } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 export function CreateCommunityDialog({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const [open, setOpen] = useState(false);
   const [communityName, setCommunityName] = useState('');
@@ -32,14 +34,19 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = () => {
-    if (!user || !firestore) {
-      toast({
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    if (!firestore) {
+       toast({
         variant: "destructive",
         title: "Błąd",
-        description: "Musisz być zalogowany, aby utworzyć społeczność.",
+        description: "Błąd połączenia z bazą danych.",
       });
       return;
     }
+
     if (!communityName.trim()) {
        toast({
         variant: "destructive",

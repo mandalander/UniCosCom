@@ -93,7 +93,7 @@ export default function PostPage() {
                 <CardTitle>{t('addComment')}</CardTitle>
             </CardHeader>
             <CardContent>
-               {user ? <CreateCommentForm communityId={communityId} postId={postId} /> : <p>{t('logInToAddComment')}</p>}
+               <CreateCommentForm communityId={communityId} postId={postId} />
             </CardContent>
         </Card>
 

@@ -11,6 +11,7 @@ import { useLanguage } from './language-provider';
 import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { collection, serverTimestamp } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 interface CreateCommentFormProps {
     communityId: string;
@@ -22,6 +23,7 @@ export function CreateCommentForm({ communityId, postId }: CreateCommentFormProp
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const FormSchema = z.object({
@@ -36,8 +38,12 @@ export function CreateCommentForm({ communityId, postId }: CreateCommentFormProp
   });
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    if (!user || !firestore) {
-      toast({ variant: "destructive", title: t('error'), description: t('mustBeLoggedInToComment') });
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    if (!firestore) {
+      toast({ variant: "destructive", title: t('error'), description: "Błąd połączenia z bazą danych." });
       return;
     }
     
