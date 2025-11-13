@@ -1,103 +1,33 @@
-/**
- * @fileoverview Firestore Security Rules for Prototyper.
- */
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Grants access to user-specific data only to the authenticated user.
-     * @path /users/{userId}
-     */
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      // Users can create their own document
+      allow create: if request.auth != null;
+      // Only the owner can read or update their own data
+      allow read, update: if request.auth.uid == userId;
     }
 
-    /**
-     * @description Allow logged-in users to list the communities collection.
-     * @path /communities
-     */
     match /communities {
-      allow list: if isSignedIn();
+      // Allow logged-in users to list the communities collection
+      allow list: if request.auth != null;
     }
 
-    /**
-     * @description Allow logged-in users to read, create and write individual community documents.
-     * @path /communities/{communityId}
-     */
     match /communities/{communityId} {
-      allow get, create, write: if isSignedIn();
+      // Allow logged-in users to read and create individual community documents
+      allow get, create, write: if request.auth != null;
     }
-
 
     // ---- Helper functions ----
 
-    /**
-     * @description Checks if the user is signed in.
-     * @return {bool} True if the user is signed in, false otherwise.
-     */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * @description Checks if the request is made by the owner of the document.
-     * @param {string} userId The user ID to compare against the request's auth UID.
-     * @return {bool} True if the user ID matches the auth UID, false otherwise.
-     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the requesting user is the author of the post.
-     * @param {object} post The post resource document.
-     * @return {bool} True if the user is the author, false otherwise.
-     */
-    function isAuthor(post) {
-      return isSignedIn() && post.data.authorId == request.auth.uid;
-    }
-    
-    /**
-     * @description Checks if the requesting user is the author of the comment.
-     * @param {object} comment The comment resource document.
-     * @return {bool} True if the user is the author, false otherwise.
-     */
-    function isCommentAuthor(comment) {
-      return isSignedIn() && comment.data.authorId == request.auth.uid;
-    }
-
-    /**
-     * @description Validates the data for a post document.
-     * @param {map} data The resource data from the request.
-     * @return {bool} True if the data is valid, false otherwise.
-     */
-    function isPostDataValid(data) {
-      // Assumes communityId is passed for context in rules.
-      return data.keys().hasAll(['title', 'content', 'authorId', 'createdAt', 'communityId'])
-             && (data.size() == 5 || (data.size() == 6 && data.keys().has('updatedAt')))
-             && data.title is string && data.title.size() > 0 && data.title.size() < 100
-             && data.content is string && data.content.size() > 0
-             && data.authorId is string && data.authorId.size() > 0
-             && data.communityId is string
-             && (data.createdAt is timestamp || data.createdAt == request.time);
-    }
-
-    /**
-     * @description Validates the data for a comment document.
-     * @param {map} data The resource data from the request.
-     * @return {bool} True if the data is valid, false otherwise.
-     */
-    function isCommentDataValid(data) {
-      // Assumes communityId and postId are passed for context.
-      return data.keys().hasAll(['content', 'authorId', 'createdAt', 'communityId', 'postId'])
-             && (data.size() == 5 || (data.size() == 6 && data.keys().has('updatedAt')))
-             && data.content is string && data.content.size() > 0 && data.content.size() < 1000
-             && data.authorId is string && data.authorId.size() > 0
-             && data.communityId is string
-             && data.postId is string
-             && (data.createdAt is timestamp || data.createdAt == request.time);
     }
   }
 }
