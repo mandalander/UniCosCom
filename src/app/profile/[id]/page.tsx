@@ -7,7 +7,7 @@ import {
   useMemoFirebase,
   useCollection,
 } from '@/firebase';
-import { doc, collection, query, where, orderBy, getDoc } from 'firebase/firestore';
+import { doc, collection, query, where, orderBy, getDoc, collectionGroup } from 'firebase/firestore';
 import {
   Card,
   CardHeader,
@@ -61,7 +61,7 @@ export default function UserProfilePage() {
   const userPostsQuery = useMemoFirebase(() => {
     if (!firestore || !userId) return null;
     return query(
-        collection(firestore, 'posts'), 
+        collectionGroup(firestore, 'posts'), 
         where('creatorId', '==', userId),
         orderBy('createdAt', 'desc')
     );
