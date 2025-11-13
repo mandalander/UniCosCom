@@ -192,6 +192,29 @@
         "userId",
         "value"
       ]
+    },
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's public-facing profile information.",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The user's public display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the user's profile picture."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the user profile was created."
+        }
+      },
+      "required": ["displayName"]
     }
   },
   "auth": {
@@ -210,7 +233,23 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user data. Path-based ownership ensures only the authenticated user (userId) can access their own data.",
+          "description": "Stores private user data. Path-based ownership ensures only the authenticated user (userId) can access their own data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user, matching the Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/userProfiles/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores public-facing user profile information. Readable by anyone, but writable only by the owner.",
           "params": [
             {
               "name": "userId",

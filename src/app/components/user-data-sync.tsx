@@ -13,31 +13,44 @@ export function UserDataSync() {
       if (!user || !firestore) return;
 
       const userDocRef = doc(firestore, 'users', user.uid);
+      const userProfileDocRef = doc(firestore, 'userProfiles', user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
-      // Check if this is a first-time sign-in with a provider
       const isNewUser = !userDocSnap.exists();
       const signInProvider = user.providerData?.[0]?.providerId;
-      const isGoogleSignIn = signInProvider === 'google.com';
+      
+      // Sync on first-time sign-in or when displayName changes
+      if (isNewUser || user.displayName !== userDocSnap.data()?.displayName || user.photoURL !== userDocSnap.data()?.photoURL) {
+         try {
+           const userData: any = {
+             uid: user.uid,
+             email: user.email,
+             displayName: user.displayName,
+             photoURL: user.photoURL,
+             updatedAt: serverTimestamp(),
+           };
+           
+           const userProfileData = {
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+           };
 
-      if (isNewUser && isGoogleSignIn && user.displayName) {
-        const nameParts = user.displayName.split(' ');
-        const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
+           if(isNewUser){
+              userData.createdAt = serverTimestamp();
+              const nameParts = user.displayName?.split(' ') || [];
+              userData.firstName = nameParts[0] || '';
+              userData.lastName = nameParts.slice(1).join(' ') || '';
+              
+              userProfileData.createdAt = serverTimestamp();
+           }
 
-        try {
-          await setDoc(userDocRef, {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            firstName: firstName,
-            lastName: lastName,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
+           await setDoc(userDocRef, userData, { merge: true });
+           await setDoc(userProfileDocRef, userProfileData, { merge: true });
+
         } catch (error) {
-          console.error("Error creating user document:", error);
+          console.error("Error syncing user data:", error);
         }
       }
     };

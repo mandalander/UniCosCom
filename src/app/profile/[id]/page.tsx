@@ -7,7 +7,7 @@ import {
   useMemoFirebase,
   useCollection,
 } from '@/firebase';
-import { doc, collection, query, where, orderBy, collectionGroup } from 'firebase/firestore';
+import { doc, collection, query, where, orderBy, getDoc } from 'firebase/firestore';
 import {
   Card,
   CardHeader,
@@ -30,7 +30,6 @@ import { useEffect, useState } from 'react';
 
 type UserProfile = {
   displayName: string;
-  email: string;
   photoURL?: string;
   createdAt: any;
 };
@@ -54,21 +53,21 @@ export default function UserProfilePage() {
   const { t, language } = useLanguage();
   const firestore = useFirestore();
 
-  const userDocRef = useMemoFirebase(() => {
+  const userProfileDocRef = useMemoFirebase(() => {
     if (!firestore || !userId) return null;
-    return doc(firestore, 'users', userId);
+    return doc(firestore, 'userProfiles', userId);
   }, [firestore, userId]);
   
   const userPostsQuery = useMemoFirebase(() => {
     if (!firestore || !userId) return null;
     return query(
-        collectionGroup(firestore, 'posts'), 
+        collection(firestore, 'posts'), 
         where('creatorId', '==', userId),
         orderBy('createdAt', 'desc')
     );
   }, [firestore, userId]);
 
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileDocRef);
   const { data: rawPosts, isLoading: arePostsLoading } = useCollection<Omit<Post, 'communityId' | 'communityName'>>(userPostsQuery);
   
   const [posts, setPosts] = useState<Post[]>([]);
@@ -84,15 +83,13 @@ export default function UserProfilePage() {
         setAreCommunityDetailsLoading(true);
         
         const postsWithCommunityData = await Promise.all(
-            rawPosts.map(async (post) => {
-                // This is a bit of a hack to get the community ID, as collectionGroup queries don't give the full path easily.
-                // It assumes the structure /communities/{communityId}/posts/{postId}
-                const postRef = doc(firestore, (post as any).ref.path);
+            rawPosts.map(async (post: any) => {
+                const postRef = doc(firestore, post.ref.path);
                 const communityRef = postRef.parent.parent;
 
                 if (!communityRef) return { ...post, communityId: 'unknown', communityName: 'Unknown' };
 
-                const communitySnap = await doc(communityRef).get();
+                const communitySnap = await getDoc(communityRef);
                 const communityName = communitySnap.exists() ? communitySnap.data().name : 'Unknown';
 
                 return {

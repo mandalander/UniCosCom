@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { updateProfile, deleteUser } from 'firebase/auth';
-import { doc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import {
@@ -150,7 +150,12 @@ export default function EditProfilePage() {
         photoURL: finalPhotoUrl,
       });
 
-      const firestoreUpdateData: any = {
+      const batch = writeBatch(firestore);
+
+      const userDocRef = doc(firestore, 'users', user.uid);
+      const userProfileDocRef = doc(firestore, 'userProfiles', user.uid);
+
+      const userPrivateData: any = {
         firstName: firstName,
         lastName: lastName,
         displayName: displayName,
@@ -165,10 +170,16 @@ export default function EditProfilePage() {
         github,
         updatedAt: serverTimestamp(),
       };
+      batch.set(userDocRef, userPrivateData, { merge: true });
 
-      if (!userDocRef) return;
-  
-      setDocumentNonBlocking(userDocRef, firestoreUpdateData, { merge: true });
+      const userPublicData = {
+          displayName: displayName,
+          photoURL: finalPhotoUrl,
+          updatedAt: serverTimestamp(),
+      };
+      batch.set(userProfileDocRef, userPublicData, { merge: true });
+
+      await batch.commit();
   
       await auth.currentUser.reload();
   
@@ -213,10 +224,14 @@ export default function EditProfilePage() {
         }
       }
 
-      // 2. Delete user document from Firestore
-      if(userDocRef) {
-        deleteDocumentNonBlocking(userDocRef);
-      }
+      const batch = writeBatch(firestore);
+      
+      // 2. Delete user documents from Firestore
+      const userDocRef = doc(firestore, 'users', user.uid);
+      const userProfileDocRef = doc(firestore, 'userProfiles', user.uid);
+      batch.delete(userDocRef);
+      batch.delete(userProfileDocRef);
+      await batch.commit();
 
       // 3. Delete user from Auth
       await deleteUser(auth.currentUser);
