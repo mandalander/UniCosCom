@@ -86,7 +86,12 @@ export default function PostPage() {
                             </Avatar>
                             <div>
                                 <p className="text-xs text-muted-foreground">
-                                    {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
+                                    <span>
+                                      {t('postedByPrefix')}{' '}
+                                      <Link href={`/profile/${post.creatorId}`} className="text-primary hover:underline">{post.creatorDisplayName}</Link>
+                                    </span>
+                                    {' • '}
+                                    {formatDate(post.createdAt)}
                                     {post.updatedAt && <span className='text-muted-foreground italic'> ({t('edited')})</span>}
                                 </p>
                                 <CardTitle className="text-xl mt-1">{post.title}</CardTitle>

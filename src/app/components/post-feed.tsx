@@ -90,7 +90,12 @@ const PostItem = ({ post }: { post: Post }) => {
                                 <CardDescription className='text-xs'>
                                     <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold">{post.communityName}</Link>
                                     <span className='mx-1'>•</span>
-                                    {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
+                                    <span>
+                                        {t('postedByPrefix')}{' '}
+                                        <Link href={`/profile/${post.creatorId}`} className="text-primary hover:underline font-semibold">{post.creatorDisplayName}</Link>
+                                    </span>
+                                    <span className='mx-1'>•</span>
+                                    <span>{formatDate(post.createdAt)}</span>
                                     {post.updatedAt && <span className='text-muted-foreground italic text-xs'> ({t('edited')})</span>}
                                 </CardDescription>
                                 <CardTitle className='leading-tight text-lg mt-1'>
@@ -135,7 +140,7 @@ const PostItem = ({ post }: { post: Post }) => {
                                                     <AvatarImage src={comment.creatorPhotoURL} />
                                                     <AvatarFallback className="text-xs">{getInitials(comment.creatorDisplayName)}</AvatarFallback>
                                                 </Avatar>
-                                                <span className="font-semibold">{comment.creatorDisplayName}</span>
+                                                <Link href={`/profile/${comment.creatorId}`} className="font-semibold text-primary hover:underline">{comment.creatorDisplayName}</Link>
                                                 <span className="text-xs text-muted-foreground">• {formatDate(comment.createdAt)}</span>
                                             </div>
                                             {isCommentOwner && (

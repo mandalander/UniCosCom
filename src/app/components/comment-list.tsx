@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { VoteButtons } from './vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
+import Link from 'next/link';
 
 type Comment = {
   id: string;
@@ -86,10 +87,12 @@ export function CommentList({ communityId, postId }: CommentListProps) {
                             <AvatarFallback>{getInitials(comment.creatorDisplayName)}</AvatarFallback>
                         </Avatar>
                         <div>
-                            <p className="font-semibold text-sm">{comment.creatorDisplayName}</p>
-                            <p className="text-xs text-muted-foreground">
-                                {formatDate(comment.createdAt)}
-                                {comment.updatedAt && <span className='italic'> ({t('edited')})</span>}
+                            <p className="text-sm">
+                                <Link href={`/profile/${comment.creatorId}`} className="font-semibold text-primary hover:underline">{comment.creatorDisplayName}</Link>
+                                <span className="text-xs text-muted-foreground ml-2">
+                                  • {formatDate(comment.createdAt)}
+                                  {comment.updatedAt && <span className='italic'> ({t('edited')})</span>}
+                                </span>
                             </p>
                         </div>
                     </div>

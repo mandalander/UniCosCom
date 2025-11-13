@@ -26,6 +26,7 @@ type Post = {
   id: string;
   title: string;
   content: string;
+  creatorId: string;
   creatorDisplayName: string;
   creatorPhotoURL?: string;
   createdAt: any;
@@ -119,7 +120,11 @@ export default function CommunityPage() {
                       </Avatar>
                       <div className='flex-1'>
                           <p className="text-sm text-muted-foreground">
-                              {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
+                              <span>
+                                {t('postedByPrefix')}{' '}
+                                <Link href={`/profile/${post.creatorId}`} className="text-primary hover:underline">{post.creatorDisplayName}</Link>
+                              </span>
+                               • {formatDate(post.createdAt)}
                           </p>
                           <CardTitle className="text-lg mt-1">{post.title}</CardTitle>
                       </div>

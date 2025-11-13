@@ -57,6 +57,9 @@ export const translations = {
     profileLocation: 'Lokalizacja',
     profileWebsite: 'Strona internetowa',
     editProfile: 'Edytuj profil',
+    publicProfileTitle: 'Profil użytkownika',
+    userPosts: 'Posty użytkownika {{username}}',
+
 
     // Edit Profile Page
     editProfileTitle: 'Edytuj profil',
@@ -149,6 +152,7 @@ export const translations = {
     postCreatedSuccessTitle: 'Sukces!',
     postCreatedSuccessDescription: 'Twój post został opublikowany.',
     postedBy: 'Opublikowane przez {{name}}',
+    postedByPrefix: 'Opublikowane przez',
     viewPostAndComments: 'Zobacz post i komentarze',
     postNotFound: 'Nie znaleziono posta.',
     error: 'Błąd',
@@ -181,7 +185,7 @@ export const translations = {
     editPostTitle: 'Edytuj post',
     editCommentTitle: 'Edytuj komentarz',
     updatePostSuccess: 'Post został zaktualizowany.',
-    updateCommentSuccess: 'Komentarz został zaktualizowany.',
+    updateCommentSuccess: 'Komentarz został usunięty.',
     voteError: 'Błąd głosowania',
     mustBeLoggedInToVote: 'Musisz być zalogowany, aby głosować.',
     share: 'Udostępnij',
@@ -250,6 +254,8 @@ export const translations = {
     profileLocation: 'Location',
     profileWebsite: 'Website',
     editProfile: 'Edit Profile',
+    publicProfileTitle: 'User Profile',
+    userPosts: "Posts by {{username}}",
     
     // Edit Profile Page
     editProfileTitle: 'Edit Profile',
@@ -341,6 +347,7 @@ export const translations = {
     postCreatedSuccessTitle: 'Success!',
     postCreatedSuccessDescription: 'Your post has been published.',
     postedBy: 'Posted by {{name}}',
+    postedByPrefix: 'Posted by',
     viewPostAndComments: 'View post and comments',
     postNotFound: 'Post not found.',
     error: 'Error',
