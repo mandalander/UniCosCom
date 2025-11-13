@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "./language-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from 'next/link';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from "@/firebase";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 
 type Community = {
@@ -17,16 +17,15 @@ type Community = {
 export function CommunityList() {
   const { t } = useLanguage();
   const firestore = useFirestore();
-  const { isUserLoading } = useUser();
 
   const communitiesQuery = useMemoFirebase(() => {
-    if (isUserLoading || !firestore) return null;
+    if (!firestore) return null;
     return query(collection(firestore, 'communities'), orderBy('createdAt', 'desc'));
-  }, [firestore, isUserLoading]);
+  }, [firestore]);
 
   const { data: communities, isLoading } = useCollection<Community>(communitiesQuery);
 
-  if (isLoading || isUserLoading) {
+  if (isLoading) {
     return (
        <div className="space-y-4">
         <div className="flex items-center gap-2">

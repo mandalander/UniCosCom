@@ -17,15 +17,18 @@ service cloud.firestore {
     }
     
     match /communities/{communityId} {
-      allow list, get, create: if isSignedIn();
+      allow list, get: if true;
+      allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
       match /posts/{postId} {
-        allow list, get, create: if isSignedIn();
+        allow list, get: if true;
+        allow create: if isSignedIn();
         allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
         match /comments/{commentId} {
-          allow list, get, create: if isSignedIn();
+          allow list, get: if true;
+          allow create: if isSignedIn();
           allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
         }
       }
