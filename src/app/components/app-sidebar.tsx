@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Settings, Compass, PlusCircle, Users } from 'lucide-react';
+import { Home, Settings, Compass, PlusCircle, Users, Pencil } from 'lucide-react';
 import {
   Sidebar,
   SidebarHeader,
@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
 import { collection, query, orderBy } from 'firebase/firestore';
+import { CreatePostDialog } from './create-post-dialog';
 
 type Community = {
   id: string;
@@ -130,6 +131,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <CreatePostDialog communities={communities || []}>
+              <SidebarMenuButton tooltip={t('createNewPost')}>
+                <Pencil />
+                <span>{t('createNewPost')}</span>
+              </SidebarMenuButton>
+            </CreatePostDialog>
+          </SidebarMenuItem>
           <SidebarMenuItem>
               <CreateCommunityDialog>
                 <SidebarMenuButton tooltip={t('createNewCommunity')}>

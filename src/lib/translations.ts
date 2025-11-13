@@ -122,18 +122,20 @@ export const translations = {
     createCommunityDescription: 'Wypełnij poniższe pola, aby utworzyć nową społeczność.',
     communityName: 'Nazwa',
     communityDescription: 'Opis',
+    logInToCreateCommunity: 'Zaloguj się, aby móc tworzyć nowe społeczności.',
 
     // Community List
     communitiesTitle: 'Społeczności',
     noCommunitiesYet: 'Nie utworzono jeszcze żadnych społeczności.',
     communityNotFound: 'Nie znaleziono społeczności.',
+    community: 'Społeczność',
 
     // Posts
     postsTitle: 'Posty',
     latestPosts: 'Najnowsze posty',
     noPostsYet: 'W tej społeczności nie ma jeszcze żadnych postów.',
     noPostsGlobal: 'Wygląda na to, że jest tu cicho... Bądź pierwszy i stwórz post!',
-    createNewPost: 'Utwórz nowy post',
+    createNewPost: 'Utwórz post',
     logInToCreatePost: 'Zaloguj się, aby tworzyć posty.',
     postTitle: 'Tytuł',
     postContent: 'Treść',
@@ -151,6 +153,9 @@ export const translations = {
     postNotFound: 'Nie znaleziono posta.',
     error: 'Błąd',
     viewCommunity: 'Zobacz społeczność',
+    createPostDialogDescription: 'Wybierz społeczność i napisz swój post.',
+    selectCommunityPlaceholder: 'Wybierz społeczność',
+    mustSelectCommunity: 'Musisz wybrać społeczność.',
 
     // Comments
     commentsTitle: 'Komentarze',
@@ -290,18 +295,20 @@ export const translations = {
     createCommunityDescription: 'Fill in the fields below to create a new community.',
     communityName: 'Name',
     communityDescription: 'Description',
+    logInToCreateCommunity: 'Log in to create a new community.',
 
     // Community List
     communitiesTitle: 'Communities',
     noCommunitiesYet: 'No communities have been created yet.',
     communityNotFound: 'Community not found.',
+    community: 'Community',
 
     // Posts
     postsTitle: 'Posts',
     latestPosts: 'Latest Posts',
     noPostsYet: 'There are no posts in this community yet.',
     noPostsGlobal: "It's quiet here... Be the first to create a post!",
-    createNewPost: 'Create new post',
+    createNewPost: 'Create Post',
     logInToCreatePost: 'Log in to create posts.',
     postTitle: 'Title',
     postContent: 'Content',
@@ -319,6 +326,9 @@ export const translations = {
     postNotFound: 'Post not found.',
     error: 'Error',
     viewCommunity: 'View Community',
+    createPostDialogDescription: 'Select a community and write your post.',
+    selectCommunityPlaceholder: 'Select a community',
+    mustSelectCommunity: 'You must select a community.',
 
     // Comments
     commentsTitle: 'Comments',
