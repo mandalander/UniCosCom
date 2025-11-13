@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the App Navigator application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user data. Path-based ownership ensures only the authenticated user (userId) can access their own data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user, matching the Firebase Authentication UID."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Given the limited scope of the application (App Navigator with user authentication and a UI consisting of a top navigation bar and sidebar), the Firestore structure is relatively straightforward. We primarily need a place to store user data. The design prioritizes Authorization Independence. Since there are no collaborative features or complex relationships described, a simple path-based ownership model is sufficient and highly secure. This approach allows for clear security rules based solely on the `request.auth.uid`, avoiding any `get()` calls and ensuring atomicity.\n\n**Authorization Independence**: Achieved through path-based ownership in `/users/{userId}`. No denormalization is needed because there are no subcollections or collaborative features requiring inherited access rights.\n\n**QAPs**: Secure `list` operations are naturally supported because each user's data is isolated under their respective `/users/{userId}` path. Listing users is not a requirement based on the given info."
+  }
+}
