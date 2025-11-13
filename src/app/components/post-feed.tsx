@@ -1,7 +1,7 @@
 'use client';
 
 import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
-import { collectionGroup, query, getDocs, collection, limit, doc, getDoc, orderBy } from 'firebase/firestore';
+import { collectionGroup, query, getDocs, collection, limit, doc, getDoc } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { PostItemActions } from './post-item-actions';
 import { VoteButtons } from './vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
+import { ShareButton } from './share-button';
 
 type Post = {
   id: string;
@@ -53,10 +54,11 @@ const PostItem = ({ post }: { post: Post }) => {
             if (!firestore) return;
             setIsLoadingComments(true);
             const commentsRef = collection(firestore, 'communities', post.communityId, 'posts', post.id, 'comments');
-            const q = query(commentsRef, orderBy('createdAt', 'desc'), limit(2));
+            const q = query(commentsRef, limit(2));
             const querySnapshot = await getDocs(q);
-            const fetchedComments = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Comment));
-            setComments(fetchedComments.reverse());
+            const fetchedComments = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Comment))
+              .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+            setComments(fetchedComments);
             setIsLoadingComments(false);
         };
         fetchComments();
@@ -76,39 +78,48 @@ const PostItem = ({ post }: { post: Post }) => {
 
     return (
         <Card className="flex">
-            <div className="p-4 flex flex-col items-center bg-muted/50 rounded-l-lg">
-                 <VoteButtons
-                    targetType="post"
-                    targetId={post.id}
-                    communityId={post.communityId}
-                    initialVoteCount={post.voteCount || 0}
-                />
-            </div>
-            <div className="flex-1">
+             <div className="flex-1">
                 <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                        <div>
-                            <CardDescription className='text-xs'>
-                                <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold">{post.communityName}</Link>
-                                <span className='mx-1'>•</span>
-                                {t('postedBy', { name: post.creatorDisplayName })} - {formatDate(post.createdAt)}
-                                {post.updatedAt && <span className='text-muted-foreground italic text-xs'> ({t('edited')})</span>}
-                            </CardDescription>
-                            <CardTitle className='leading-tight text-lg mt-1'>{post.title}</CardTitle>
+                        <div className='flex items-center gap-3'>
+                             <Avatar className="h-10 w-10">
+                                <AvatarImage src={post.creatorPhotoURL} />
+                                <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <CardDescription className='text-xs'>
+                                    <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold">{post.communityName}</Link>
+                                    <span className='mx-1'>•</span>
+                                    {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
+                                    {post.updatedAt && <span className='text-muted-foreground italic text-xs'> ({t('edited')})</span>}
+                                </CardDescription>
+                                <CardTitle className='leading-tight text-lg mt-1'>
+                                    <Link href={`/community/${post.communityId}/post/${post.id}`} className='hover:underline'>
+                                        {post.title}
+                                    </Link>
+                                </CardTitle>
+                            </div>
                         </div>
                         {isOwner && <PostItemActions communityId={post.communityId} post={post} />}
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className='pl-16'>
                     <p className="line-clamp-4">{post.content}</p>
                 </CardContent>
-                <CardFooter className='flex-col items-start gap-4'>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
-                            <Button variant="ghost" className="p-2 h-auto text-sm flex items-center gap-2">
-                                <MessageSquare className='h-5 w-5' /> <span>{t('viewPostAndComments')}</span>
+                <CardFooter className='flex-col items-start gap-4 pl-16'>
+                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <VoteButtons
+                            targetType="post"
+                            targetId={post.id}
+                            communityId={post.communityId}
+                            initialVoteCount={post.voteCount || 0}
+                        />
+                         <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
+                            <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2">
+                                <MessageSquare className='h-5 w-5' /> <span>{t('commentsTitle')}</span>
                             </Button>
                         </Link>
+                        <ShareButton post={post} />
                     </div>
                     <div className="w-full space-y-3">
                         {isLoadingComments ? (
@@ -188,8 +199,9 @@ export function PostFeed() {
       });
 
       const postsData = (await Promise.all(postsDataPromises))
-        .filter((p): p is Post => p !== null)
+        .filter((p): p is Post => p !== null && p.createdAt)
         .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+
 
       setPosts(postsData.slice(0, 10));
       setIsLoading(false);
@@ -213,12 +225,12 @@ export function PostFeed() {
                     </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className='pl-16'>
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full mt-2" />
                 <Skeleton className="h-4 w-3/4 mt-2" />
               </CardContent>
-              <CardFooter>
+              <CardFooter className='pl-16'>
                  <Skeleton className="h-8 w-40" />
               </CardFooter>
             </Card>

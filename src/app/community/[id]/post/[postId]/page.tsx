@@ -7,13 +7,16 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { User, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { CommentList } from '@/app/components/comment-list';
 import { CreateCommentForm } from '@/app/components/create-comment-form';
 import { PostItemActions } from '@/app/components/post-item-actions';
 import { VoteButtons } from '@/app/components/vote-buttons';
+import { ShareButton } from '@/app/components/share-button';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 type Post = {
   id: string;
@@ -74,33 +77,44 @@ export default function PostPage() {
       <Card>
         <CardHeader>
             <div className="flex items-start gap-4">
-                <div className="flex flex-col items-center">
-                    <VoteButtons
-                        targetType="post"
-                        targetId={post.id}
-                        communityId={communityId}
-                        initialVoteCount={post.voteCount}
-                    />
-                </div>
                 <div className="flex-1">
                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-xs text-muted-foreground">
-                                {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
-                                {post.updatedAt && <span className='text-muted-foreground italic'> ({t('edited')})</span>}
-                            </p>
-                            <CardTitle className="text-xl mt-1">{post.title}</CardTitle>
+                        <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10">
+                                <AvatarImage src={post.creatorPhotoURL} />
+                                <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <p className="text-xs text-muted-foreground">
+                                    {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
+                                    {post.updatedAt && <span className='text-muted-foreground italic'> ({t('edited')})</span>}
+                                </p>
+                                <CardTitle className="text-xl mt-1">{post.title}</CardTitle>
+                            </div>
                         </div>
                         {isOwner && <PostItemActions communityId={communityId} post={post} />}
                    </div>
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="pl-20">
+        <CardContent className="pl-16">
           <p className="whitespace-pre-wrap">{post.content}</p>
         </CardContent>
-        <CardFooter className="pl-20">
-           {/* Placeholder for actions like comments count etc. */}
+        <CardFooter className="pl-16">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <VoteButtons
+                    targetType="post"
+                    targetId={post.id}
+                    communityId={communityId}
+                    initialVoteCount={post.voteCount}
+                />
+                 <Link href={`/community/${communityId}/post/${post.id}`} passHref>
+                    <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2">
+                        <MessageSquare className='h-5 w-5' /> <span>{t('commentsTitle')}</span>
+                    </Button>
+                </Link>
+                <ShareButton post={{...post, communityId}} />
+            </div>
         </CardFooter>
       </Card>
       

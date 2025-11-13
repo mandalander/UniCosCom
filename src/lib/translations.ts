@@ -184,6 +184,9 @@ export const translations = {
     updateCommentSuccess: 'Komentarz został zaktualizowany.',
     voteError: 'Błąd głosowania',
     mustBeLoggedInToVote: 'Musisz być zalogowany, aby głosować.',
+    share: 'Udostępnij',
+    linkCopied: 'Link skopiowany do schowka!',
+    linkCopyFailed: 'Nie udało się skopiować linku.',
 
     // Metadata
     metaTitle: 'Unicoscom',
@@ -373,6 +376,9 @@ export const translations = {
     updateCommentSuccess: 'Comment updated successfully.',
     voteError: 'Vote Error',
     mustBeLoggedInToVote: 'You must be logged in to vote.',
+    share: 'Share',
+    linkCopied: 'Link copied to clipboard!',
+    linkCopyFailed: 'Failed to copy link.',
 
     // Metadata
     metaTitle: 'Unicoscom',

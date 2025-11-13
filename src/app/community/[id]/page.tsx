@@ -10,10 +10,11 @@ import { CreatePostForm } from '@/app/components/create-post-form';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { User, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { VoteButtons } from '@/app/components/vote-buttons';
+import { ShareButton } from '@/app/components/share-button';
 
 type Community = {
   id: string;
@@ -29,6 +30,7 @@ type Post = {
   creatorPhotoURL?: string;
   createdAt: any;
   voteCount: number;
+  communityId: string;
 };
 
 export default function CommunityPage() {
@@ -107,15 +109,7 @@ export default function CommunityPage() {
         <h2 className="text-2xl font-bold">{t('postsTitle')}</h2>
         {posts && posts.length > 0 ? (
           posts.map((post) => (
-            <Card key={post.id} className="flex">
-              <div className="p-4 flex flex-col items-center bg-muted/50 rounded-l-lg">
-                <VoteButtons
-                    targetType="post"
-                    targetId={post.id}
-                    communityId={communityId}
-                    initialVoteCount={post.voteCount || 0}
-                />
-              </div>
+            <Card key={post.id}>
               <div className='flex-1'>
                 <CardHeader>
                    <div className="flex items-center gap-3">
@@ -131,15 +125,24 @@ export default function CommunityPage() {
                       </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pl-16">
                   <p className="line-clamp-3">{post.content}</p>
                 </CardContent>
-                <CardFooter>
-                   <Button asChild variant="link" className="p-0">
-                      <Link href={`/community/${communityId}/post/${post.id}`}>
-                          {t('viewPostAndComments')}
-                      </Link>
-                  </Button>
+                <CardFooter className="pl-16">
+                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <VoteButtons
+                            targetType="post"
+                            targetId={post.id}
+                            communityId={communityId}
+                            initialVoteCount={post.voteCount || 0}
+                        />
+                        <Link href={`/community/${communityId}/post/${post.id}`} passHref>
+                          <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2">
+                              <MessageSquare className='h-5 w-5' /> <span>{t('commentsTitle')}</span>
+                          </Button>
+                        </Link>
+                        <ShareButton post={{...post, communityId: communityId}} />
+                    </div>
                 </CardFooter>
               </div>
             </Card>
