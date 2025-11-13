@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { CommentList } from '@/app/components/comment-list';
 import { CreateCommentForm } from '@/app/components/create-comment-form';
@@ -43,7 +43,7 @@ export default function PostPage() {
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
     const date = timestamp.toDate();
-    return format(date, 'PPP p', { locale: language === 'pl' ? pl : enUS });
+    return formatDistanceToNow(date, { addSuffix: true, locale: language === 'pl' ? pl : enUS });
   };
   
   const getInitials = (name?: string | null) => {
@@ -74,34 +74,33 @@ export default function PostPage() {
       <Card>
         <CardHeader>
             <div className="flex items-start gap-4">
-                <Avatar className="h-12 w-12">
-                    <AvatarImage src={post.creatorPhotoURL} />
-                    <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
-                </Avatar>
+                <div className="flex flex-col items-center">
+                    <VoteButtons
+                        targetType="post"
+                        targetId={post.id}
+                        communityId={communityId}
+                        initialVoteCount={post.voteCount}
+                    />
+                </div>
                 <div className="flex-1">
                    <div className="flex justify-between items-start">
                         <div>
-                            <CardTitle className="text-2xl">{post.title}</CardTitle>
-                            <p className="text-sm text-muted-foreground">
-                                {t('postedBy', { name: post.creatorDisplayName })} - {formatDate(post.createdAt)}
+                            <p className="text-xs text-muted-foreground">
+                                {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
                                 {post.updatedAt && <span className='text-muted-foreground italic'> ({t('edited')})</span>}
                             </p>
+                            <CardTitle className="text-xl mt-1">{post.title}</CardTitle>
                         </div>
                         {isOwner && <PostItemActions communityId={communityId} post={post} />}
                    </div>
                 </div>
             </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-20">
           <p className="whitespace-pre-wrap">{post.content}</p>
         </CardContent>
-        <CardFooter>
-            <VoteButtons
-                targetType="post"
-                targetId={post.id}
-                communityId={communityId}
-                initialVoteCount={post.voteCount}
-            />
+        <CardFooter className="pl-20">
+           {/* Placeholder for actions like comments count etc. */}
         </CardFooter>
       </Card>
       

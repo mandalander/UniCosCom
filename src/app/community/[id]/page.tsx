@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
+import { VoteButtons } from '@/app/components/vote-buttons';
 
 type Community = {
   id: string;
@@ -27,6 +28,7 @@ type Post = {
   creatorDisplayName: string;
   creatorPhotoURL?: string;
   createdAt: any;
+  voteCount: number;
 };
 
 export default function CommunityPage() {
@@ -105,31 +107,41 @@ export default function CommunityPage() {
         <h2 className="text-2xl font-bold">{t('postsTitle')}</h2>
         {posts && posts.length > 0 ? (
           posts.map((post) => (
-            <Card key={post.id}>
-              <CardHeader>
-                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                        <AvatarImage src={post.creatorPhotoURL} />
-                        <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
-                    </Avatar>
-                    <div className='flex-1'>
-                        <CardTitle>{post.title}</CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                            {t('postedBy', { name: post.creatorDisplayName })} - {formatDate(post.createdAt)}
-                        </p>
-                    </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="line-clamp-3">{post.content}</p>
-              </CardContent>
-              <CardFooter>
-                 <Button asChild variant="link" className="p-0">
-                    <Link href={`/community/${communityId}/post/${post.id}`}>
-                        {t('viewPostAndComments')}
-                    </Link>
-                </Button>
-              </CardFooter>
+            <Card key={post.id} className="flex">
+              <div className="p-4 flex flex-col items-center bg-muted/50 rounded-l-lg">
+                <VoteButtons
+                    targetType="post"
+                    targetId={post.id}
+                    communityId={communityId}
+                    initialVoteCount={post.voteCount || 0}
+                />
+              </div>
+              <div className='flex-1'>
+                <CardHeader>
+                   <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                          <AvatarImage src={post.creatorPhotoURL} />
+                          <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
+                      </Avatar>
+                      <div className='flex-1'>
+                          <p className="text-sm text-muted-foreground">
+                              {t('postedBy', { name: post.creatorDisplayName })} • {formatDate(post.createdAt)}
+                          </p>
+                          <CardTitle className="text-lg mt-1">{post.title}</CardTitle>
+                      </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="line-clamp-3">{post.content}</p>
+                </CardContent>
+                <CardFooter>
+                   <Button asChild variant="link" className="p-0">
+                      <Link href={`/community/${communityId}/post/${post.id}`}>
+                          {t('viewPostAndComments')}
+                      </Link>
+                  </Button>
+                </CardFooter>
+              </div>
             </Card>
           ))
         ) : (

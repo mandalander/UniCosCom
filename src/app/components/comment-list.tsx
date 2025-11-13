@@ -78,15 +78,15 @@ export function CommentList({ communityId, postId }: CommentListProps) {
         comments.map((comment) => {
             const isOwner = user && user.uid === comment.creatorId;
             return (
-              <Card key={comment.id}>
+              <Card key={comment.id} className="bg-muted/50">
                 <CardHeader className='flex-row items-center justify-between gap-3 space-y-0 pb-2'>
                     <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
+                        <Avatar className="h-8 w-8">
                             <AvatarImage src={comment.creatorPhotoURL} />
                             <AvatarFallback>{getInitials(comment.creatorDisplayName)}</AvatarFallback>
                         </Avatar>
                         <div>
-                            <p className="font-semibold">{comment.creatorDisplayName}</p>
+                            <p className="font-semibold text-sm">{comment.creatorDisplayName}</p>
                             <p className="text-xs text-muted-foreground">
                                 {formatDate(comment.createdAt)}
                                 {comment.updatedAt && <span className='italic'> ({t('edited')})</span>}
@@ -101,10 +101,10 @@ export function CommentList({ communityId, postId }: CommentListProps) {
                         />
                     )}
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pl-14">
                 <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
                 </CardContent>
-                 <CardFooter>
+                 <CardFooter className="pl-14">
                     <VoteButtons
                         targetType="comment"
                         targetId={comment.id}
