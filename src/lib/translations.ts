@@ -3,7 +3,7 @@ export const translations = {
   pl: {
     // App Sidebar
     main: 'Główna',
-    explore: 'Eksploruj',
+    explore: 'Społeczności',
     profile: 'Profil',
     settings: 'Ustawienia',
     appNavigator: 'Unicoscom',
@@ -26,15 +26,15 @@ export const translations = {
     signUpWithGoogle: 'Zarejestruj się z Google',
 
     // Home Page
-    homeTitle: 'Witaj w Unicoscom',
-    homeDescription: 'To jest przykładowa aplikacja demonstrująca responsywny układ z górnym paskiem nawigacyjnym i zwijanym paskiem bocznym.',
+    homeTitle: 'Najnowsze posty',
+    homeDescription: 'Zobacz, co nowego w społecznościach.',
     homeContent1: 'Użyj ikony menu w lewym górnym rogu, aby otworzyć i zamknąć pasek boczny. Pasek boczny zawiera linki nawigacyjne do różnych sekcji aplikacji.',
     homeContent2: 'Przycisk logowania w prawym górnym rogu zazwyczaj prowadzi do strony uwierzytelniania.',
     homeContent3: 'Ten interfejs został zbudowany przy użyciu Next.js, TypeScript, Tailwind CSS i komponentów ShadCN UI, aby był nowoczesny, responsywny i dostępny.',
 
     // Explore Page
     exploreTitle: 'Eksploruj',
-    exploreDescription: 'Tutaj możesz odkrywać nowe treści.',
+    exploreDescription: 'Przeglądaj wszystkie dostępne społeczności.',
     exploreContent: 'Treść strony eksploracji pojawi się tutaj.',
 
     // Profile Page
@@ -132,6 +132,7 @@ export const translations = {
     postsTitle: 'Posty',
     latestPosts: 'Najnowsze posty',
     noPostsYet: 'W tej społeczności nie ma jeszcze żadnych postów.',
+    noPostsGlobal: 'Wygląda na to, że jest tu cicho... Bądź pierwszy i stwórz post!',
     createNewPost: 'Utwórz nowy post',
     logInToCreatePost: 'Zaloguj się, aby tworzyć posty.',
     postTitle: 'Tytuł',
@@ -149,6 +150,7 @@ export const translations = {
     viewPostAndComments: 'Zobacz post i komentarze',
     postNotFound: 'Nie znaleziono posta.',
     error: 'Błąd',
+    viewCommunity: 'Zobacz społeczność',
 
     // Comments
     commentsTitle: 'Komentarze',
@@ -170,7 +172,7 @@ export const translations = {
   en: {
     // App Sidebar
     main: 'Home',
-    explore: 'Explore',
+    explore: 'Communities',
     profile: 'Profile',
     settings: 'Settings',
     appNavigator: 'Unicoscom',
@@ -193,15 +195,15 @@ export const translations = {
     signUpWithGoogle: 'Sign up with Google',
 
     // Home Page
-    homeTitle: 'Welcome to Unicoscom',
-    homeDescription: 'This is a sample application demonstrating a responsive layout with a top navigation bar and a collapsible sidebar.',
+    homeTitle: 'Latest Posts',
+    homeDescription: "See what's new in the communities.",
     homeContent1: 'Use the menu icon in the top left to open and close the sidebar. The sidebar contains navigation links to different sections of the application.',
     homeContent2: 'The login button in the top right usually leads to an authentication page.',
     homeContent3: 'This interface was built using Next.js, TypeScript, Tailwind CSS, and ShadCN UI components to be modern, responsive, and accessible.',
 
     // Explore Page
     exploreTitle: 'Explore',
-    exploreDescription: 'Here you can discover new content.',
+    exploreDescription: 'Browse all available communities.',
     exploreContent: 'The content of the exploration page will appear here.',
 
     // Profile Page
@@ -298,6 +300,7 @@ export const translations = {
     postsTitle: 'Posts',
     latestPosts: 'Latest Posts',
     noPostsYet: 'There are no posts in this community yet.',
+    noPostsGlobal: "It's quiet here... Be the first to create a post!",
     createNewPost: 'Create new post',
     logInToCreatePost: 'Log in to create posts.',
     postTitle: 'Title',
@@ -315,6 +318,7 @@ export const translations = {
     viewPostAndComments: 'View post and comments',
     postNotFound: 'Post not found.',
     error: 'Error',
+    viewCommunity: 'View Community',
 
     // Comments
     commentsTitle: 'Comments',

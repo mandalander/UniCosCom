@@ -12,8 +12,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
-      allow read, update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow read, update, delete: if isOwner(userId);
     }
     
     match /communities/{communityId} {
@@ -32,6 +31,11 @@ service cloud.firestore {
           allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
         }
       }
+    }
+
+    // This rule allows a collection group query on 'posts'
+    match /{path=**}/posts/{postId} {
+      allow read: if true;
     }
   }
 }

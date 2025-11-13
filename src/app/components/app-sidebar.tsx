@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Settings, Compass, PlusCircle } from 'lucide-react';
+import { Home, Settings, Compass, PlusCircle, Users } from 'lucide-react';
 import {
   Sidebar,
   SidebarHeader,
@@ -11,22 +11,41 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSkeleton
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
 import { useEffect, useState } from 'react';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
+import { collection, query, orderBy } from 'firebase/firestore';
+
+type Community = {
+  id: string;
+  name: string;
+};
 
 export function AppSidebar() {
   const pathname = usePathname();
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const { user } = useUser();
+  const firestore = useFirestore();
+
+  const communitiesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'communities'), orderBy('name', 'asc'));
+  }, [firestore]);
+
+  const { data: communities, isLoading: isLoadingCommunities } = useCollection<Community>(communitiesQuery);
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
-    { href: '/explore', label: t('explore'), icon: Compass, requiresAuth: false },
   ];
   
   const settingsMenuItem = { href: '/settings', label: t('settings'), icon: Settings, requiresAuth: false };
@@ -85,6 +104,29 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
+        <SidebarGroup>
+            <SidebarGroupLabel asChild>
+                <Link href="/explore"><Users /> <span>{t('communitiesTitle')}</span></Link>
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+                <SidebarMenuSub>
+                    {isLoadingCommunities ? (
+                        <>
+                            <SidebarMenuSkeleton showIcon={false} />
+                            <SidebarMenuSkeleton showIcon={false} />
+                        </>
+                    ) : communities && communities.length > 0 ? (
+                        communities.map((community) => (
+                            <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`}>
+                                <Link href={`/community/${community.id}`}>{community.name}</Link>
+                            </SidebarMenuSubButton>
+                        ))
+                    ) : (
+                        <p className="px-2 text-xs text-sidebar-foreground/70">{t('noCommunitiesYet')}</p>
+                    )}
+                </SidebarMenuSub>
+            </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
