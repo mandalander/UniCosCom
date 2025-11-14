@@ -52,8 +52,5 @@ service cloud.firestore {
         }
       }
     }
-
-    // Collection group queries are now covered by the more specific rules above.
-    // These can be kept for absolute clarity or removed. For this fix, they are removed to avoid redundancy.
   }
 }
