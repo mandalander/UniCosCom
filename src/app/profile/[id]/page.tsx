@@ -217,6 +217,7 @@ export default function UserProfilePage() {
                         <VoteButtons
                             targetType="post"
                             targetId={post.id}
+                            creatorId={post.creatorId}
                             communityId={post.communityId}
                             initialVoteCount={post.voteCount || 0}
                         />
@@ -238,3 +239,5 @@ export default function UserProfilePage() {
     </div>
   );
 }
+
+    

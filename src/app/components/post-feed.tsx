@@ -116,6 +116,7 @@ const PostItem = ({ post }: { post: Post }) => {
                         <VoteButtons
                             targetType="post"
                             targetId={post.id}
+                            creatorId={post.creatorId}
                             communityId={post.communityId}
                             initialVoteCount={post.voteCount || 0}
                         />
@@ -156,6 +157,7 @@ const PostItem = ({ post }: { post: Post }) => {
                                             <VoteButtons
                                                 targetType="comment"
                                                 targetId={comment.id}
+                                                creatorId={comment.creatorId}
                                                 communityId={post.communityId}
                                                 postId={post.id}
                                                 initialVoteCount={comment.voteCount || 0}
@@ -256,3 +258,5 @@ export function PostFeed() {
     </div>
   );
 }
+
+    

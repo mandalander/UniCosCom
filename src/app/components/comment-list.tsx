@@ -111,6 +111,7 @@ export function CommentList({ communityId, postId }: CommentListProps) {
                     <VoteButtons
                         targetType="comment"
                         targetId={comment.id}
+                        creatorId={comment.creatorId}
                         communityId={communityId}
                         postId={postId}
                         initialVoteCount={comment.voteCount}
@@ -125,3 +126,5 @@ export function CommentList({ communityId, postId }: CommentListProps) {
     </div>
   );
 }
+
+    

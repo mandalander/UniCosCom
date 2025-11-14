@@ -195,6 +195,13 @@ export const translations = {
     linkCopied: 'Link skopiowany do schowka!',
     linkCopyFailed: 'Nie udało się skopiować linku.',
 
+    // Notifications
+    notifications: 'Powiadomienia',
+    noNotifications: 'Brak nowych powiadomień.',
+    markAllAsRead: 'Oznacz wszystkie jako przeczytane',
+    userUpvotedYourPost: '{{username}} polubił(a) Twój post: "{{postTitle}}"',
+    userUpvotedYourComment: '{{username}} polubił(a) Twój komentarz do posta: "{{postTitle}}"',
+
     // Metadata
     metaTitle: 'Unicoscom',
     metaDescription: 'Unicoscom - Unikalny Kosmos Komunikacji i Społeczności.',
@@ -393,8 +400,17 @@ export const translations = {
     linkCopied: 'Link copied to clipboard!',
     linkCopyFailed: 'Failed to copy link.',
 
+    // Notifications
+    notifications: 'Notifications',
+    noNotifications: 'No new notifications.',
+    markAllAsRead: 'Mark all as read',
+    userUpvotedYourPost: '{{username}} upvoted your post: "{{postTitle}}"',
+    userUpvotedYourComment: '{{username}} upvoted your comment on: "{{postTitle}}"',
+
     // Metadata
     metaTitle: 'Unicoscom',
     metaDescription: 'Unicoscom - The Unique Cosmos of Communication and Community.',
   },
 };
+
+    

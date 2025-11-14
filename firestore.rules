@@ -18,22 +18,26 @@ service cloud.firestore {
     match /userProfiles/{userId} {
       allow get: if true;
       allow create, update: if isOwner(userId);
+
+      // Notifications can only be read by the owner and written to by anyone signed in
+      // (as users create notifications for others by voting).
+      match /notifications/{notificationId} {
+        allow read, update: if isOwner(userId);
+        allow create: if isSignedIn();
+      }
     }
     
     match /communities/{communityId} {
-      // Allow public read access for communities
       allow list, get: if true;
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
       match /posts/{postId} {
-        // Allow public read access for posts
         allow list, get: if true;
         allow create: if isSignedIn();
         allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
         match /comments/{commentId} {
-          // Allow public read access for comments
           allow list, get: if true;
           allow create: if isSignedIn();
           allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
@@ -54,3 +58,5 @@ service cloud.firestore {
     }
   }
 }
+
+    

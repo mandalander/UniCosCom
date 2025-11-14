@@ -3,22 +3,24 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore, runVoteTransaction } from '@/firebase';
-import { doc, getDoc, setDoc, increment } from 'firebase/firestore';
+import { useUser, useFirestore, runVoteTransaction, addDocumentNonBlocking } from '@/firebase';
+import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, DocumentData } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from './language-provider';
+import { useLanguage } from '@/app/components/language-provider';
 import { cn } from '@/lib/utils';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 interface VoteButtonsProps {
   targetType: 'post' | 'comment';
   targetId: string;
+  creatorId: string;
   communityId: string;
   postId?: string; // only for comments
   initialVoteCount: number;
 }
 
-export function VoteButtons({ targetType, targetId, communityId, postId, initialVoteCount }: VoteButtonsProps) {
+export function VoteButtons({ targetType, targetId, creatorId, communityId, postId, initialVoteCount }: VoteButtonsProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -44,16 +46,55 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
       }
 
       if (voteRef) {
-        const voteSnap = await getDoc(voteRef);
-        if (voteSnap.exists()) {
-          setUserVote(voteSnap.data().value);
-        } else {
-          setUserVote(null);
+        try {
+            const voteSnap = await getDoc(voteRef);
+            if (voteSnap.exists()) {
+              setUserVote(voteSnap.data().value);
+            } else {
+              setUserVote(null);
+            }
+        } catch (e) {
+            console.warn("Could not fetch user's vote", e);
+            setUserVote(null);
         }
       }
     };
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
+
+   const createNotification = async (targetAuthorId: string) => {
+    if (!user || !firestore || user.uid === targetAuthorId) {
+      return;
+    }
+
+    // We need the post title for the notification message
+    let postTitle = 'a post';
+    const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
+    try {
+        const postSnap = await getDocFromServer(postRef);
+        if(postSnap.exists()) {
+            postTitle = postSnap.data().title;
+        }
+    } catch(e) {
+        console.error("Could not fetch post for notification", e);
+    }
+
+    const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
+    const notificationData = {
+        recipientId: targetAuthorId,
+        type: 'vote',
+        targetType: targetType,
+        targetId: targetId,
+        targetTitle: postTitle,
+        communityId: communityId,
+        postId: postId || targetId,
+        actorId: user.uid,
+        actorDisplayName: user.displayName || 'Someone',
+        read: false,
+        createdAt: serverTimestamp(),
+    };
+    addDocumentNonBlocking(notificationsRef, notificationData);
+  }
 
   const handleVote = async (newVote: 1 | -1) => {
     if (!user) {
@@ -72,53 +113,67 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
     const newVoteValue = userVote === newVote ? 0 : newVote;
 
     // Optimistic UI update
-    let voteChange = newVoteValue - voteValueBefore;
+    const voteChange = newVoteValue - voteValueBefore;
     setVoteCount(prev => (prev || 0) + voteChange);
     setUserVote(newVoteValue === 0 ? null : newVoteValue);
 
+    let targetRef, voteRef;
 
-    try {
-        let targetRef, voteRef;
+    if (targetType === 'post') {
+        targetRef = doc(firestore, 'communities', communityId, 'posts', targetId);
+        voteRef = doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
+    } else if (postId) {
+        targetRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId);
+        voteRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
+    } else {
+        console.error("postId is required for comment votes");
+        setIsVoting(false);
+        return;
+    }
 
-        if (targetType === 'post') {
-            targetRef = doc(firestore, 'communities', communityId, 'posts', targetId);
-            voteRef = doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
-        } else if (postId) {
-            targetRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId);
-            voteRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
-        } else {
-            throw new Error("postId is required for comment votes");
-        }
-
-        await runVoteTransaction(firestore, async (transaction) => {
-            const voteDoc = await transaction.get(voteRef);
-            const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
-            
-            const voteDifference = newVoteValue - currentVoteOnDb;
-            
-            transaction.update(targetRef, { 
-                voteCount: increment(voteDifference)
-            });
-
-            if (newVoteValue === 0) {
-                transaction.delete(voteRef);
-            } else {
-                transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
-            }
+    const transactionBody = async (transaction: Transaction) => {
+        const voteDoc = await transaction.get(voteRef);
+        const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
+        
+        const voteDifference = newVoteValue - currentVoteOnDb;
+        
+        const { increment } = await import('firebase/firestore');
+        transaction.update(targetRef, { 
+            voteCount: increment(voteDifference)
         });
-    } catch (e) {
-      console.error(e);
-      // Revert optimistic update on failure
+
+        if (newVoteValue === 0) {
+            transaction.delete(voteRef);
+        } else {
+            transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
+        }
+    };
+    
+    runVoteTransaction(firestore, transactionBody, {
+        path: voteRef.path,
+        operation: 'write', 
+        requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
+    }).then(() => {
+        // On success, create a notification if it's an upvote
+        if(newVoteValue === 1) {
+            createNotification(creatorId);
+        }
+    }).catch((e) => {
+      // Revert optimistic update on any failure
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-      toast({
-        variant: 'destructive',
-        title: t('voteError'),
-        description: (e as Error).message,
-      });
-    } finally {
-      setIsVoting(false);
-    }
+      
+      if (!(e instanceof FirestorePermissionError)) {
+          console.error("Vote transaction failed with a non-permission error: ", e);
+          toast({
+            variant: 'destructive',
+            title: t('voteError'),
+            description: e.message || "An unknown error occurred.",
+          });
+      }
+    }).finally(() => {
+        setIsVoting(false);
+    });
   };
 
   return (
@@ -151,3 +206,5 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
     </div>
   );
 }
+
+    

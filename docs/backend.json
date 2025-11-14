@@ -215,6 +215,69 @@
         }
       },
       "required": ["displayName"]
+    },
+    "Notification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Notification",
+      "type": "object",
+      "description": "Represents a notification for a user.",
+      "properties": {
+        "recipientId": {
+          "type": "string",
+          "description": "The UID of the user receiving the notification."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["vote"],
+          "description": "The type of notification."
+        },
+        "targetType": {
+          "type": "string",
+          "enum": ["post", "comment"],
+          "description": "The type of content that was acted upon."
+        },
+        "targetId": {
+          "type": "string",
+          "description": "The ID of the content that was acted upon."
+        },
+        "communityId": {
+          "type": "string",
+          "description": "The ID of the community where the event occurred."
+        },
+        "postId": {
+          "type": "string",
+          "description": "The ID of the post related to the notification."
+        },
+        "actorId": {
+          "type": "string",
+          "description": "The UID of the user who performed the action."
+        },
+        "actorDisplayName": {
+          "type": "string",
+          "description": "The display name of the user who performed the action."
+        },
+        "read": {
+          "type": "boolean",
+          "description": "Whether the notification has been read."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the notification was created."
+        }
+      },
+      "required": [
+        "recipientId",
+        "type",
+        "targetType",
+        "targetId",
+        "communityId",
+        "postId",
+        "actorId",
+        "actorDisplayName",
+        "read",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -255,6 +318,19 @@
               "name": "userId",
               "description": "The unique identifier of the user, matching the Firebase Authentication UID."
             }
+          ]
+        }
+      },
+       {
+        "path": "/userProfiles/{userId}/notifications/{notificationId}",
+        "definition": {
+          "entityName": "Notification",
+          "schema": {
+            "$ref": "#/backend/entities/Notification"
+          },
+          "description": "Stores notifications for a specific user. Writable by system/triggers, readable only by the owner.",
+          "params": [
+            { "name": "userId" }, { "name": "notificationId" }
           ]
         }
       },
@@ -345,6 +421,8 @@
         }
       }
     ],
-    "reasoning": "The structure allows for nested data. Posts are nested under communities, and comments are nested under posts. Votes are nested under the content they apply to, which allows for easy lookup of a user's vote on a specific item."
+    "reasoning": "The structure allows for nested data. Posts are nested under communities, and comments are nested under posts. Votes are nested under the content they apply to, which allows for easy lookup of a user's vote on a specific item. Notifications are stored in a subcollection under the user's public profile."
   }
 }
+
+    

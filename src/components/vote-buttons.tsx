@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore, runVoteTransaction } from '@/firebase';
-import { doc, getDoc, Transaction } from 'firebase/firestore';
+import { useUser, useFirestore, runVoteTransaction, addDocumentNonBlocking } from '@/firebase';
+import { doc, getDoc, Transaction, collection, getDocFromServer, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
@@ -14,12 +14,13 @@ import { FirestorePermissionError } from '@/firebase/errors';
 interface VoteButtonsProps {
   targetType: 'post' | 'comment';
   targetId: string;
+  creatorId: string;
   communityId: string;
   postId?: string; // only for comments
   initialVoteCount: number;
 }
 
-export function VoteButtons({ targetType, targetId, communityId, postId, initialVoteCount }: VoteButtonsProps) {
+export function VoteButtons({ targetType, targetId, creatorId, communityId, postId, initialVoteCount }: VoteButtonsProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -48,12 +49,11 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
         try {
             const voteSnap = await getDoc(voteRef);
             if (voteSnap.exists()) {
-            setUserVote(voteSnap.data().value);
+              setUserVote(voteSnap.data().value);
             } else {
-            setUserVote(null);
+              setUserVote(null);
             }
         } catch (e) {
-            // This can happen if rules prevent reading own vote. Silently fail.
             console.warn("Could not fetch user's vote", e);
             setUserVote(null);
         }
@@ -61,6 +61,26 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
     };
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
+
+   const createNotification = (targetAuthorId: string) => {
+    if (!user || !firestore || user.uid === targetAuthorId) {
+      return;
+    }
+    const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
+    const notificationData = {
+        recipientId: targetAuthorId,
+        type: 'vote',
+        targetType: targetType,
+        targetId: targetId,
+        communityId: communityId,
+        postId: postId || targetId,
+        actorId: user.uid,
+        actorDisplayName: user.displayName || 'Someone',
+        read: false,
+        createdAt: serverTimestamp(),
+    };
+    addDocumentNonBlocking(notificationsRef, notificationData);
+  }
 
   const handleVote = async (newVote: 1 | -1) => {
     if (!user) {
@@ -103,7 +123,6 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
         
         const voteDifference = newVoteValue - currentVoteOnDb;
         
-        // This import is needed inside the transaction body
         const { increment } = await import('firebase/firestore');
         transaction.update(targetRef, { 
             voteCount: increment(voteDifference)
@@ -120,6 +139,11 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
         path: voteRef.path,
         operation: 'write', 
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
+    }).then(() => {
+        // On success, create a notification if it's an upvote
+        if(newVoteValue === 1) {
+            createNotification(creatorId);
+        }
     }).catch((e) => {
       // Revert optimistic update on any failure
       setVoteCount(prev => (prev || 0) - voteChange);
@@ -168,3 +192,5 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
     </div>
   );
 }
+
+    

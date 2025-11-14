@@ -110,6 +110,7 @@ export default function PostPage() {
                 <VoteButtons
                     targetType="post"
                     targetId={post.id}
+                    creatorId={post.creatorId}
                     communityId={communityId}
                     initialVoteCount={post.voteCount}
                 />
@@ -140,3 +141,5 @@ export default function PostPage() {
     </div>
   );
 }
+
+    
