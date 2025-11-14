@@ -45,11 +45,17 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
       }
 
       if (voteRef) {
-        const voteSnap = await getDoc(voteRef);
-        if (voteSnap.exists()) {
-          setUserVote(voteSnap.data().value);
-        } else {
-          setUserVote(null);
+        try {
+            const voteSnap = await getDoc(voteRef);
+            if (voteSnap.exists()) {
+            setUserVote(voteSnap.data().value);
+            } else {
+            setUserVote(null);
+            }
+        } catch (e) {
+            // This can happen if rules prevent reading own vote. Silently fail.
+            console.warn("Could not fetch user's vote", e);
+            setUserVote(null);
         }
       }
     };
@@ -110,18 +116,15 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
         }
     };
     
-    // The runVoteTransaction will now handle permission errors globally
     runVoteTransaction(firestore, transactionBody, {
         path: voteRef.path,
-        operation: 'write', // 'write' covers create, update, delete
+        operation: 'write', 
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
     }).catch((e) => {
       // Revert optimistic update on any failure
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
-      // Do not toast permission errors, as they are handled globally.
-      // Only toast for other, unexpected errors.
       if (!(e instanceof FirestorePermissionError)) {
           console.error("Vote transaction failed with a non-permission error: ", e);
           toast({
