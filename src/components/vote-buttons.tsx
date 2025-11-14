@@ -65,25 +65,23 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
 
   const createNotification = (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
-      return Promise.resolve(); // Return a resolved promise if no action is needed
+      return Promise.resolve();
     }
 
     const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
     const notificationData = {
-      recipientId: targetAuthorId,
-      type: 'vote' as const,
-      targetType: targetType,
-      targetId: targetId,
-      targetTitle: 'your content', // Simplified title
-      communityId: communityId,
-      postId: postId || targetId,
-      actorId: user.uid,
-      actorDisplayName: user.displayName || 'Someone',
-      read: false,
-      createdAt: serverTimestamp(),
+        recipientId: targetAuthorId,
+        type: 'vote' as const,
+        targetType: targetType,
+        targetId: targetId,
+        targetTitle: 'your content', // Simplified title
+        communityId: communityId,
+        postId: postId || targetId,
+        actorId: user.uid,
+        actorDisplayName: user.displayName || 'Someone',
+        read: false,
+        createdAt: serverTimestamp(),
     };
-
-    // Return the promise from addDocumentNonBlocking
     return addDocumentNonBlocking(notificationsRef, notificationData);
   };
 
@@ -146,19 +144,17 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         operation: 'write', 
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
     }).then(() => {
-        // On success, create a notification if it's an upvote
-        if(newVoteValue === 1) {
+        if (newVoteValue === 1) {
             createNotification(creatorId).catch(error => {
-                // This catch block handles permission errors specifically from createNotification
-                const notifRef = collection(firestore, 'userProfiles', creatorId, 'notifications');
+                const notificationsRef = collection(firestore, 'userProfiles', creatorId, 'notifications');
                 const permissionError = new FirestorePermissionError({
-                    path: notifRef.path,
+                    path: notificationsRef.path,
                     operation: 'create',
-                    requestResourceData: { /* recreated for context, might differ slightly */
-                      recipientId: creatorId,
-                      type: 'vote',
-                      targetType: targetType,
-                      targetId: targetId,
+                    requestResourceData: { /* Recreate data for context */
+                        recipientId: creatorId,
+                        type: 'vote',
+                        targetType: targetType,
+                        targetId: targetId,
                     }
                 });
                 errorEmitter.emit('permission-error', permissionError);
