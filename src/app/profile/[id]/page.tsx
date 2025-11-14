@@ -7,7 +7,7 @@ import {
   useMemoFirebase,
   useCollection,
 } from '@/firebase';
-import { doc, collection, query, where, orderBy, getDoc, collectionGroup } from 'firebase/firestore';
+import { doc, collection, query, where, orderBy, getDoc, collectionGroup, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 import {
   Card,
   CardHeader,
@@ -68,32 +68,32 @@ export default function UserProfilePage() {
   }, [firestore, userId]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileDocRef);
-  const { data: rawPosts, isLoading: arePostsLoading } = useCollection<Omit<Post, 'communityId' | 'communityName'>>(userPostsQuery);
+  const { docs: rawPostDocs, isLoading: arePostsLoading } = useCollection<Omit<Post, 'communityId' | 'communityName'>>(userPostsQuery);
   
   const [posts, setPosts] = useState<Post[]>([]);
   const [areCommunityDetailsLoading, setAreCommunityDetailsLoading] = useState(false);
 
   useEffect(() => {
     const fetchCommunityDetails = async () => {
-        if (!firestore || !rawPosts || rawPosts.length === 0) {
-          if (rawPosts) setPosts([]);
+        if (!firestore || !rawPostDocs || rawPostDocs.length === 0) {
+          if (rawPostDocs) setPosts([]);
           return;
         }
 
         setAreCommunityDetailsLoading(true);
         
         const postsWithCommunityData = await Promise.all(
-            rawPosts.map(async (post: any) => {
-                const postRef = doc(firestore, post.ref.path);
-                const communityRef = postRef.parent.parent;
+            rawPostDocs.map(async (postDoc: QueryDocumentSnapshot<DocumentData>) => {
+                const postData = { id: postDoc.id, ...postDoc.data() } as Omit<Post, 'communityName' | 'communityId'>;
+                const communityRef = postDoc.ref.parent.parent;
 
-                if (!communityRef) return { ...post, communityId: 'unknown', communityName: 'Unknown' };
+                if (!communityRef) return { ...postData, communityId: 'unknown', communityName: 'Unknown' };
 
                 const communitySnap = await getDoc(communityRef);
                 const communityName = communitySnap.exists() ? communitySnap.data().name : 'Unknown';
 
                 return {
-                    ...post,
+                    ...postData,
                     communityId: communityRef.id,
                     communityName: communityName,
                 } as Post;
@@ -105,7 +105,7 @@ export default function UserProfilePage() {
     };
 
     fetchCommunityDetails();
-  }, [rawPosts, firestore]);
+  }, [rawPostDocs, firestore]);
 
   const getInitials = (name?: string | null) => {
     return name ? name.charAt(0).toUpperCase() : <UserIcon className="h-5 w-5" />;
