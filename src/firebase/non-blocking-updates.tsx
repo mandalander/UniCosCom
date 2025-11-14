@@ -41,8 +41,7 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
  * Returns the Promise so the caller can chain .then() or .catch().
  */
 export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>, data: any): Promise<DocumentReference<DocumentData>> {
-  const promise = addDoc(colRef, data);
-  promise.catch(error => {
+  return addDoc(colRef, data).catch(error => {
     // Create the rich, contextual error.
     const permissionError = new FirestorePermissionError({
         path: colRef.path,
@@ -51,9 +50,9 @@ export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>
     });
     // Emit the error with the global error emitter.
     errorEmitter.emit('permission-error', permissionError);
-    // The original promise is already rejected, no need to re-reject
+    // IMPORTANT: Reject the promise to allow the caller to handle the failure.
+    return Promise.reject(permissionError);
   });
-  return promise;
 }
 
 

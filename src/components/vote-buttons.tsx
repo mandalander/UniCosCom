@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
 import { cn } from '@/lib/utils';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { errorEmitter } from '@/firebase/error-emitter';
 
 interface VoteButtonsProps {
   targetType: 'post' | 'comment';
@@ -63,9 +62,9 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
 
-  const createNotification = (targetAuthorId: string) => {
+   const createNotification = (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
-      return;
+      return Promise.resolve();
     }
 
     const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
@@ -74,7 +73,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         type: 'vote' as const,
         targetType: targetType,
         targetId: targetId,
-        targetTitle: 'your content', // Simplified title
+        targetTitle: 'your content', // Simplified title to avoid extra read
         communityId: communityId,
         postId: postId || targetId,
         actorId: user.uid,
@@ -82,9 +81,10 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         read: false,
         createdAt: serverTimestamp(),
     };
-    addDocumentNonBlocking(notificationsRef, notificationData);
-  };
-
+    
+    // Return the promise from addDocumentNonBlocking
+    return addDocumentNonBlocking(notificationsRef, notificationData);
+  }
 
   const handleVote = async (newVote: 1 | -1) => {
     if (!user) {
@@ -146,13 +146,21 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     }).then(() => {
         // On success, create a notification if it's an upvote
         if(newVoteValue === 1) {
-            createNotification(creatorId);
+           createNotification(creatorId).catch((e) => {
+             // The vote succeeded, but notification failed.
+             // The error has already been emitted globally by addDocumentNonBlocking.
+             // We don't need to show a toast here, as the user doesn't need to know about this specific failure.
+             console.warn("Failed to create notification, but vote was successful.", e);
+           });
         }
     }).catch((e) => {
       // Revert optimistic update on any failure
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
+      // The error is already emitted by runVoteTransaction or createNotification,
+      // so we just need to catch it to revert the UI state.
+      // We check if it's NOT a permission error before showing a generic toast.
       if (!(e instanceof FirestorePermissionError)) {
           console.error("Vote transaction failed with a non-permission error: ", e);
           toast({
