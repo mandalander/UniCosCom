@@ -113,7 +113,7 @@ export function runVoteTransaction(
             return Promise.reject(permissionError);
         }
         
-        // For other types of errors, re-throw the original error
-        throw serverError;
+        // For other types of errors, re-throw the original error to be handled by the caller.
+        return Promise.reject(serverError);
     });
 }
