@@ -8,10 +8,14 @@ import { ThemeProvider } from './components/theme-provider';
 import { LanguageProvider } from './components/language-provider';
 import { FirebaseClientProvider } from '@/firebase';
 import { UserDataSync } from './components/user-data-sync';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Unicoscom',
   description: 'Unicoscom - Unikalny Kosmos Komunikacji i Społeczności.',
+  verification: {
+    google: "YOUR_GOOGLE_VERIFICATION_TOKEN",
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +29,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7558071569357753" crossOrigin="anonymous"></script>
+        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7558071569357753" crossOrigin="anonymous" strategy="lazyOnload" />
       </head>
       <body className="font-body antialiased">
         <ThemeProvider
