@@ -172,39 +172,39 @@ export function AppSidebar() {
             </g>
             <g filter="url(#neon-glow)">
               <text x="360" y="660" 
-                    font-family="'Arial Black', 'Arial Bold', sans-serif" 
-                    font-size="480" 
-                    font-weight="900" 
-                    letter-spacing="-80" 
-                    text-anchor="middle" 
+                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
+                    fontSize="480" 
+                    fontWeight="900" 
+                    letterSpacing="-80" 
+                    textAnchor="middle" 
                     fill="url(#gradU)">U</text>
               <text x="640" y="660" 
-                    font-family="'Arial Black', 'Arial Bold', sans-serif" 
-                    font-size="480" 
-                    font-weight="900" 
-                    letter-spacing="-80" 
-                    text-anchor="middle" 
+                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
+                    fontSize="480" 
+                    fontWeight="900" 
+                    letterSpacing="-80" 
+                    textAnchor="middle" 
                     fill="url(#gradC)">C</text>
             </g>
             <g opacity="0.9">
               <text x="360" y="660" 
-                    font-family="'Arial Black', 'Arial Bold', sans-serif" 
-                    font-size="480" 
-                    font-weight="900" 
-                    letter-spacing="-80" 
-                    text-anchor="middle" 
+                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
+                    fontSize="480" 
+                    fontWeight="900" 
+                    letterSpacing="-80" 
+                    textAnchor="middle" 
                     fill="none" 
                     stroke="#66ffff" 
-                    stroke-width="3">U</text>
+                    strokeWidth="3">U</text>
               <text x="640" y="660" 
-                    font-family="'Arial Black', 'Arial Bold', sans-serif" 
-                    font-size="480" 
-                    font-weight="900" 
-                    letter-spacing="-80" 
-                    text-anchor="middle" 
+                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
+                    fontSize="480" 
+                    fontWeight="900" 
+                    letterSpacing="-80" 
+                    textAnchor="middle" 
                     fill="none" 
                     stroke="#dd88ff" 
-                    stroke-width="3">C</text>
+                    strokeWidth="3">C</text>
             </g>
             <circle cx="500" cy="500" r="50" fill="#c466ff" opacity="0.1">
               <animate attributeName="r" values="50;80;50" dur="3s" repeatCount="indefinite" />
