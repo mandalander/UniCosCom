@@ -54,5 +54,10 @@ service cloud.firestore {
     match /{path=**}/posts/{postId} {
       allow read: if true;
     }
+
+    // This rule allows a collection group query on 'comments'
+    match /{path=**}/comments/{commentId} {
+      allow read: if true;
+    }
   }
 }
