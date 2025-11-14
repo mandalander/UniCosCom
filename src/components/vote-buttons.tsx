@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, runVoteTransaction, addDocumentNonBlocking } from '@/firebase';
-import { doc, getDoc, Transaction, collection, serverTimestamp, DocumentData } from 'firebase/firestore';
+import { doc, getDoc, Transaction, collection, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
@@ -144,20 +144,21 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         operation: 'write', 
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
     }).then(() => {
-        // On success, create a notification if it's an upvote
         if(newVoteValue === 1) {
-           createNotification(creatorId);
+           // Chain the notification promise to the main promise chain
+           return createNotification(creatorId);
         }
+        return Promise.resolve();
     }).catch((e) => {
+      // This will catch errors from runVoteTransaction AND createNotification
       // Revert optimistic update on any failure
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
-      // The error is already emitted by runVoteTransaction or createNotification,
-      // so we just need to catch it to revert the UI state.
-      // We check if it's NOT a permission error before showing a generic toast.
+      // The error is already emitted by the helper functions, so we just revert UI.
+      // We only show a generic toast for non-permission errors.
       if (!(e instanceof FirestorePermissionError)) {
-          console.error("Vote transaction failed with a non-permission error: ", e);
+          console.error("Vote or Notification failed with a non-permission error: ", e);
           toast({
             variant: 'destructive',
             title: t('voteError'),
