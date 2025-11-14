@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, runVoteTransaction, addDocumentNonBlocking } from '@/firebase';
-import { doc, getDoc, Transaction, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, DocumentData } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
@@ -62,18 +62,30 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
 
-   const createNotification = (targetAuthorId: string) => {
+   const createNotification = async (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
-      return Promise.resolve();
+      return;
+    }
+
+    // We need the post title for the notification message
+    let postTitle = 'a post';
+    const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
+    try {
+        const postSnap = await getDocFromServer(postRef);
+        if(postSnap.exists()) {
+            postTitle = postSnap.data().title;
+        }
+    } catch(e) {
+        console.error("Could not fetch post for notification", e);
     }
 
     const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
     const notificationData = {
         recipientId: targetAuthorId,
-        type: 'vote' as const,
+        type: 'vote',
         targetType: targetType,
         targetId: targetId,
-        targetTitle: 'your content', // Simplified title to avoid extra read
+        targetTitle: postTitle,
         communityId: communityId,
         postId: postId || targetId,
         actorId: user.uid,
@@ -81,8 +93,6 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         read: false,
         createdAt: serverTimestamp(),
     };
-    
-    // Return the promise from addDocumentNonBlocking
     return addDocumentNonBlocking(notificationsRef, notificationData);
   }
 
