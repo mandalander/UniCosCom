@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, runVoteTransaction, addDocumentNonBlocking } from '@/firebase';
-import { doc, getDoc, Transaction, collection, getDocFromServer, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, DocumentData } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
 import { cn } from '@/lib/utils';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 interface VoteButtonsProps {
   targetType: 'post' | 'comment';
@@ -62,24 +63,43 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
 
-   const createNotification = (targetAuthorId: string) => {
+   const createNotification = async (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
       return;
     }
-    const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
-    const notificationData = {
-        recipientId: targetAuthorId,
-        type: 'vote',
-        targetType: targetType,
-        targetId: targetId,
-        communityId: communityId,
-        postId: postId || targetId,
-        actorId: user.uid,
-        actorDisplayName: user.displayName || 'Someone',
-        read: false,
-        createdAt: serverTimestamp(),
-    };
-    addDocumentNonBlocking(notificationsRef, notificationData);
+
+    // We need the post title for the notification message
+    let postTitle = 'a post';
+    const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
+    
+    getDocFromServer(postRef).then((postSnap) => {
+        if(postSnap.exists()) {
+            postTitle = postSnap.data().title;
+        }
+        
+        const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
+        const notificationData = {
+            recipientId: targetAuthorId,
+            type: 'vote',
+            targetType: targetType,
+            targetId: targetId,
+            targetTitle: postTitle,
+            communityId: communityId,
+            postId: postId || targetId,
+            actorId: user.uid,
+            actorDisplayName: user.displayName || 'Someone',
+            read: false,
+            createdAt: serverTimestamp(),
+        };
+        addDocumentNonBlocking(notificationsRef, notificationData);
+
+    }).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: postRef.path,
+            operation: 'get',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    });
   }
 
   const handleVote = async (newVote: 1 | -1) => {
@@ -192,5 +212,3 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     </div>
   );
 }
-
-    
