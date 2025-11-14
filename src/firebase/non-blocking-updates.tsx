@@ -13,7 +13,7 @@ import {
   Transaction,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
-import {FirestorePermissionError} from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 /**
  * Initiates a setDoc operation for a document reference.
@@ -96,11 +96,24 @@ export function deleteDocumentNonBlocking(docRef: DocumentReference) {
  * Initiates a Firestore transaction to handle voting logic.
  * Wraps runTransaction to provide a more specific error on failure.
  */
-export function runVoteTransaction(db: Firestore, transactionBody: (transaction: Transaction) => Promise<any>): Promise<void> {
-    return runTransaction(db, transactionBody).catch(error => {
-        console.error("Vote transaction failed: ", error);
-        // We re-throw the error to be handled by the caller,
-        // which has more context to revert UI changes.
+export function runVoteTransaction(
+    db: Firestore, 
+    transactionBody: (transaction: Transaction) => Promise<any>,
+    errorContext: SecurityRuleContext
+): Promise<void> {
+    return runTransaction(db, transactionBody).catch(serverError => {
+        // Check if the error is likely a permission error
+        if (serverError && (serverError.code === 'permission-denied' || serverError.code === 'unauthenticated')) {
+             // Create and emit the detailed, contextual error
+            const permissionError = new FirestorePermissionError(errorContext);
+            errorEmitter.emit('permission-error', permissionError);
+            // We still throw the original error so the UI can revert state,
+            // but the important part is that the contextual error was emitted.
+            throw permissionError;
+        }
+        
+        // For other types of errors, re-throw a generic error
+        console.error("Vote transaction failed with a non-permission error: ", serverError);
         throw new Error("Wystąpił błąd podczas zapisywania głosu. Spróbuj ponownie.");
     });
 }

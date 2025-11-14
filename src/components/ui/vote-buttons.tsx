@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, runVoteTransaction } from '@/firebase';
-import { doc, getDoc, setDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, setDoc, increment, Firestore, Transaction } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
@@ -76,49 +76,56 @@ export function VoteButtons({ targetType, targetId, communityId, postId, initial
     setVoteCount(prev => (prev || 0) + voteChange);
     setUserVote(newVoteValue === 0 ? null : newVoteValue);
 
+    let targetRef, voteRef;
+    if (targetType === 'post') {
+        targetRef = doc(firestore, 'communities', communityId, 'posts', targetId);
+        voteRef = doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
+    } else if (postId) {
+        targetRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId);
+        voteRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
+    } else {
+        setIsVoting(false);
+        toast({ variant: 'destructive', title: 'Error', description: "postId is required for comment votes" });
+        return;
+    }
 
-    try {
-        let targetRef, voteRef;
-
-        if (targetType === 'post') {
-            targetRef = doc(firestore, 'communities', communityId, 'posts', targetId);
-            voteRef = doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
-        } else if (postId) {
-            targetRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId);
-            voteRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
-        } else {
-            throw new Error("postId is required for comment votes");
-        }
-
-        await runVoteTransaction(firestore, async (transaction) => {
-            const voteDoc = await transaction.get(voteRef);
-            const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
-            
-            const voteDifference = newVoteValue - currentVoteOnDb;
-            
-            transaction.update(targetRef, { 
-                voteCount: increment(voteDifference)
-            });
-
-            if (newVoteValue === 0) {
-                transaction.delete(voteRef);
-            } else {
-                transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
-            }
+    const transactionBody = async (transaction: Transaction) => {
+        const voteDoc = await transaction.get(voteRef);
+        const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
+        
+        const voteDifference = newVoteValue - currentVoteOnDb;
+        
+        transaction.update(targetRef, { 
+            voteCount: increment(voteDifference)
         });
-    } catch (e) {
-      console.error(e);
-      // Revert optimistic update on failure
+
+        if (newVoteValue === 0) {
+            transaction.delete(voteRef);
+        } else {
+            transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
+        }
+    };
+    
+    // The runVoteTransaction will now handle permission errors globally
+    await runVoteTransaction(firestore, transactionBody, {
+        path: voteRef.path,
+        operation: 'write',
+        requestResourceData: { value: newVoteValue, userId: user.uid }
+    }).catch((e) => {
+      // Revert optimistic update on any failure
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-      toast({
-        variant: 'destructive',
-        title: t('voteError'),
-        description: (e as Error).message,
-      });
-    } finally {
-      setIsVoting(false);
-    }
+      // Don't toast permission errors, as they are handled globally
+      if (!(e instanceof Error && e.name === 'FirebaseError')) {
+          toast({
+            variant: 'destructive',
+            title: t('voteError'),
+            description: e.message || "An unknown error occurred.",
+          });
+      }
+    });
+
+    setIsVoting(false);
   };
 
   return (
