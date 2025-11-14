@@ -42,17 +42,16 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
  * Returns the Promise so the caller can chain .then() or .catch().
  */
 export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>, data: any): Promise<DocumentReference<DocumentData>> {
-  // Return the promise directly, but add a catch block to emit contextual errors.
   const promise = addDoc(colRef, data);
   promise.catch(error => {
-    errorEmitter.emit(
-        'permission-error',
-        new FirestorePermissionError({
-            path: colRef.path,
-            operation: 'create',
-            requestResourceData: data,
-        })
-    );
+    // Create the rich, contextual error.
+    const permissionError = new FirestorePermissionError({
+        path: colRef.path,
+        operation: 'create',
+        requestResourceData: data,
+    });
+    // Emit the error with the global error emitter.
+    errorEmitter.emit('permission-error', permissionError);
   });
   return promise;
 }

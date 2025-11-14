@@ -83,19 +83,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       createdAt: serverTimestamp(),
     };
   
-    // Directly use addDocumentNonBlocking and chain a .catch for specific error handling.
-    addDocumentNonBlocking(notificationsRef, notificationData)
-      .catch(error => {
-        // Create the rich, contextual error.
-        const permissionError = new FirestorePermissionError({
-          path: notificationsRef.path,
-          operation: 'create',
-          requestResourceData: notificationData,
-        });
-  
-        // Emit the error with the global error emitter.
-        errorEmitter.emit('permission-error', permissionError);
-      });
+    addDocumentNonBlocking(notificationsRef, notificationData);
   };
 
   const handleVote = async (newVote: 1 | -1) => {
