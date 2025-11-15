@@ -258,5 +258,3 @@ export function PostFeed() {
     </div>
   );
 }
-
-    

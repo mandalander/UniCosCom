@@ -68,7 +68,7 @@ export default function UserProfilePage() {
   }, [firestore, userId]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileDocRef);
-  const { docs: rawPostDocs, isLoading: arePostsLoading } = useCollection<Omit<Post, 'communityId' | 'communityName'>>(userPostsQuery);
+  const { data: rawPostDocs, isLoading: arePostsLoading } = useCollection<Omit<Post, 'communityId' | 'communityName'>>(userPostsQuery);
   
   const [posts, setPosts] = useState<Post[]>([]);
   const [areCommunityDetailsLoading, setAreCommunityDetailsLoading] = useState(false);
@@ -83,10 +83,8 @@ export default function UserProfilePage() {
         setAreCommunityDetailsLoading(true);
         
         const postsWithCommunityData = await Promise.all(
-            rawPostDocs.map(async (postDoc: QueryDocumentSnapshot<DocumentData>) => {
-                const postData = { id: postDoc.id, ...postDoc.data() } as Omit<Post, 'communityName' | 'communityId'>;
-                const communityRef = postDoc.ref.parent.parent;
-
+            rawPostDocs.map(async (postData) => {
+                const communityRef = postData.ref.parent.parent;
                 if (!communityRef) return { ...postData, communityId: 'unknown', communityName: 'Unknown' };
 
                 const communitySnap = await getDoc(communityRef);
@@ -239,5 +237,3 @@ export default function UserProfilePage() {
     </div>
   );
 }
-
-    
