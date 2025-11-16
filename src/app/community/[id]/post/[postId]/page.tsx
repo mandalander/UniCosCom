@@ -13,7 +13,7 @@ import { pl, enUS } from 'date-fns/locale';
 import { CommentList } from '@/app/components/comment-list';
 import { CreateCommentForm } from '@/app/components/create-comment-form';
 import { PostItemActions } from '@/app/components/post-item-actions';
-import { VoteButtons } from '@/app/components/vote-buttons';
+import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from '@/app/components/share-button';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -141,5 +141,3 @@ export default function PostPage() {
     </div>
   );
 }
-
-    

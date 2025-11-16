@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
-import { VoteButtons } from './vote-buttons';
+import { VoteButtons } from '@/components/vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
 import Link from 'next/link';
 
@@ -126,5 +126,3 @@ export function CommentList({ communityId, postId }: CommentListProps) {
     </div>
   );
 }
-
-    

@@ -62,39 +62,41 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
 
-   const createNotification = async (targetAuthorId: string) => {
+   const createNotification = (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
       return Promise.resolve();
     }
 
     // We need the post title for the notification message
-    let postTitle = 'a post';
-    const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
-    try {
-        const postSnap = await getDocFromServer(postRef);
-        if(postSnap.exists()) {
-            postTitle = postSnap.data().title;
+    const getPostTitle = async () => {
+        const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
+        try {
+            const postSnap = await getDocFromServer(postRef);
+            return postSnap.exists() ? postSnap.data().title : 'a post';
+        } catch (e) {
+            console.error("Could not fetch post for notification", e);
+            return 'a post';
         }
-    } catch(e) {
-        console.error("Could not fetch post for notification", e);
     }
 
-    const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
-    const notificationData = {
-        recipientId: targetAuthorId,
-        type: 'vote',
-        targetType: targetType,
-        targetId: targetId,
-        targetTitle: postTitle,
-        communityId: communityId,
-        postId: postId || targetId,
-        actorId: user.uid,
-        actorDisplayName: user.displayName || 'Someone',
-        read: false,
-        createdAt: serverTimestamp(),
-    };
-    // Use the non-blocking wrapper to handle potential permission errors
-    return addDocumentNonBlocking(notificationsRef, notificationData);
+    return getPostTitle().then(postTitle => {
+        const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
+        const notificationData = {
+            recipientId: targetAuthorId,
+            type: 'vote',
+            targetType: targetType,
+            targetId: targetId,
+            targetTitle: postTitle,
+            communityId: communityId,
+            postId: postId || targetId,
+            actorId: user.uid,
+            actorDisplayName: user.displayName || 'Someone',
+            read: false,
+            createdAt: serverTimestamp(),
+        };
+        // Use the non-blocking wrapper and return its promise
+        return addDocumentNonBlocking(notificationsRef, notificationData);
+    });
   }
 
   const handleVote = async (newVote: 1 | -1) => {

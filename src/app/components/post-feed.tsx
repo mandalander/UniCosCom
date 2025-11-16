@@ -13,7 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { PostItemActions } from './post-item-actions';
-import { VoteButtons } from './vote-buttons';
+import { VoteButtons } from '@/components/vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
 import { ShareButton } from './share-button';
 

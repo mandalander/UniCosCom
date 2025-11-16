@@ -24,7 +24,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { VoteButtons } from '@/app/components/vote-buttons';
+import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from '@/app/components/share-button';
 import { useEffect, useState } from 'react';
 

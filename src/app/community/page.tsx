@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
-import { VoteButtons } from '@/app/components/vote-buttons';
+import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from '@/app/components/share-button';
 
 type Community = {
@@ -160,5 +160,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-
-    
