@@ -12,7 +12,6 @@ import {
   Firestore,
   Transaction,
   DocumentData,
-  increment,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
