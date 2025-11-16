@@ -64,7 +64,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
 
    const createNotification = async (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
-      return;
+      return Promise.resolve();
     }
 
     // We need the post title for the notification message
@@ -93,6 +93,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         read: false,
         createdAt: serverTimestamp(),
     };
+    // Use the non-blocking wrapper to handle potential permission errors
     return addDocumentNonBlocking(notificationsRef, notificationData);
   }
 
