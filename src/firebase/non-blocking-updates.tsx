@@ -35,7 +35,7 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
     });
     errorEmitter.emit('permission-error', permissionError);
     return Promise.reject(permissionError);
-  })
+  });
 }
 
 
