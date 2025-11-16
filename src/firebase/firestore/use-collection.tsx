@@ -108,6 +108,7 @@ export function useCollection<T = any>(
 
         // trigger global error propagation
         errorEmitter.emit('permission-error', contextualError);
+        throw contextualError;
       }
     );
 
