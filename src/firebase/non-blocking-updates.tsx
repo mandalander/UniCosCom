@@ -23,11 +23,6 @@ import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/e
 export function setDocumentNonBlocking(docRef: DocumentReference, data: any, options?: SetOptions) {
   const operation = options && 'merge' in options ? 'update' : 'create';
   return setDoc(docRef, data, options || {}).catch(serverError => {
-    console.error("!!! RAW ERROR CAUGHT BY setDocumentNonBlocking !!!", serverError);
-    console.error("Error code:", (serverError as any)?.code);
-    console.error("Error message:", (serverError as any)?.message);
-    
-    console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
     const permissionError = new FirestorePermissionError({
       path: docRef.path,
       operation: operation,
@@ -46,11 +41,6 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
  */
 export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>, data: any): Promise<DocumentReference<DocumentData>> {
   return addDoc(colRef, data).catch(serverError => {
-    console.error("!!! RAW ERROR CAUGHT BY addDocumentNonBlocking !!!", serverError);
-    console.error("Error code:", (serverError as any)?.code);
-    console.error("Error message:", (serverError as any)?.message);
-
-    console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
     const permissionError = new FirestorePermissionError({
         path: colRef.path,
         operation: 'create',
@@ -69,11 +59,6 @@ export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>
 export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) {
   return updateDoc(docRef, data)
     .catch(serverError => {
-      console.error("!!! RAW ERROR CAUGHT BY updateDocumentNonBlocking !!!", serverError);
-      console.error("Error code:", (serverError as any)?.code);
-      console.error("Error message:", (serverError as any)?.message);
-
-      console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
       const permissionError = new FirestorePermissionError({
         path: docRef.path,
         operation: 'update',
@@ -92,11 +77,6 @@ export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) 
 export function deleteDocumentNonBlocking(docRef: DocumentReference) {
   return deleteDoc(docRef)
     .catch(serverError => {
-      console.error("!!! RAW ERROR CAUGHT BY deleteDocumentNonBlocking !!!", serverError);
-      console.error("Error code:", (serverError as any)?.code);
-      console.error("Error message:", (serverError as any)?.message);
-
-      console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
       const permissionError = new FirestorePermissionError({
         path: docRef.path,
         operation: 'delete',
@@ -116,14 +96,8 @@ export function runVoteTransaction(
     errorContext: SecurityRuleContext
 ): Promise<any> {
     return runTransaction(db, transactionBody).catch(serverError => {
-        console.error("!!! RAW ERROR CAUGHT BY runVoteTransaction !!!", serverError);
-        console.error("Error code:", (serverError as any)?.code);
-        console.error("Error message:", (serverError as any)?.message);
-        
-        console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
         const permissionError = new FirestorePermissionError(errorContext);
         errorEmitter.emit('permission-error', permissionError);
-        
         return Promise.reject(permissionError);
     });
 }
