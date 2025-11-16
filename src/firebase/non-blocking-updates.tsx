@@ -22,14 +22,18 @@ import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/e
  */
 export function setDocumentNonBlocking(docRef: DocumentReference, data: any, options?: SetOptions) {
   const operation = options && 'merge' in options ? 'update' : 'create';
-  return setDoc(docRef, data, options || {}).catch(error => {
+  return setDoc(docRef, data, options || {}).catch(serverError => {
+    console.error("!!! RAW ERROR CAUGHT BY setDocumentNonBlocking !!!", serverError);
+    console.error("Error code:", (serverError as any)?.code);
+    console.error("Error message:", (serverError as any)?.message);
+    
+    console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
     const permissionError = new FirestorePermissionError({
       path: docRef.path,
       operation: operation,
       requestResourceData: data,
     });
     errorEmitter.emit('permission-error', permissionError);
-    // IMPORTANT: Reject the promise to allow the caller to handle the failure.
     return Promise.reject(permissionError);
   })
 }
@@ -41,16 +45,18 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
  * Returns the Promise so the caller can chain .then() or .catch().
  */
 export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>, data: any): Promise<DocumentReference<DocumentData>> {
-  return addDoc(colRef, data).catch(error => {
-    // Create the rich, contextual error.
+  return addDoc(colRef, data).catch(serverError => {
+    console.error("!!! RAW ERROR CAUGHT BY addDocumentNonBlocking !!!", serverError);
+    console.error("Error code:", (serverError as any)?.code);
+    console.error("Error message:", (serverError as any)?.message);
+
+    console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
     const permissionError = new FirestorePermissionError({
         path: colRef.path,
         operation: 'create',
         requestResourceData: data,
     });
-    // Emit the error with the global error emitter.
     errorEmitter.emit('permission-error', permissionError);
-    // IMPORTANT: Reject the promise to allow the caller to handle the failure.
     return Promise.reject(permissionError);
   });
 }
@@ -62,14 +68,18 @@ export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>
  */
 export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) {
   return updateDoc(docRef, data)
-    .catch(error => {
+    .catch(serverError => {
+      console.error("!!! RAW ERROR CAUGHT BY updateDocumentNonBlocking !!!", serverError);
+      console.error("Error code:", (serverError as any)?.code);
+      console.error("Error message:", (serverError as any)?.message);
+
+      console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
       const permissionError = new FirestorePermissionError({
         path: docRef.path,
         operation: 'update',
         requestResourceData: data,
       });
       errorEmitter.emit('permission-error', permissionError);
-       // IMPORTANT: Reject the promise to allow the caller to handle the failure.
       return Promise.reject(permissionError);
     });
 }
@@ -81,13 +91,17 @@ export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) 
  */
 export function deleteDocumentNonBlocking(docRef: DocumentReference) {
   return deleteDoc(docRef)
-    .catch(error => {
+    .catch(serverError => {
+      console.error("!!! RAW ERROR CAUGHT BY deleteDocumentNonBlocking !!!", serverError);
+      console.error("Error code:", (serverError as any)?.code);
+      console.error("Error message:", (serverError as any)?.message);
+
+      console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
       const permissionError = new FirestorePermissionError({
         path: docRef.path,
         operation: 'delete',
       });
       errorEmitter.emit('permission-error', permissionError);
-       // IMPORTANT: Reject the promise to allow the caller to handle the failure.
       return Promise.reject(permissionError);
     });
 }
@@ -102,17 +116,14 @@ export function runVoteTransaction(
     errorContext: SecurityRuleContext
 ): Promise<any> {
     return runTransaction(db, transactionBody).catch(serverError => {
-        // Check if the error is likely a permission error
-        if (serverError && (serverError.code === 'permission-denied' || serverError.code === 'unauthenticated')) {
-             // Create and emit the detailed, contextual error
-            const permissionError = new FirestorePermissionError(errorContext);
-            errorEmitter.emit('permission-error', permissionError);
-            
-            // IMPORTANT: Reject the promise so that the calling UI can revert its state.
-            return Promise.reject(permissionError);
-        }
+        console.error("!!! RAW ERROR CAUGHT BY runVoteTransaction !!!", serverError);
+        console.error("Error code:", (serverError as any)?.code);
+        console.error("Error message:", (serverError as any)?.message);
         
-        // For other types of errors, re-throw the original error to be handled by the caller.
-        return Promise.reject(serverError);
+        console.log("!!! TRANSFORMING TO PERMISSION ERROR !!!");
+        const permissionError = new FirestorePermissionError(errorContext);
+        errorEmitter.emit('permission-error', permissionError);
+        
+        return Promise.reject(permissionError);
     });
 }
