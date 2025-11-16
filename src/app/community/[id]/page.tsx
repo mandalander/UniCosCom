@@ -138,6 +138,7 @@ export default function CommunityPage() {
                         <VoteButtons
                             targetType="post"
                             targetId={post.id}
+                            creatorId={post.creatorId}
                             communityId={communityId}
                             initialVoteCount={post.voteCount || 0}
                         />

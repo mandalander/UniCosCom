@@ -62,41 +62,36 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
 
-   const createNotification = (targetAuthorId: string) => {
+   const createNotification = async (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
       return Promise.resolve();
     }
 
-    // We need the post title for the notification message
-    const getPostTitle = async () => {
-        const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
-        try {
-            const postSnap = await getDocFromServer(postRef);
-            return postSnap.exists() ? postSnap.data().title : 'a post';
-        } catch (e) {
-            console.error("Could not fetch post for notification", e);
-            return 'a post';
-        }
+    const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
+    let postTitle = 'a post';
+    try {
+        const postSnap = await getDocFromServer(postRef);
+        postTitle = postSnap.exists() ? postSnap.data().title : 'a post';
+    } catch (e) {
+        console.error("Could not fetch post for notification", e);
     }
-
-    return getPostTitle().then(postTitle => {
-        const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
-        const notificationData = {
-            recipientId: targetAuthorId,
-            type: 'vote',
-            targetType: targetType,
-            targetId: targetId,
-            targetTitle: postTitle,
-            communityId: communityId,
-            postId: postId || targetId,
-            actorId: user.uid,
-            actorDisplayName: user.displayName || 'Someone',
-            read: false,
-            createdAt: serverTimestamp(),
-        };
-        // Use the non-blocking wrapper and return its promise
-        return addDocumentNonBlocking(notificationsRef, notificationData);
-    });
+    
+    const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
+    const notificationData = {
+        recipientId: targetAuthorId,
+        type: 'vote',
+        targetType: targetType,
+        targetId: targetId,
+        targetTitle: postTitle,
+        communityId: communityId,
+        postId: postId || targetId,
+        actorId: user.uid,
+        actorDisplayName: user.displayName || 'Someone',
+        read: false,
+        createdAt: serverTimestamp(),
+    };
+    
+    return addDocumentNonBlocking(notificationsRef, notificationData);
   }
 
   const handleVote = async (newVote: 1 | -1) => {
@@ -158,18 +153,13 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
     }).then(() => {
         if(newVoteValue === 1) {
-           // Chain the notification promise to the main promise chain
            return createNotification(creatorId);
         }
         return Promise.resolve();
     }).catch((e) => {
-      // This will catch errors from runVoteTransaction AND createNotification
-      // Revert optimistic update on any failure
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
-      // The error is already emitted by the helper functions, so we just revert UI.
-      // We only show a generic toast for non-permission errors.
       if (!(e instanceof FirestorePermissionError)) {
           console.error("Vote or Notification failed with a non-permission error: ", e);
           toast({
