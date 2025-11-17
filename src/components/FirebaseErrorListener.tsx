@@ -12,21 +12,20 @@ export function FirebaseErrorListener() {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const handleError = (error: Error) => {
-      // This listener is now generic and can handle any type of error
-      // if needed in the future. For now, we are de-scoping it from
-      // handling FirestorePermissionError to avoid conflicts.
+    const handleError = (error: FirestorePermissionError) => {
       // Set error in state to trigger a re-render.
-      // setError(error);
+      // This will cause the component to throw the error in the next render cycle,
+      // which is then caught by the Next.js error boundary.
+      setError(error);
     };
 
     // The typed emitter will enforce that the callback for 'permission-error'
     // matches the expected payload type (FirestorePermissionError).
-    // errorEmitter.on('permission-error', handleError);
+    errorEmitter.on('permission-error', handleError);
 
     // Unsubscribe on unmount to prevent memory leaks.
     return () => {
-      // errorEmitter.off('permission-error', handleError);
+      errorEmitter.off('permission-error', handleError);
     };
   }, []);
 

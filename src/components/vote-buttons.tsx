@@ -54,7 +54,8 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
               setUserVote(null);
             }
         } catch (e) {
-            console.warn("Could not fetch user's vote", e);
+            // This might fail due to security rules on read, which is fine.
+            // We'll proceed assuming no vote.
             setUserVote(null);
         }
       }
@@ -62,36 +63,52 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     fetchUserVote();
   }, [user, firestore, communityId, postId, targetId, targetType]);
 
-   const createNotification = async (targetAuthorId: string) => {
+   const createNotification = (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
       return Promise.resolve();
     }
 
     const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
-    let postTitle = 'a post';
-    try {
-        const postSnap = await getDocFromServer(postRef);
-        postTitle = postSnap.exists() ? postSnap.data().title : 'a post';
-    } catch (e) {
-        console.error("Could not fetch post for notification", e);
-    }
     
-    const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
-    const notificationData = {
-        recipientId: targetAuthorId,
-        type: 'vote',
-        targetType: targetType,
-        targetId: targetId,
-        targetTitle: postTitle,
-        communityId: communityId,
-        postId: postId || targetId,
-        actorId: user.uid,
-        actorDisplayName: user.displayName || 'Someone',
-        read: false,
-        createdAt: serverTimestamp(),
-    };
-    
-    return addDocumentNonBlocking(notificationsRef, notificationData);
+    // This is a best-effort attempt to get the post title. It might fail if rules
+    // don't allow it, so we have a fallback.
+    return getDocFromServer(postRef).then(postSnap => {
+        const postTitle = postSnap.exists() ? postSnap.data().title : 'a post';
+        const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
+        const notificationData = {
+            recipientId: targetAuthorId,
+            type: 'vote',
+            targetType: targetType,
+            targetId: targetId,
+            targetTitle: postTitle,
+            communityId: communityId,
+            postId: postId || targetId,
+            actorId: user.uid,
+            actorDisplayName: user.displayName || 'Someone',
+            read: false,
+            createdAt: serverTimestamp(),
+        };
+        // The wrapper will handle permission errors here
+        return addDocumentNonBlocking(notificationsRef, notificationData);
+    }).catch(e => {
+        // If getting the post fails, we still try to create the notification.
+        // The wrapper for addDocumentNonBlocking will handle the actual permission error.
+        const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
+        const notificationData = {
+            recipientId: targetAuthorId,
+            type: 'vote',
+            targetType: targetType,
+            targetId: targetId,
+            targetTitle: 'a post', // Fallback title
+            communityId: communityId,
+            postId: postId || targetId,
+            actorId: user.uid,
+            actorDisplayName: user.displayName || 'Someone',
+            read: false,
+            createdAt: serverTimestamp(),
+        };
+        return addDocumentNonBlocking(notificationsRef, notificationData);
+    });
   }
 
   const handleVote = async (newVote: 1 | -1) => {
@@ -124,7 +141,6 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         targetRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId);
         voteRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
     } else {
-        console.error("postId is required for comment votes");
         setIsVoting(false);
         return;
     }
@@ -157,12 +173,11 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         }
         return Promise.resolve();
     }).catch((e) => {
-      // Revert optimistic UI update on error
+      // Revert optimistic UI update on error.
+      // The error has already been emitted globally by the wrapper.
+      // We don't need to re-throw it here.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-      
-      // CRITICAL: Re-throw the error to be caught by the global error handler (Next.js overlay)
-      throw e;
       
     }).finally(() => {
         setIsVoting(false);

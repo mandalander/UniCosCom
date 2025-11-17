@@ -14,6 +14,7 @@ import {
   DocumentData,
 } from 'firebase/firestore';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { errorEmitter } from './error-emitter';
 
 /**
  * Initiates a setDoc operation for a document reference.
@@ -27,6 +28,7 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
       operation: operation,
       requestResourceData: data,
     });
+    errorEmitter.emit('permission-error', permissionError);
     return Promise.reject(permissionError);
   });
 }
@@ -44,6 +46,7 @@ export function addDocumentNonBlocking(colRef: CollectionReference<DocumentData>
         operation: 'create',
         requestResourceData: data,
     });
+    errorEmitter.emit('permission-error', permissionError);
     return Promise.reject(permissionError);
   });
 }
@@ -61,6 +64,7 @@ export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) 
         operation: 'update',
         requestResourceData: data,
       });
+      errorEmitter.emit('permission-error', permissionError);
       return Promise.reject(permissionError);
     });
 }
@@ -77,6 +81,7 @@ export function deleteDocumentNonBlocking(docRef: DocumentReference) {
         path: docRef.path,
         operation: 'delete',
       });
+      errorEmitter.emit('permission-error', permissionError);
       return Promise.reject(permissionError);
     });
 }
@@ -92,6 +97,7 @@ export function runVoteTransaction(
 ): Promise<any> {
     return runTransaction(db, transactionBody).catch(serverError => {
         const permissionError = new FirestorePermissionError(errorContext);
+        errorEmitter.emit('permission-error', permissionError);
         return Promise.reject(permissionError);
     });
 }
