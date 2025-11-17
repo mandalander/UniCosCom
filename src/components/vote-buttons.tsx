@@ -174,11 +174,10 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         return Promise.resolve();
     }).catch((e) => {
       // Revert optimistic UI update on error.
-      // The error has already been emitted globally by the wrapper.
-      // We don't need to re-throw it here.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-      
+      // Re-throw the error to be caught by the Next.js error boundary
+      throw e;
     }).finally(() => {
         setIsVoting(false);
     });
