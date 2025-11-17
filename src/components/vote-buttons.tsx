@@ -157,17 +157,13 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         }
         return Promise.resolve();
     }).catch((e) => {
+      // Revert optimistic UI update on error
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
-      if (!(e instanceof FirestorePermissionError)) {
-          console.error("Vote or Notification failed with a non-permission error: ", e);
-          toast({
-            variant: 'destructive',
-            title: t('voteError'),
-            description: e.message || "An unknown error occurred.",
-          });
-      }
+      // Rethrow the error to be caught by the global error handler (Next.js overlay)
+      throw e;
+      
     }).finally(() => {
         setIsVoting(false);
     });
