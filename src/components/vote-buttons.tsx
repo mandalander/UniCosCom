@@ -161,7 +161,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
-      // Rethrow the error to be caught by the global error handler (Next.js overlay)
+      // Re-throw the error to be caught by the global error handler (Next.js overlay)
       throw e;
       
     }).finally(() => {
