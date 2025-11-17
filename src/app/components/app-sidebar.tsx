@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
-import { useEffect, useState } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useEffect, useState, useMemo } from 'react';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
@@ -38,7 +38,7 @@ export function AppSidebar() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const communitiesQuery = useMemoFirebase(() => {
+  const communitiesQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'communities'), orderBy('name', 'asc'));
   }, [firestore]);

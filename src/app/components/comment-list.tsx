@@ -1,6 +1,6 @@
 'use client';
 
-import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { useFirestore, useCollection, useUser, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,6 +12,7 @@ import { pl, enUS } from 'date-fns/locale';
 import { VoteButtons } from '@/components/vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
 import Link from 'next/link';
+import { useMemo } from 'react';
 
 type Comment = {
   id: string;
@@ -34,7 +35,7 @@ export function CommentList({ communityId, postId }: CommentListProps) {
   const firestore = useFirestore();
   const { user } = useUser();
 
-  const commentsColRef = useMemoFirebase(() => {
+  const commentsColRef = useMemo(() => {
     if (!firestore || !communityId || !postId) return null;
     return query(collection(firestore, 'communities', communityId, 'posts', postId, 'comments'), orderBy('createdAt', 'asc'));
   }, [firestore, communityId, postId]);

@@ -4,8 +4,8 @@ import { useParams } from 'next/navigation';
 import {
   useFirestore,
   useDoc,
-  useMemoFirebase,
   useCollection,
+  useMemoFirebase,
 } from '@/firebase';
 import { doc, collection, query, where, orderBy, getDoc, collectionGroup, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 import {
@@ -26,7 +26,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from '@/app/components/share-button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 type UserProfile = {
   displayName: string;
@@ -53,12 +53,12 @@ export default function UserProfilePage() {
   const { t, language } = useLanguage();
   const firestore = useFirestore();
 
-  const userProfileDocRef = useMemoFirebase(() => {
+  const userProfileDocRef = useMemo(() => {
     if (!firestore || !userId) return null;
     return doc(firestore, 'userProfiles', userId);
   }, [firestore, userId]);
   
-  const userPostsQuery = useMemoFirebase(() => {
+  const userPostsQuery = useMemo(() => {
     if (!firestore || !userId) return null;
     return query(
         collectionGroup(firestore, 'posts'), 

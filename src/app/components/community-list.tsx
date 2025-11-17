@@ -6,6 +6,7 @@ import { useLanguage } from "./language-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
+import { useMemo } from 'react';
 
 type Community = {
   id: string;
@@ -18,7 +19,7 @@ export function CommunityList() {
   const { t } = useLanguage();
   const firestore = useFirestore();
 
-  const communitiesQuery = useMemoFirebase(() => {
+  const communitiesQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'communities'), orderBy('createdAt', 'desc'));
   }, [firestore]);

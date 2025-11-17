@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useFirestore, useDoc, useMemoFirebase, useUser } from '@/firebase';
+import { useFirestore, useDoc, useUser, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,6 +17,7 @@ import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from '@/app/components/share-button';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useMemo } from 'react';
 
 type Post = {
   id: string;
@@ -36,7 +37,7 @@ export default function PostPage() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const postDocRef = useMemoFirebase(() => {
+  const postDocRef = useMemo(() => {
     if (!firestore || !communityId || !postId) return null;
     return doc(firestore, 'communities', communityId, 'posts', postId);
   }, [firestore, communityId, postId]);

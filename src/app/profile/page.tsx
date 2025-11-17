@@ -19,13 +19,14 @@ import { pl, enUS } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User as UserIcon, Link as LinkIcon, Twitter, Linkedin, Github } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useMemo } from 'react';
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
-  const userDocRef = useMemoFirebase(() => {
+  const userDocRef = useMemo(() => {
     if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
@@ -189,5 +190,3 @@ export default function ProfilePage() {
     </Card>
   );
 }
-
-    

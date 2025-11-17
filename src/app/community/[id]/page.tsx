@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useFirestore, useDoc, useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { useFirestore, useDoc, useCollection, useUser, useMemoFirebase } from '@/firebase';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +15,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from '@/app/components/share-button';
+import { useMemo } from 'react';
 
 type Community = {
   id: string;
@@ -40,12 +41,12 @@ export default function CommunityPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
-  const communityDocRef = useMemoFirebase(() => {
+  const communityDocRef = useMemo(() => {
     if (!firestore || !communityId) return null;
     return doc(firestore, 'communities', communityId);
   }, [firestore, communityId]);
 
-  const postsColRef = useMemoFirebase(() => {
+  const postsColRef = useMemo(() => {
     if (!firestore || !communityId) return null;
     return query(collection(firestore, 'communities', communityId, 'posts'), orderBy('createdAt', 'desc'));
   }, [firestore, communityId]);
