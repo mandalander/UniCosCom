@@ -176,7 +176,8 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       // Revert optimistic UI update on error.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-      // Re-throw the error to be caught by the Next.js error boundary
+      // Desperate measure to see the actual error object
+      alert(JSON.stringify(e, Object.getOwnPropertyNames(e), 2));
       throw e;
     }).finally(() => {
         setIsVoting(false);
