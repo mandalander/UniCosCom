@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore, runVoteTransaction, addDocumentNonBlocking } from '@/firebase';
-import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, DocumentData } from 'firebase/firestore';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, DocumentData, runTransaction } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
 import { cn } from '@/lib/utils';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 interface VoteButtonsProps {
   targetType: 'post' | 'comment';
@@ -126,9 +127,9 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
 
     const voteValueBefore = userVote || 0;
     const newVoteValue = userVote === newVote ? 0 : newVote;
+    const voteChange = newVoteValue - voteValueBefore;
 
     // Optimistic UI update
-    const voteChange = newVoteValue - voteValueBefore;
     setVoteCount(prev => (prev || 0) + voteChange);
     setUserVote(newVoteValue === 0 ? null : newVoteValue);
 
@@ -145,39 +146,44 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         return;
     }
     
-    runVoteTransaction(
-        firestore,
-        async (transaction: Transaction) => {
-            const voteDoc = await transaction.get(voteRef);
-            const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
-            const voteDifference = newVoteValue - currentVoteOnDb;
-            const { increment } = await import('firebase/firestore');
-            transaction.update(targetRef, { voteCount: increment(voteDifference) });
-            if (newVoteValue === 0) {
-                transaction.delete(voteRef);
-            } else {
-                transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
-            }
-        },
-        {
-            path: voteRef.path,
-            operation: 'write', 
-            requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
-        }
-    ).then(() => {
-        if(newVoteValue === 1) {
-           return createNotification(creatorId);
-        }
-        return Promise.resolve();
-    }).catch(() => {
+    try {
+      await runTransaction(firestore, async (transaction: Transaction) => {
+          const voteDoc = await transaction.get(voteRef);
+          const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
+          const voteDifference = newVoteValue - currentVoteOnDb;
+          
+          const { increment } = await import('firebase/firestore');
+          transaction.update(targetRef, { voteCount: increment(voteDifference) });
+          
+          if (newVoteValue === 0) {
+              transaction.delete(voteRef);
+          } else {
+              transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
+          }
+      });
+      
+      if(newVoteValue === 1) {
+         await createNotification(creatorId);
+      }
+
+    } catch (e) {
       // Revert optimistic UI update on error.
-      // The error is emitted and thrown globally by runVoteTransaction,
-      // so we just need to handle the local UI state here.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-    }).finally(() => {
+      
+      // Create and throw the detailed permission error.
+      const permissionError = new FirestorePermissionError({
+        path: voteRef.path,
+        operation: 'write', 
+        requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
+      });
+
+      // This will be caught by the Next.js error overlay.
+      throw permissionError;
+
+    } finally {
         setIsVoting(false);
-    });
+    }
   };
 
   return (

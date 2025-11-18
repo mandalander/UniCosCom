@@ -85,26 +85,3 @@ export function deleteDocumentNonBlocking(docRef: DocumentReference) {
       return Promise.reject(permissionError);
     });
 }
-
-/**
- * Initiates a Firestore transaction, handling permission errors gracefully.
- * This wrapper ensures that if the transaction fails due to security rules,
- * a detailed FirestorePermissionError is created and emitted globally.
- */
-export function runVoteTransaction(
-    db: Firestore, 
-    updateFunction: (transaction: Transaction) => Promise<any>,
-    errorContext: SecurityRuleContext
-): Promise<any> {
-    return runTransaction(db, updateFunction).catch(serverError => {
-        // Assume any error from the transaction is a permission error.
-        // Create the rich, contextual error.
-        const permissionError = new FirestorePermissionError(errorContext);
-        
-        // Emit the error globally for the listener to catch and display.
-        errorEmitter.emit('permission-error', permissionError);
-        
-        // Reject the promise to allow the calling component to handle UI state reversal.
-        return Promise.reject(permissionError);
-    });
-}
