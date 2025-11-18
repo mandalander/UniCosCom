@@ -178,7 +178,6 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       // Desperate measure to see the actual error object
       alert(JSON.stringify(e, Object.getOwnPropertyNames(e), 2));
-      throw e;
     }).finally(() => {
         setIsVoting(false);
     });
