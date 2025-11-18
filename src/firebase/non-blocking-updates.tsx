@@ -96,6 +96,15 @@ export function runVoteTransaction(
     errorContext: SecurityRuleContext
 ): Promise<any> {
     return runTransaction(db, transactionBody).catch(serverError => {
+        // First, check if the server error is ALREADY our specific error.
+        // This can happen if a get() inside the transaction fails with a permission error
+        // that we've already wrapped.
+        if (serverError instanceof FirestorePermissionError) {
+            errorEmitter.emit('permission-error', serverError);
+            return Promise.reject(serverError);
+        }
+
+        // If it's a generic error, wrap it with our context.
         const permissionError = new FirestorePermissionError(errorContext);
         errorEmitter.emit('permission-error', permissionError);
         return Promise.reject(permissionError);
