@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, errorEmitter } from '@/firebase';
 import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, DocumentData, runTransaction } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -167,19 +167,19 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       }
 
     } catch (e) {
-      // Revert optimistic UI update on error.
+      // 1. Revert optimistic UI update on error.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
-      // Create and throw the detailed permission error.
+      // 2. Create the detailed permission error.
       const permissionError = new FirestorePermissionError({
         path: voteRef.path,
         operation: 'write', 
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
       });
 
-      // This will be caught by the Next.js error overlay.
-      throw permissionError;
+      // 3. Emit the error to the global listener. Do NOT throw it here.
+      errorEmitter.emit('permission-error', permissionError);
 
     } finally {
         setIsVoting(false);
