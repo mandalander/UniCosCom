@@ -68,7 +68,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       return Promise.resolve();
     }
 
-    const postRef = doc(firestore, 'communities', communityId, 'posts', postId || targetId);
+    const postRef = doc(firestore, 'communities', communityId, postId || targetId);
     
     // This is a best-effort attempt to get the post title. It might fail if rules
     // don't allow it, so we have a fallback.
@@ -144,40 +144,37 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         setIsVoting(false);
         return;
     }
-
-    const transactionBody = async (transaction: Transaction) => {
-        const voteDoc = await transaction.get(voteRef);
-        const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
-        
-        const voteDifference = newVoteValue - currentVoteOnDb;
-        
-        const { increment } = await import('firebase/firestore');
-        transaction.update(targetRef, { 
-            voteCount: increment(voteDifference)
-        });
-
-        if (newVoteValue === 0) {
-            transaction.delete(voteRef);
-        } else {
-            transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
-        }
-    };
     
-    runVoteTransaction(firestore, transactionBody, {
-        path: voteRef.path,
-        operation: 'write', 
-        requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
-    }).then(() => {
+    runVoteTransaction(
+        firestore,
+        async (transaction: Transaction) => {
+            const voteDoc = await transaction.get(voteRef);
+            const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
+            const voteDifference = newVoteValue - currentVoteOnDb;
+            const { increment } = await import('firebase/firestore');
+            transaction.update(targetRef, { voteCount: increment(voteDifference) });
+            if (newVoteValue === 0) {
+                transaction.delete(voteRef);
+            } else {
+                transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
+            }
+        },
+        {
+            path: voteRef.path,
+            operation: 'write', 
+            requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
+        }
+    ).then(() => {
         if(newVoteValue === 1) {
            return createNotification(creatorId);
         }
         return Promise.resolve();
-    }).catch((e) => {
+    }).catch(() => {
       // Revert optimistic UI update on error.
+      // The error is emitted and thrown globally by runVoteTransaction,
+      // so we just need to handle the local UI state here.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-      // Desperate measure to see the actual error object
-      alert(JSON.stringify(e, Object.getOwnPropertyNames(e), 2));
     }).finally(() => {
         setIsVoting(false);
     });
