@@ -172,7 +172,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       
       const permissionError = new FirestorePermissionError({
         path: voteRef.path,
-        operation: newVoteValue === 0 ? 'delete' : 'write',
+        operation: 'write', // Use a general 'write' operation for simplicity in transactions
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
       });
       
