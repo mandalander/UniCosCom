@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore, errorEmitter } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, runTransaction, increment } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -172,7 +172,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       
       const permissionError = new FirestorePermissionError({
         path: voteRef.path,
-        operation: 'write', 
+        operation: newVoteValue === 0 ? 'delete' : 'write',
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
       });
       
