@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, DocumentData, runTransaction, increment } from 'firebase/firestore';
+import { useUser, useFirestore, errorEmitter } from '@/firebase';
+import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, runTransaction, increment } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
@@ -176,9 +176,9 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         operation: 'write', 
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
       });
-
-      // 3. Throw the error directly to be caught by Next.js error overlay
-      throw permissionError;
+      
+      // 3. Emit the error to be caught by the global listener.
+      errorEmitter.emit('permission-error', permissionError);
 
     } finally {
         setIsVoting(false);
