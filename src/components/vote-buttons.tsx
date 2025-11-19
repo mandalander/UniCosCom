@@ -166,19 +166,18 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       }
 
     } catch (e: any) {
-      // 1. Revert optimistic UI update on error.
+      // Revert optimistic UI update on error.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
-      // 2. Create the detailed permission error.
       const permissionError = new FirestorePermissionError({
         path: voteRef.path,
         operation: 'write', 
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
       });
       
-      // 3. Emit the error to be caught by the global listener.
-      errorEmitter.emit('permission-error', permissionError);
+      // Throw the error directly to be caught by Next.js error boundary
+      throw permissionError;
 
     } finally {
         setIsVoting(false);
