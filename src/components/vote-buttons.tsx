@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, runTransaction, increment } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
 import { cn } from '@/lib/utils';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 interface VoteButtonsProps {
   targetType: 'post' | 'comment';
@@ -66,14 +66,12 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
 
    const createNotification = (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
-      return Promise.resolve();
+      return;
     }
 
     const postRef = doc(firestore, 'communities', communityId, postId || targetId);
     
-    // This is a best-effort attempt to get the post title. It might fail if rules
-    // don't allow it, so we have a fallback.
-    return getDocFromServer(postRef).then(postSnap => {
+    getDocFromServer(postRef).then(postSnap => {
         const postTitle = postSnap.exists() ? postSnap.data().title : 'a post';
         const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
         const notificationData = {
@@ -89,11 +87,8 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
             read: false,
             createdAt: serverTimestamp(),
         };
-        // The wrapper will handle permission errors here
-        return addDocumentNonBlocking(notificationsRef, notificationData);
+        addDocumentNonBlocking(notificationsRef, notificationData);
     }).catch(e => {
-        // If getting the post fails, we still try to create the notification.
-        // The wrapper for addDocumentNonBlocking will handle the actual permission error.
         const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
         const notificationData = {
             recipientId: targetAuthorId,
@@ -108,7 +103,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
             read: false,
             createdAt: serverTimestamp(),
         };
-        return addDocumentNonBlocking(notificationsRef, notificationData);
+        addDocumentNonBlocking(notificationsRef, notificationData);
     });
   }
 
@@ -162,7 +157,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       });
       
       if(newVoteValue === 1) {
-         await createNotification(creatorId);
+         createNotification(creatorId);
       }
 
     } catch (e: any) {
@@ -172,12 +167,11 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       
       const permissionError = new FirestorePermissionError({
         path: voteRef.path,
-        operation: 'write', // Use a general 'write' operation for simplicity in transactions
+        operation: 'write',
         requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
       });
       
-      // Throw the error directly to be caught by Next.js error boundary
-      throw permissionError;
+      errorEmitter.emit('permission-error', permissionError);
 
     } finally {
         setIsVoting(false);
