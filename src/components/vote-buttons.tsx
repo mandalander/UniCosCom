@@ -89,21 +89,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         };
         addDoc(notificationsRef, notificationData);
     }).catch(e => {
-        const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
-        const notificationData = {
-            recipientId: targetAuthorId,
-            type: 'vote',
-            targetType: targetType,
-            targetId: targetId,
-            targetTitle: 'a post', // Fallback title
-            communityId: communityId,
-            postId: postId || targetId,
-            actorId: user.uid,
-            actorDisplayName: user.displayName || 'Someone',
-            read: false,
-            createdAt: serverTimestamp(),
-        };
-        addDoc(notificationsRef, notificationData);
+        console.error("Error creating notification: ", e);
     });
   }
 
