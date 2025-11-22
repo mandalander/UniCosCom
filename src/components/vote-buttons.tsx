@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
-import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, runTransaction, increment } from 'firebase/firestore';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, runTransaction, increment, addDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
@@ -87,7 +87,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
             read: false,
             createdAt: serverTimestamp(),
         };
-        addDocumentNonBlocking(notificationsRef, notificationData);
+        addDoc(notificationsRef, notificationData);
     }).catch(e => {
         const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
         const notificationData = {
@@ -103,7 +103,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
             read: false,
             createdAt: serverTimestamp(),
         };
-        addDocumentNonBlocking(notificationsRef, notificationData);
+        addDoc(notificationsRef, notificationData);
     });
   }
 
