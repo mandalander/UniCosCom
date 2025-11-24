@@ -155,9 +155,12 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
       const isDeleteOperation = newVoteValue === 0;
+      // This is the correct write operation as per logic
+      const writeOperation = isDeleteOperation ? 'delete' : 'write';
+      
       const permissionError = new FirestorePermissionError({
         path: voteRef.path,
-        operation: isDeleteOperation ? 'delete' : 'write',
+        operation: writeOperation,
         requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid }
       });
       
