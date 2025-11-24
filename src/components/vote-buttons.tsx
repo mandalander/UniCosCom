@@ -87,9 +87,12 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
             read: false,
             createdAt: serverTimestamp(),
         };
-        addDoc(notificationsRef, notificationData);
+        addDoc(notificationsRef, notificationData).catch(e => {
+          // Non-critical, so just log the error if notification fails
+          console.error("Error creating notification: ", e);
+        });
     }).catch(e => {
-        console.error("Error creating notification: ", e);
+        console.error("Error fetching post for notification: ", e);
     });
   }
 
@@ -107,7 +110,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     setIsVoting(true);
 
     const voteValueBefore = userVote || 0;
-    const newVoteValue = userVote === newVote ? 0 : newVote;
+    const newVoteValue = userVote === newVote ? 0 : newVote; // If clicking the same button again, it's a "take back"
     const voteChange = newVoteValue - voteValueBefore;
 
     // Optimistic UI update
@@ -142,7 +145,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
           }
       });
       
-      if(newVoteValue === 1) {
+      if(newVoteValue === 1 && creatorId !== user.uid) {
          createNotification(creatorId);
       }
 
@@ -151,12 +154,14 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
+      const isDeleteOperation = newVoteValue === 0;
       const permissionError = new FirestorePermissionError({
         path: voteRef.path,
-        operation: 'write',
-        requestResourceData: newVoteValue === 0 ? undefined : { value: newVoteValue, userId: user.uid }
+        operation: isDeleteOperation ? 'delete' : 'write',
+        requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid }
       });
       
+      // Emit the contextual error for the listener to catch and throw.
       errorEmitter.emit('permission-error', permissionError);
 
     } finally {
