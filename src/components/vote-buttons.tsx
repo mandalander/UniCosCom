@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, runTransaction, increment, addDoc } from 'firebase/firestore';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc, getDoc, Transaction, collection, serverTimestamp, getDocFromServer, runTransaction, increment, addDoc, writeBatch } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
@@ -36,19 +36,22 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     setVoteCount(initialVoteCount || 0);
   }, [initialVoteCount]);
 
+  const voteDocRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+     if (targetType === 'post') {
+        return doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
+      } else if (postId) {
+        return doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
+      }
+      return null;
+  }, [user, firestore, targetType, communityId, targetId, postId]);
+  
+
   useEffect(() => {
     const fetchUserVote = async () => {
-      if (!user || !firestore) return;
-      let voteRef;
-      if (targetType === 'post') {
-        voteRef = doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
-      } else if (postId) {
-        voteRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
-      }
-
-      if (voteRef) {
+      if (voteDocRef) {
         try {
-            const voteSnap = await getDoc(voteRef);
+            const voteSnap = await getDoc(voteDocRef);
             if (voteSnap.exists()) {
               setUserVote(voteSnap.data().value);
             } else {
@@ -59,10 +62,12 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
             // We'll proceed assuming no vote.
             setUserVote(null);
         }
+      } else if (!user) {
+        setUserVote(null);
       }
     };
     fetchUserVote();
-  }, [user, firestore, communityId, postId, targetId, targetType]);
+  }, [voteDocRef, user]);
 
    const createNotification = (targetAuthorId: string) => {
     if (!user || !firestore || user.uid === targetAuthorId) {
@@ -105,10 +110,10 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       router.push('/login');
       return;
     }
-    if (!firestore || isVoting) return;
+    if (!firestore || isVoting || !voteDocRef) return;
 
     setIsVoting(true);
-
+    
     const voteValueBefore = userVote || 0;
     const newVoteValue = userVote === newVote ? 0 : newVote; // If clicking the same button again, it's a "take back"
     const voteChange = newVoteValue - voteValueBefore;
@@ -117,14 +122,11 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     setVoteCount(prev => (prev || 0) + voteChange);
     setUserVote(newVoteValue === 0 ? null : newVoteValue);
 
-    let targetRef, voteRef;
-
+    let targetRef;
     if (targetType === 'post') {
         targetRef = doc(firestore, 'communities', communityId, 'posts', targetId);
-        voteRef = doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
     } else if (postId) {
         targetRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId);
-        voteRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
     } else {
         setIsVoting(false);
         return;
@@ -132,16 +134,16 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     
     try {
       await runTransaction(firestore, async (transaction: Transaction) => {
-          const voteDoc = await transaction.get(voteRef);
+          const voteDoc = await transaction.get(voteDocRef);
           const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
           const voteDifference = newVoteValue - currentVoteOnDb;
           
           transaction.update(targetRef, { voteCount: increment(voteDifference) });
           
           if (newVoteValue === 0) {
-              transaction.delete(voteRef);
+              transaction.delete(voteDocRef);
           } else {
-              transaction.set(voteRef, { value: newVoteValue, userId: user.uid });
+              transaction.set(voteDocRef, { value: newVoteValue, userId: user.uid });
           }
       });
       
@@ -155,11 +157,10 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
       
       const isDeleteOperation = newVoteValue === 0;
-      // This is the correct write operation as per logic
       const writeOperation = isDeleteOperation ? 'delete' : 'write';
       
       const permissionError = new FirestorePermissionError({
-        path: voteRef.path,
+        path: voteDocRef.path,
         operation: writeOperation,
         requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid }
       });
