@@ -1,7 +1,7 @@
 'use client';
 
 import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
-import { collectionGroup, query, getDocs, collection, limit, doc, getDoc } from 'firebase/firestore';
+import { collectionGroup, query, getDocs, collection, limit, doc, getDoc, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
@@ -18,17 +18,17 @@ import { CommentItemActions } from './comment-item-actions';
 import { ShareButton } from './share-button';
 
 type Post = {
-  id: string;
-  title: string;
-  content: string;
-  creatorId: string;
-  creatorDisplayName: string;
-  creatorPhotoURL?: string;
-  createdAt: any;
-  updatedAt?: any;
-  communityId: string;
-  communityName: string;
-  voteCount: number;
+    id: string;
+    title: string;
+    content: string;
+    creatorId: string;
+    creatorDisplayName: string;
+    creatorPhotoURL?: string;
+    createdAt: any;
+    updatedAt?: any;
+    communityId: string;
+    communityName: string;
+    voteCount: number;
 };
 
 type Comment = {
@@ -54,10 +54,10 @@ const PostItem = ({ post }: { post: Post }) => {
             if (!firestore) return;
             setIsLoadingComments(true);
             const commentsRef = collection(firestore, 'communities', post.communityId, 'posts', post.id, 'comments');
-            const q = query(commentsRef, limit(2));
+            const q = query(commentsRef, orderBy('createdAt', 'asc'), limit(2));
             const querySnapshot = await getDocs(q);
             const fetchedComments = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Comment))
-              .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+                .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
             setComments(fetchedComments);
             setIsLoadingComments(false);
         };
@@ -73,16 +73,16 @@ const PostItem = ({ post }: { post: Post }) => {
     const getInitials = (name?: string | null) => {
         return name ? name.charAt(0).toUpperCase() : <User className="h-5 w-5" />;
     };
-    
+
     const isOwner = user && user.uid === post.creatorId;
 
     return (
         <Card className="flex">
-             <div className="flex-1">
+            <div className="flex-1">
                 <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
                         <div className='flex items-center gap-3'>
-                             <Avatar className="h-10 w-10">
+                            <Avatar className="h-10 w-10">
                                 <AvatarImage src={post.creatorPhotoURL} />
                                 <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
                             </Avatar>
@@ -112,7 +112,7 @@ const PostItem = ({ post }: { post: Post }) => {
                     <p className="line-clamp-4">{post.content}</p>
                 </CardContent>
                 <CardFooter className='flex-col items-start gap-4 pl-16'>
-                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <VoteButtons
                             targetType="post"
                             targetId={post.id}
@@ -120,7 +120,7 @@ const PostItem = ({ post }: { post: Post }) => {
                             communityId={post.communityId}
                             initialVoteCount={post.voteCount || 0}
                         />
-                         <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
+                        <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
                             <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2">
                                 <MessageSquare className='h-5 w-5' /> <span>{t('commentsTitle')}</span>
                             </Button>
@@ -145,10 +145,10 @@ const PostItem = ({ post }: { post: Post }) => {
                                                 <span className="text-xs text-muted-foreground">• {formatDate(comment.createdAt)}</span>
                                             </div>
                                             {isCommentOwner && (
-                                                <CommentItemActions 
-                                                    communityId={post.communityId} 
-                                                    postId={post.id} 
-                                                    comment={comment} 
+                                                <CommentItemActions
+                                                    communityId={post.communityId}
+                                                    postId={post.id}
+                                                    comment={comment}
                                                 />
                                             )}
                                         </div>
@@ -176,85 +176,85 @@ const PostItem = ({ post }: { post: Post }) => {
 
 
 export function PostFeed() {
-  const { t } = useLanguage();
-  const firestore = useFirestore();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+    const { t } = useLanguage();
+    const firestore = useFirestore();
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (!firestore) return;
-      setIsLoading(true);
+    useEffect(() => {
+        const fetchPosts = async () => {
+            if (!firestore) return;
+            setIsLoading(true);
 
-      const postsQuery = query(collectionGroup(firestore, 'posts'), limit(25));
-      const postSnapshots = await getDocs(postsQuery);
+            const postsQuery = query(collectionGroup(firestore, 'posts'), orderBy('createdAt', 'desc'), limit(25));
+            const postSnapshots = await getDocs(postsQuery);
 
-      const postsDataPromises = postSnapshots.docs.map(async (postDoc) => {
-        const post = { id: postDoc.id, ...postDoc.data() } as Omit<Post, 'communityName' | 'communityId'>;
-        const communityRef = postDoc.ref.parent.parent;
-        
-        if (!communityRef) return null;
+            const postsDataPromises = postSnapshots.docs.map(async (postDoc) => {
+                const post = { id: postDoc.id, ...postDoc.data() } as Omit<Post, 'communityName' | 'communityId'>;
+                const communityRef = postDoc.ref.parent.parent;
 
-        const communitySnap = await getDoc(communityRef);
-        const communityName = communitySnap.exists() ? communitySnap.data().name : 'Unknown Community';
-        
-        return {
-          ...post,
-          communityId: communityRef.id,
-          communityName: communityName,
-        } as Post;
-      });
+                if (!communityRef) return null;
 
-      const postsData = (await Promise.all(postsDataPromises))
-        .filter((p): p is Post => p !== null && p.createdAt)
-        .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                const communitySnap = await getDoc(communityRef);
+                const communityName = communitySnap.exists() ? communitySnap.data().name : 'Unknown Community';
 
+                return {
+                    ...post,
+                    communityId: communityRef.id,
+                    communityName: communityName,
+                } as Post;
+            });
 
-      setPosts(postsData.slice(0, 10));
-      setIsLoading(false);
-    };
-
-    fetchPosts();
-  }, [firestore]);
+            const postsData = (await Promise.all(postsDataPromises))
+                .filter((p): p is Post => p !== null && p.createdAt)
+                .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
 
 
-  if (isLoading) {
+            setPosts(postsData.slice(0, 10));
+            setIsLoading(false);
+        };
+
+        fetchPosts();
+    }, [firestore]);
+
+
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                {[...Array(3)].map((_, i) => (
+                    <Card key={i}>
+                        <CardHeader>
+                            <div className="flex items-center gap-3">
+                                <Skeleton className="h-10 w-10 rounded-full" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-5 w-48" />
+                                    <Skeleton className="h-4 w-64" />
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className='pl-16'>
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-full mt-2" />
+                            <Skeleton className="h-4 w-3/4 mt-2" />
+                        </CardContent>
+                        <CardFooter className='pl-16'>
+                            <Skeleton className="h-8 w-40" />
+                        </CardFooter>
+                    </Card>
+                ))}
+            </div>
+        )
+    }
+
     return (
-       <div className="space-y-6">
-          {[...Array(3)].map((_, i) => (
-             <Card key={i}>
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-5 w-48" />
-                        <Skeleton className="h-4 w-64" />
-                    </div>
-                </div>
-              </CardHeader>
-              <CardContent className='pl-16'>
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full mt-2" />
-                <Skeleton className="h-4 w-3/4 mt-2" />
-              </CardContent>
-              <CardFooter className='pl-16'>
-                 <Skeleton className="h-8 w-40" />
-              </CardFooter>
-            </Card>
-          ))}
+        <div className="space-y-6">
+            {posts && posts.length > 0 ? (
+                posts.map((post) => (
+                    <PostItem key={post.id} post={post} />
+                ))
+            ) : (
+                <p className='text-center text-muted-foreground'>{t('noPostsGlobal')}</p>
+            )}
         </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
-      {posts && posts.length > 0 ? (
-          posts.map((post) => (
-            <PostItem key={post.id} post={post} />
-          ))
-      ) : (
-        <p className='text-center text-muted-foreground'>{t('noPostsGlobal')}</p>
-      )}
-    </div>
-  );
+    );
 }

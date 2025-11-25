@@ -30,10 +30,9 @@ export function UserDataSync() {
              updatedAt: serverTimestamp(),
            };
            
-           const userProfileData = {
+           const userProfileData: any = {
               displayName: user.displayName,
               photoURL: user.photoURL,
-              createdAt: serverTimestamp(),
               updatedAt: serverTimestamp(),
            };
 
