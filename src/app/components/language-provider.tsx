@@ -32,10 +32,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('language', lang);
     setLanguageState(lang);
   };
-  
+
   const t = useMemo(() => (key: keyof typeof translations.pl, vars?: TranslationVariables): string => {
-    let translation = translations[language][key] || key;
-    
+    const lang = translations[language];
+    let translation = (lang[key as keyof typeof lang] as string) || key;
+
     if (vars) {
       Object.keys(vars).forEach(varKey => {
         const regex = new RegExp(`{{${varKey}}}`, 'g');

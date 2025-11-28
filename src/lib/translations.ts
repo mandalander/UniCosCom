@@ -8,11 +8,14 @@ export const translations = {
     settings: 'Ustawienia',
     appNavigator: 'Unicoscom',
     createNewCommunity: 'Utwórz nową społeczność',
+    loading: 'Ładowanie...',
+    privacyPolicyTitle: 'Polityka Prywatności',
+    termsTitle: 'Regulamin Serwisu',
 
     // Top Nav Bar
     login: 'Zaloguj się',
     logout: 'Wyloguj się',
-    
+
     // Login Page
     loginTitle: 'Logowanie',
     loginDescription: 'Podaj swój e-mail poniżej, aby zalogować się na swoje konto.',
@@ -91,10 +94,11 @@ export const translations = {
     profileLinkedIn: 'LinkedIn',
     profileGitHub: 'GitHub',
     editProfileSocialLinksPlaceholder: 'Link do Twojego profilu',
+    profileSocialLinks: 'Linki społecznościowe',
 
     // Security & Privacy
     securityPrivacyDescription: 'Zarządzaj swoimi ustawieniami bezpieczeństwa i prywatności.',
-    
+
     // Danger Zone
     dangerZone: 'Strefa niebezpieczna',
     dangerZoneDescription: 'Te działania są nieodwracalne. Prosimy o ostrożność.',
@@ -121,7 +125,7 @@ export const translations = {
     language: 'Język',
     english: 'Angielski',
     polish: 'Polski',
-    
+
     // Create Community Dialog
     createCommunity: 'Utwórz',
     createCommunityDescription: 'Wypełnij poniższe pola, aby utworzyć nową społeczność.',
@@ -151,6 +155,7 @@ export const translations = {
     mustBeLoggedInToPost: 'Musisz być zalogowany, aby dodać post.',
     createPost: 'Opublikuj post',
     creatingPost: 'Publikowanie...',
+    postCreationError: 'Błąd tworzenia posta',
     postCreatedSuccessTitle: 'Sukces!',
     postCreatedSuccessDescription: 'Twój post został opublikowany.',
     postedBy: 'Opublikowane przez {{name}}',
@@ -169,6 +174,7 @@ export const translations = {
     addComment: 'Dodaj komentarz',
     logInToAddComment: 'Zaloguj się, aby dodawać komentarze.',
     commenting: 'Komentowanie...',
+    commentCreationError: 'Błąd dodawania komentarza',
     commentAddedSuccessTitle: 'Komentarz dodany!',
     mustBeLoggedInToComment: 'Musisz być zalogowany, aby dodać komentarz.',
     typeYourCommentPlaceholder: 'Napisz komentarz...',
@@ -182,7 +188,9 @@ export const translations = {
     deleteConfirmationTitle: 'Czy na pewno chcesz usunąć?',
     deleteConfirmationDescription: 'Tej akcji nie można cofnąć.',
     deletePostSuccess: 'Post został usunięty.',
+    deletePostError: 'Błąd usuwania posta',
     deleteCommentSuccess: 'Komentarz został usunięty.',
+    deleteCommentError: 'Błąd usuwania komentarza',
     update: 'Zaktualizuj',
     updating: 'Aktualizowanie...',
     editPostTitle: 'Edytuj post',
@@ -201,6 +209,13 @@ export const translations = {
     markAllAsRead: 'Oznacz wszystkie jako przeczytane',
     userUpvotedYourPost: '{{username}} polubił(a) Twój post: "{{postTitle}}"',
     userUpvotedYourComment: '{{username}} polubił(a) Twój komentarz do posta: "{{postTitle}}"',
+    notificationsTitle: 'Powiadomienia',
+    notificationsDescription: 'Tutaj zobaczysz powiadomienia o aktywności w Twoich postach i komentarzach.',
+    notificationVoted: 'Głosowanie',
+    notificationCommented: 'Komentarz',
+    post: 'post',
+    comment: 'komentarz',
+    viewContext: 'Zobacz kontekst',
 
     // Metadata
     metaTitle: 'Unicoscom',
@@ -268,7 +283,7 @@ export const translations = {
     userPosts: "Posts by {{username}}",
     userHasNoPosts: 'This user has not published any posts yet.',
     userNotFound: 'User not found.',
-    
+
     // Edit Profile Page
     editProfileTitle: 'Edit Profile',
     editProfileDescription: 'Update your profile information and manage your account.',
@@ -297,7 +312,8 @@ export const translations = {
     profileLinkedIn: 'LinkedIn',
     profileGitHub: 'GitHub',
     editProfileSocialLinksPlaceholder: 'Your profile link',
-    
+    profileSocialLinks: 'Social Links',
+
     // Security & Privacy
     securityPrivacyDescription: 'Manage your security and privacy settings.',
 
@@ -356,6 +372,7 @@ export const translations = {
     mustBeLoggedInToPost: 'You must be logged in to post.',
     createPost: 'Publish Post',
     creatingPost: 'Publishing...',
+    postCreationError: 'Error creating post',
     postCreatedSuccessTitle: 'Success!',
     postCreatedSuccessDescription: 'Your post has been published.',
     postedBy: 'Posted by {{name}}',
@@ -374,6 +391,7 @@ export const translations = {
     addComment: 'Add Comment',
     logInToAddComment: 'Log in to add comments.',
     commenting: 'Commenting...',
+    commentCreationError: 'Error adding comment',
     commentAddedSuccessTitle: 'Comment added!',
     mustBeLoggedInToComment: 'You must be logged in to comment.',
     typeYourCommentPlaceholder: 'Type your comment...',
@@ -387,7 +405,9 @@ export const translations = {
     deleteConfirmationTitle: 'Are you sure you want to delete?',
     deleteConfirmationDescription: 'This action cannot be undone.',
     deletePostSuccess: 'Post deleted successfully.',
+    deletePostError: 'Error deleting post',
     deleteCommentSuccess: 'Comment deleted successfully.',
+    deleteCommentError: 'Error deleting comment',
     update: 'Update',
     updating: 'Updating...',
     editPostTitle: 'Edit Post',
@@ -406,6 +426,13 @@ export const translations = {
     markAllAsRead: 'Mark all as read',
     userUpvotedYourPost: '{{username}} upvoted your post: "{{postTitle}}"',
     userUpvotedYourComment: '{{username}} upvoted your comment on: "{{postTitle}}"',
+    notificationsTitle: 'Notifications',
+    notificationsDescription: 'Here you will see notifications about activity on your posts and comments.',
+    notificationVoted: 'Vote',
+    notificationCommented: 'Comment',
+    post: 'post',
+    comment: 'comment',
+    viewContext: 'View context',
 
     // Metadata
     metaTitle: 'Unicoscom',
@@ -413,4 +440,3 @@ export const translations = {
   },
 };
 
-    

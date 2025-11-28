@@ -1,0 +1,6 @@
+
+> unicoscom@0.1.0 typecheck
+> tsc --noEmit
+
+src/app/components/language-provider.tsx(37,23): error TS7053: Element implicitly has an 'any' type because expression of type '"language" | "communityName" | "post" | "edited" | "comment" | "main" | "explore" | "profile" | "settings" | "appNavigator" | "createNewCommunity" | "loading" | "privacyPolicyTitle" | ... 170 more ... | "metaDescription"' can't be used to index type '{ main: string; explore: string; profile: string; settings: string; appNavigator: string; createNewCommunity: string; loading: string; privacyPolicyTitle: string; termsTitle: string; login: string; ... 173 more ...; metaDescription: string; } | { ...; }'.
+  Property 'loading' does not exist on type '{ main: string; explore: string; profile: string; settings: string; appNavigator: string; createNewCommunity: string; loading: string; privacyPolicyTitle: string; termsTitle: string; login: string; ... 173 more ...; metaDescription: string; } | { ...; }'.

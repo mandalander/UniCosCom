@@ -1,0 +1,7 @@
+
+> unicoscom@0.1.0 typecheck
+> tsc --noEmit
+
+src/lib/translations.ts(4,14): error TS1005: ':' expected.
+src/lib/translations.ts(428,2): error TS1005: ',' expected.
+src/lib/translations.ts(430,5): error TS1005: '}' expected.
