@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Settings, Compass, PlusCircle, Users, Pencil } from 'lucide-react';
+import { Home, Settings, Compass, PlusCircle, Users, Pencil, Bell } from 'lucide-react';
 import {
   Sidebar,
   SidebarHeader,
@@ -47,8 +47,9 @@ export function AppSidebar() {
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
+    { href: '/notifications', label: t('notificationsTitle') || "Powiadomienia", icon: Bell, requiresAuth: true },
   ];
-  
+
   const settingsMenuItem = { href: '/settings', label: t('settings'), icon: Settings, requiresAuth: false };
 
 
@@ -74,24 +75,24 @@ export function AppSidebar() {
           <svg width="24" height="24" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <radialGradient id="bgGrad" cx="50%" cy="50%">
-                <stop offset="0%" style={{stopColor: '#1a0a2e'}} />
-                <stop offset="50%" style={{stopColor: '#0f0520'}} />
-                <stop offset="100%" style={{stopColor: '#030008'}} />
+                <stop offset="0%" style={{ stopColor: '#1a0a2e' }} />
+                <stop offset="50%" style={{ stopColor: '#0f0520' }} />
+                <stop offset="100%" style={{ stopColor: '#030008' }} />
               </radialGradient>
               <linearGradient id="gradU" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style={{stopColor: '#00f5ff'}} />
-                <stop offset="50%" style={{stopColor: '#00d4ff'}} />
-                <stop offset="100%" style={{stopColor: '#4169ff'}} />
+                <stop offset="0%" style={{ stopColor: '#00f5ff' }} />
+                <stop offset="50%" style={{ stopColor: '#00d4ff' }} />
+                <stop offset="100%" style={{ stopColor: '#4169ff' }} />
               </linearGradient>
               <linearGradient id="gradC" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style={{stopColor: '#c466ff'}} />
-                <stop offset="50%" style={{stopColor: '#9d4edd'}} />
-                <stop offset="100%" style={{stopColor: '#00d4ff'}} />
+                <stop offset="0%" style={{ stopColor: '#c466ff' }} />
+                <stop offset="50%" style={{ stopColor: '#9d4edd' }} />
+                <stop offset="100%" style={{ stopColor: '#00d4ff' }} />
               </linearGradient>
               <linearGradient id="orbitGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" style={{stopColor: '#00f5ff', stopOpacity: 0.6}} />
-                <stop offset="50%" style={{stopColor: '#c466ff', stopOpacity: 0.4}} />
-                <stop offset="100%" style={{stopColor: '#00f5ff', stopOpacity: 0.6}} />
+                <stop offset="0%" style={{ stopColor: '#00f5ff', stopOpacity: 0.6 }} />
+                <stop offset="50%" style={{ stopColor: '#c466ff', stopOpacity: 0.4 }} />
+                <stop offset="100%" style={{ stopColor: '#00f5ff', stopOpacity: 0.6 }} />
               </linearGradient>
               <filter id="neon-glow" x="-100%" y="-100%" width="300%" height="300%">
                 <feGaussianBlur stdDeviation="8" in="SourceGraphic" result="blur1" />
@@ -114,10 +115,10 @@ export function AppSidebar() {
               <filter id="star-glow">
                 <feGaussianBlur stdDeviation="1.5" />
               </filter>
-              <path id="orbit1" d="M 180,500 A 380,140 0 1,1 820,500 A 380,140 0 1,1 180,500" 
-                    transform="rotate(-20 500 500)" fill="none" />
-              <path id="orbit2" d="M 80,500 A 420,160 0 1,1 920,500 A 420,160 0 1,1 80,500" 
-                    transform="rotate(25 500 500)" fill="none" />
+              <path id="orbit1" d="M 180,500 A 380,140 0 1,1 820,500 A 380,140 0 1,1 180,500"
+                transform="rotate(-20 500 500)" fill="none" />
+              <path id="orbit2" d="M 80,500 A 420,160 0 1,1 920,500 A 420,160 0 1,1 80,500"
+                transform="rotate(25 500 500)" fill="none" />
             </defs>
             <rect width="100%" height="100%" fill="url(#bgGrad)" />
             <g opacity="0.7">
@@ -137,24 +138,24 @@ export function AppSidebar() {
               <circle cx="600" cy="900" r="1.8" fill="#c466ff" filter="url(#star-glow)" />
             </g>
             <g filter="url(#orbit-glow)">
-              <ellipse cx="500" cy="500" rx="380" ry="140" 
-                       stroke="url(#orbitGrad)" strokeWidth="2" fill="none" 
-                       transform="rotate(-20 500 500)" opacity="0.8">
+              <ellipse cx="500" cy="500" rx="380" ry="140"
+                stroke="url(#orbitGrad)" strokeWidth="2" fill="none"
+                transform="rotate(-20 500 500)" opacity="0.8">
                 <animate attributeName="opacity" values="0.8;0.4;0.8" dur="4s" repeatCount="indefinite" />
               </ellipse>
-              <ellipse cx="500" cy="500" rx="420" ry="160" 
-                       stroke="url(#orbitGrad)" strokeWidth="1.8" fill="none" 
-                       transform="rotate(25 500 500)" opacity="0.6">
+              <ellipse cx="500" cy="500" rx="420" ry="160"
+                stroke="url(#orbitGrad)" strokeWidth="1.8" fill="none"
+                transform="rotate(25 500 500)" opacity="0.6">
                 <animate attributeName="opacity" values="0.6;0.3;0.6" dur="5s" repeatCount="indefinite" />
               </ellipse>
-              <ellipse cx="500" cy="500" rx="360" ry="125" 
-                       stroke="url(#orbitGrad)" strokeWidth="1.5" fill="none" 
-                       transform="rotate(-5 500 500)" opacity="0.5">
+              <ellipse cx="500" cy="500" rx="360" ry="125"
+                stroke="url(#orbitGrad)" strokeWidth="1.5" fill="none"
+                transform="rotate(-5 500 500)" opacity="0.5">
                 <animate attributeName="opacity" values="0.5;0.25;0.5" dur="6s" repeatCount="indefinite" />
               </ellipse>
-              <ellipse cx="500" cy="500" rx="340" ry="110" 
-                       stroke="url(#orbitGrad)" strokeWidth="1.2" fill="none" 
-                       transform="rotate(10 500 500)" opacity="0.4">
+              <ellipse cx="500" cy="500" rx="340" ry="110"
+                stroke="url(#orbitGrad)" strokeWidth="1.2" fill="none"
+                transform="rotate(10 500 500)" opacity="0.4">
                 <animate attributeName="opacity" values="0.4;0.2;0.4" dur="7s" repeatCount="indefinite" />
               </ellipse>
             </g>
@@ -171,40 +172,40 @@ export function AppSidebar() {
               </circle>
             </g>
             <g filter="url(#neon-glow)">
-              <text x="360" y="660" 
-                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
-                    fontSize="480" 
-                    fontWeight="900" 
-                    letterSpacing="-80" 
-                    textAnchor="middle" 
-                    fill="url(#gradU)">U</text>
-              <text x="640" y="660" 
-                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
-                    fontSize="480" 
-                    fontWeight="900" 
-                    letterSpacing="-80" 
-                    textAnchor="middle" 
-                    fill="url(#gradC)">C</text>
+              <text x="360" y="660"
+                fontFamily="'Arial Black', 'Arial Bold', sans-serif"
+                fontSize="480"
+                fontWeight="900"
+                letterSpacing="-80"
+                textAnchor="middle"
+                fill="url(#gradU)">U</text>
+              <text x="640" y="660"
+                fontFamily="'Arial Black', 'Arial Bold', sans-serif"
+                fontSize="480"
+                fontWeight="900"
+                letterSpacing="-80"
+                textAnchor="middle"
+                fill="url(#gradC)">C</text>
             </g>
             <g opacity="0.9">
-              <text x="360" y="660" 
-                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
-                    fontSize="480" 
-                    fontWeight="900" 
-                    letterSpacing="-80" 
-                    textAnchor="middle" 
-                    fill="none" 
-                    stroke="#66ffff" 
-                    strokeWidth="3">U</text>
-              <text x="640" y="660" 
-                    fontFamily="'Arial Black', 'Arial Bold', sans-serif" 
-                    fontSize="480" 
-                    fontWeight="900" 
-                    letterSpacing="-80" 
-                    textAnchor="middle" 
-                    fill="none" 
-                    stroke="#dd88ff" 
-                    strokeWidth="3">C</text>
+              <text x="360" y="660"
+                fontFamily="'Arial Black', 'Arial Bold', sans-serif"
+                fontSize="480"
+                fontWeight="900"
+                letterSpacing="-80"
+                textAnchor="middle"
+                fill="none"
+                stroke="#66ffff"
+                strokeWidth="3">U</text>
+              <text x="640" y="660"
+                fontFamily="'Arial Black', 'Arial Bold', sans-serif"
+                fontSize="480"
+                fontWeight="900"
+                letterSpacing="-80"
+                textAnchor="middle"
+                fill="none"
+                stroke="#dd88ff"
+                strokeWidth="3">C</text>
             </g>
             <circle cx="500" cy="500" r="50" fill="#c466ff" opacity="0.1">
               <animate attributeName="r" values="50;80;50" dur="3s" repeatCount="indefinite" />
@@ -232,27 +233,27 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
         <SidebarGroup>
-            <SidebarGroupLabel asChild>
-                <Link href="/explore"><Users /> <span>{t('communitiesTitle')}</span></Link>
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-                <SidebarMenuSub>
-                    {isLoadingCommunities ? (
-                        <>
-                            <SidebarMenuSkeleton showIcon={false} />
-                            <SidebarMenuSkeleton showIcon={false} />
-                        </>
-                    ) : communities && communities.length > 0 ? (
-                        communities.map((community) => (
-                            <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`}>
-                                <Link href={`/community/${community.id}`}>{community.name}</Link>
-                            </SidebarMenuSubButton>
-                        ))
-                    ) : (
-                        <p className="px-2 text-xs text-sidebar-foreground/70">{t('noCommunitiesYet')}</p>
-                    )}
-                </SidebarMenuSub>
-            </SidebarGroupContent>
+          <SidebarGroupLabel asChild>
+            <Link href="/explore"><Users /> <span>{t('communitiesTitle')}</span></Link>
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenuSub>
+              {isLoadingCommunities ? (
+                <>
+                  <SidebarMenuSkeleton showIcon={false} />
+                  <SidebarMenuSkeleton showIcon={false} />
+                </>
+              ) : communities && communities.length > 0 ? (
+                communities.map((community) => (
+                  <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`}>
+                    <Link href={`/community/${community.id}`}>{community.name}</Link>
+                  </SidebarMenuSubButton>
+                ))
+              ) : (
+                <p className="px-2 text-xs text-sidebar-foreground/70">{t('noCommunitiesYet')}</p>
+              )}
+            </SidebarMenuSub>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
@@ -266,12 +267,12 @@ export function AppSidebar() {
             </CreatePostDialog>
           </SidebarMenuItem>
           <SidebarMenuItem>
-              <CreateCommunityDialog>
-                <SidebarMenuButton tooltip={t('createNewCommunity')}>
-                  <PlusCircle />
-                  <span>{t('createNewCommunity')}</span>
-                </SidebarMenuButton>
-              </CreateCommunityDialog>
+            <CreateCommunityDialog>
+              <SidebarMenuButton tooltip={t('createNewCommunity')}>
+                <PlusCircle />
+                <span>{t('createNewCommunity')}</span>
+              </SidebarMenuButton>
+            </CreateCommunityDialog>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton

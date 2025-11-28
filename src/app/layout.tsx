@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import './globals.css';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
@@ -45,7 +46,22 @@ export default function RootLayout({
                 <AppSidebar />
                 <SidebarInset>
                   <TopNavBar />
-                  <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+                  <div className="p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem-60px)]">{children}</div>
+                  <footer className="border-t py-6 md:py-0">
+                    <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row px-4 sm:px-6 lg:px-8">
+                      <p className="text-sm text-muted-foreground text-center md:text-left">
+                        &copy; {new Date().getFullYear()} UniCosCom. Wszelkie prawa zastrzeżone.
+                      </p>
+                      <nav className="flex gap-4 text-sm text-muted-foreground">
+                        <Link href="/privacy" className="hover:underline hover:text-foreground">
+                          Polityka Prywatności
+                        </Link>
+                        <Link href="/terms" className="hover:underline hover:text-foreground">
+                          Regulamin
+                        </Link>
+                      </nav>
+                    </div>
+                  </footer>
                 </SidebarInset>
               </SidebarProvider>
               <Toaster />
