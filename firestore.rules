@@ -26,34 +26,6 @@ service cloud.firestore {
         allow create: if isSignedIn();
       }
     }
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    match /users/{userId} {
-      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
-      allow read, update, delete: if isOwner(userId);
-    }
-
-    match /userProfiles/{userId} {
-      allow get: if true;
-      allow create, update: if isOwner(userId);
-
-      // Notifications can only be read by the owner and written to by anyone signed in
-      // (as users create notifications for others by voting).
-      match /notifications/{notificationId} {
-        allow read, update: if isOwner(userId);
-        allow create: if isSignedIn();
-      }
-    }
     
     match /communities/{communityId} {
       allow list, get: if true;
