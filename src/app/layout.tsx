@@ -7,7 +7,7 @@ import { AppSidebar } from './components/app-sidebar';
 import { TopNavBar } from './components/top-nav-bar';
 import { ThemeProvider } from './components/theme-provider';
 import { LanguageProvider } from './components/language-provider';
-import { FirebaseClientProvider } from '@/firebase';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { UserDataSync } from './components/user-data-sync';
 import Script from 'next/script';
 

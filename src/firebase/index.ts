@@ -2,7 +2,7 @@
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, setPersistence, browserLocalPersistence, inMemoryPersistence, type Auth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
@@ -33,15 +33,26 @@ export function initializeFirebase() {
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
+  // Only initialize auth on the client side to avoid localStorage issues during SSR
+  let auth: Auth | null = null;
+
+  if (typeof window !== 'undefined') {
+    auth = getAuth(firebaseApp);
+    // Set persistence to inMemoryPersistence to prevent automatic localStorage access
+    setPersistence(auth, inMemoryPersistence).catch((error) => {
+      console.error('Error setting auth persistence:', error);
+    });
+  }
+
   return {
     firebaseApp,
-    auth: getAuth(firebaseApp),
+    auth: auth as any, // Type assertion since we know it will be initialized on client
     firestore: getFirestore(firebaseApp)
   };
 }
 
 export * from './provider';
-export * from './client-provider';
+//export * from './client-provider'; // Don't export this to avoid SSR issues
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
 export * from './non-blocking-updates';

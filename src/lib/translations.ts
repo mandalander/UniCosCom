@@ -230,6 +230,9 @@ export const translations = {
     settings: 'Settings',
     appNavigator: 'Unicoscom',
     createNewCommunity: 'Create new community',
+    loading: 'Loading...',
+    privacyPolicyTitle: 'Privacy Policy',
+    termsTitle: 'Terms of Service',
 
     // Top Nav Bar
     login: 'Log in',

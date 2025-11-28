@@ -1,0 +1,336 @@
+
+> unicoscom@0.1.0 dev
+> next dev --turbopack
+
+   Ôľ▓ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.12:3000
+
+ Ôťô Starting...
+ Ôťô Ready in 1611ms
+ ÔŚő Compiling / ...
+ Ôťô Compiled / in 8.7s
+(node:21412) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ÔĘ» [TypeError: localStorage.getItem is not a function] {
+  digest: '1712504039'
+}
+[TypeError: localStorage.getItem is not a function]
+ ÔĘ» [TypeError: localStorage.getItem is not a function] { page: '/' }
+ ÔŚő Compiling /_error ...
+ Ôťô Compiled /_error in 2.5s
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ GET / 500 in 14445ms
+ GET / 500 in 229ms
+ ÔĘ» [TypeError: localStorage.getItem is not a function] {
+  digest: '1712504039'
+}
+[TypeError: localStorage.getItem is not a function]
+ ÔĘ» [TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ HEAD / 500 in 2242ms
+ HEAD / 500 in 107ms
+ ÔĘ» [TypeError: localStorage.getItem is not a function] {
+  digest: '1712504039'
+}
+[TypeError: localStorage.getItem is not a function]
+ ÔĘ» [TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ HEAD / 500 in 2172ms
+ HEAD / 500 in 128ms
+ ÔĘ» ./src/firebase/client-provider.tsx:6:26
+Parsing ecmascript source code failed
+  4 | import { FirebaseProvider } from '@/firebase/provider';
+  5 | import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+> 6 | auth = { firebaseServices.auth }
+    |                          ^
+  7 | firestore = { firebaseServices.firestore }
+  8 |   >
+  9 |   <FirebaseErrorListener />
+
+Expected ',', got '.'
+
+
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+Error [ModuleBuildError]: ./src/firebase/client-provider.tsx:6:26
+Parsing ecmascript source code failed
+  4 | import { FirebaseProvider } from '@/firebase/provider';
+  5 | import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+> 6 | auth = { firebaseServices.auth }
+    |                          ^
+  7 | firestore = { firebaseServices.firestore }
+  8 |   >
+  9 |   <FirebaseErrorListener />
+
+Expected ',', got '.'
+
+
+    at <unknown> (ModuleBuildError: ./src/firebase/client-provider.tsx:6:26)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ HEAD / 500 in 789ms
+ HEAD / 500 in 282ms
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ Ôťô Compiled in 506ms
+ Ôťô Compiled / in 78ms
+ ÔĘ» [TypeError: localStorage.getItem is not a function] {
+  digest: '1712504039'
+}
+[TypeError: localStorage.getItem is not a function]
+ ÔĘ» [TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ HEAD / 500 in 2233ms
+ HEAD / 500 in 120ms
+ Ôťô Compiled in 380ms
+ Ôťô Compiled / in 83ms
+ ÔĘ» [TypeError: localStorage.getItem is not a function] {
+  digest: '1712504039'
+}
+[TypeError: localStorage.getItem is not a function]
+ ÔĘ» [TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ HEAD / 500 in 2111ms
+ HEAD / 500 in 102ms
+ ÔĘ» ./src/app/layout.tsx:28:6
+Parsing ecmascript source code failed
+  26 | }>) {
+  27 |   return (
+> 28 |     <html lang="pl" suppressHydrationWarning>
+     |      ^^^^
+  29 |       <head>
+  30 |         import type {Metadata} from 'next';
+  31 |         import Link from 'next/link';
+
+Unexpected token `html`. Expected jsx identifier
+
+
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+Error [ModuleBuildError]: ./src/app/layout.tsx:28:6
+Parsing ecmascript source code failed
+  26 | }>) {
+  27 |   return (
+> 28 |     <html lang="pl" suppressHydrationWarning>
+     |      ^^^^
+  29 |       <head>
+  30 |         import type {Metadata} from 'next';
+  31 |         import Link from 'next/link';
+
+Unexpected token `html`. Expected jsx identifier
+
+
+    at <unknown> (ModuleBuildError: ./src/app/layout.tsx:28:6)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ HEAD / 500 in 463ms
+ HEAD / 500 in 246ms
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ Ôťô Compiled in 911ms
+ Ôťô Compiled / in 78ms
+ ÔĘ» [TypeError: localStorage.getItem is not a function] {
+  digest: '1712504039'
+}
+[TypeError: localStorage.getItem is not a function]
+ ÔĘ» [TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ÔĘ» unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ HEAD / 500 in 2618ms
+ HEAD / 500 in 174ms

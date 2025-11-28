@@ -21,15 +21,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const storedLanguage = localStorage.getItem('language') as Language;
-    if (storedLanguage && (storedLanguage === 'pl' || storedLanguage === 'en')) {
-      setLanguageState(storedLanguage);
+    if (typeof window !== 'undefined') {
+      const storedLanguage = localStorage.getItem('language') as Language;
+      if (storedLanguage && (storedLanguage === 'pl' || storedLanguage === 'en')) {
+        setLanguageState(storedLanguage);
+      }
     }
     setIsMounted(true);
   }, []);
 
   const setLanguage = (lang: Language) => {
-    localStorage.setItem('language', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', lang);
+    }
     setLanguageState(lang);
   };
 
