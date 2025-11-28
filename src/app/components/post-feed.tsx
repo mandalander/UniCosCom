@@ -1,7 +1,7 @@
 'use client';
 
 import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
-import { collectionGroup, query, getDocs, collection, limit, doc, getDoc, orderBy } from 'firebase/firestore';
+import { collectionGroup, query, getDocs, collection, limit, doc, getDoc, orderBy, onSnapshot } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
@@ -182,14 +182,13 @@ export function PostFeed() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            if (!firestore) return;
-            setIsLoading(true);
+        if (!firestore) return;
+        setIsLoading(true);
 
-            const postsQuery = query(collectionGroup(firestore, 'posts'), orderBy('createdAt', 'desc'), limit(25));
-            const postSnapshots = await getDocs(postsQuery);
+        const postsQuery = query(collectionGroup(firestore, 'posts'), orderBy('createdAt', 'desc'), limit(25));
 
-            const postsDataPromises = postSnapshots.docs.map(async (postDoc) => {
+        const unsubscribe = onSnapshot(postsQuery, async (snapshot) => {
+            const postsDataPromises = snapshot.docs.map(async (postDoc) => {
                 const post = { id: postDoc.id, ...postDoc.data() } as Omit<Post, 'communityName' | 'communityId'>;
                 const communityRef = postDoc.ref.parent.parent;
 
@@ -210,11 +209,14 @@ export function PostFeed() {
                 .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
 
 
-            setPosts(postsData.slice(0, 10));
+            setPosts(postsData);
             setIsLoading(false);
-        };
+        }, (error) => {
+            console.error("Error fetching posts:", error);
+            setIsLoading(false);
+        });
 
-        fetchPosts();
+        return () => unsubscribe();
     }, [firestore]);
 
 

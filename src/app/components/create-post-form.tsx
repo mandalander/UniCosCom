@@ -43,7 +43,7 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!user) {
       router.push('/login');
       return;
@@ -69,15 +69,25 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
       voteCount: 0,
     };
     
-    addDocumentNonBlocking(postsColRef, postData);
+    try {
+        await addDocumentNonBlocking(postsColRef, postData);
 
-    toast({
-      title: t('postCreatedSuccessTitle'),
-      description: t('postCreatedSuccessDescription'),
-    });
-    
-    form.reset();
-    setIsSubmitting(false);
+        toast({
+          title: t('postCreatedSuccessTitle'),
+          description: t('postCreatedSuccessDescription'),
+        });
+        
+        form.reset();
+    } catch (error) {
+        console.error("Error creating post:", error);
+        toast({
+            variant: "destructive",
+            title: t('error'),
+            description: t('postCreationError') || "Failed to create post.",
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
   
   if (!user) {
