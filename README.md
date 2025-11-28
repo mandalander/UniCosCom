@@ -26,4 +26,54 @@ Witaj w **Unicoscom** (Unikalny Kosmos Komunikacji i Społeczności) - bogatej w
 
 ## 🏁 Pierwsze kroki
 
-Projekt jest hostowany w **Firebase Studio**. Możesz zacząć eksplorować i modyfikować kod, zaczynając od pliku `src/app/page.tsx`.
+Aby uruchomić projekt lokalnie, postępuj zgodnie z poniższymi instrukcjami:
+
+### Wymagania wstępne
+
+*   [Node.js](https://nodejs.org/) (wersja 18 lub nowsza)
+*   Menedżer pakietów `npm`
+
+### Instalacja
+
+1.  Sklonuj repozytorium (jeśli jeszcze tego nie zrobiłeś):
+    ```bash
+    git clone https://github.com/twoje-repo/unicoscom.git
+    cd unicoscom
+    ```
+
+2.  Zainstaluj zależności:
+    ```bash
+    npm install
+    ```
+
+### Uruchamianie w trybie deweloperskim
+
+Aby uruchomić serwer deweloperski:
+
+```bash
+npm run dev
+```
+
+Aplikacja będzie dostępna pod adresem [http://localhost:3000](http://localhost:3000).
+
+### Budowanie wersji produkcyjnej
+
+Aby zbudować aplikację do produkcji:
+
+```bash
+npm run build
+```
+
+Następnie możesz ją uruchomić za pomocą:
+
+```bash
+npm start
+```
+
+### Linting
+
+Aby sprawdzić kod pod kątem błędów:
+
+```bash
+npm run lint
+```

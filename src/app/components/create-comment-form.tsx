@@ -14,8 +14,8 @@ import { collection, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 
 interface CreateCommentFormProps {
-    communityId: string;
-    postId: string;
+  communityId: string;
+  postId: string;
 }
 
 export function CreateCommentForm({ communityId, postId }: CreateCommentFormProps) {
@@ -37,7 +37,7 @@ export function CreateCommentForm({ communityId, postId }: CreateCommentFormProp
     },
   });
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!user) {
       router.push('/login');
       return;
@@ -46,11 +46,11 @@ export function CreateCommentForm({ communityId, postId }: CreateCommentFormProp
       toast({ variant: "destructive", title: t('error'), description: "Błąd połączenia z bazą danych." });
       return;
     }
-    
+
     setIsSubmitting(true);
 
     const commentsColRef = collection(firestore, 'communities', communityId, 'posts', postId, 'comments');
-    
+
     const commentData = {
       content: data.content,
       creatorId: user.uid,
@@ -61,25 +61,35 @@ export function CreateCommentForm({ communityId, postId }: CreateCommentFormProp
       downvotes: 0,
       voteCount: 0,
     };
-    
-    addDocumentNonBlocking(commentsColRef, commentData);
 
-    toast({
-      title: t('commentAddedSuccessTitle'),
-    });
-    
-    form.reset();
-    setIsSubmitting(false);
+    try {
+      await addDocumentNonBlocking(commentsColRef, commentData);
+
+      toast({
+        title: t('commentAddedSuccessTitle'),
+      });
+
+      form.reset();
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      toast({
+        variant: "destructive",
+        title: t('error'),
+        description: t('commentCreationError') || "Failed to add comment.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-   if (!user) {
+  if (!user) {
     return (
-        <div className="text-center text-muted-foreground">
-            <p>{t('logInToAddComment')}</p>
-            <Button onClick={() => router.push('/login')} className="mt-4" variant="outline">
-                {t('login')}
-            </Button>
-        </div>
+      <div className="text-center text-muted-foreground">
+        <p>{t('logInToAddComment')}</p>
+        <Button onClick={() => router.push('/login')} className="mt-4" variant="outline">
+          {t('login')}
+        </Button>
+      </div>
     )
   }
 

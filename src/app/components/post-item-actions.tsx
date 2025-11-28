@@ -17,9 +17,9 @@ import { DeleteConfirmationDialog } from './delete-confirmation-dialog';
 import { EditPostForm } from './edit-post-form';
 
 type Post = {
-    id: string;
-    title: string;
-    content: string;
+  id: string;
+  title: string;
+  content: string;
 };
 
 interface PostItemActionsProps {
@@ -34,12 +34,20 @@ export function PostItemActions({ communityId, post }: PostItemActionsProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!firestore) return;
     const postRef = doc(firestore, 'communities', communityId, 'posts', post.id);
-    deleteDocumentNonBlocking(postRef);
-    toast({ description: t('deletePostSuccess') });
-    setIsDeleteDialogOpen(false);
+    try {
+      await deleteDocumentNonBlocking(postRef);
+      toast({ description: t('deletePostSuccess') });
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast({
+        variant: "destructive",
+        description: t('deletePostError') || "Failed to delete post.",
+      });
+    }
   };
 
   return (
@@ -62,7 +70,7 @@ export function PostItemActions({ communityId, post }: PostItemActionsProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

@@ -211,7 +211,7 @@ export function PostFeed() {
 
             setPosts(postsData);
             setIsLoading(false);
-        }, (error) => {
+        }, (error: any) => {
             console.error("Error fetching posts:", error);
             setIsLoading(false);
         });

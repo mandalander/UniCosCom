@@ -17,8 +17,8 @@ import { DeleteConfirmationDialog } from './delete-confirmation-dialog';
 import { EditCommentForm } from './edit-comment-form';
 
 type Comment = {
-    id: string;
-    content: string;
+  id: string;
+  content: string;
 };
 
 interface CommentItemActionsProps {
@@ -34,12 +34,20 @@ export function CommentItemActions({ communityId, postId, comment }: CommentItem
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!firestore) return;
     const commentRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', comment.id);
-    deleteDocumentNonBlocking(commentRef);
-    toast({ description: t('deleteCommentSuccess') });
-    setIsDeleteDialogOpen(false);
+    try {
+      await deleteDocumentNonBlocking(commentRef);
+      toast({ description: t('deleteCommentSuccess') });
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      toast({
+        variant: "destructive",
+        description: t('deleteCommentError') || "Failed to delete comment.",
+      });
+    }
   };
 
   return (
@@ -62,14 +70,14 @@ export function CommentItemActions({ communityId, postId, comment }: CommentItem
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleDelete}
       />
 
-       <EditCommentForm
+      <EditCommentForm
         isOpen={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         communityId={communityId}
