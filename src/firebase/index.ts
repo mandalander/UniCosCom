@@ -2,7 +2,7 @@
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence, inMemoryPersistence, type Auth } from 'firebase/auth';
+import type { Auth } from 'firebase/auth'; // Import TYPES only
 import { getFirestore } from 'firebase/firestore'
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
@@ -37,9 +37,14 @@ export function getSdks(firebaseApp: FirebaseApp) {
   let auth: Auth | null = null;
 
   if (typeof window !== 'undefined') {
+    // Dynamically import firebase/auth to avoid SSR side effects
+    // We use require here because this function is synchronous and we want to avoid top-level imports
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { getAuth, setPersistence, inMemoryPersistence } = require('firebase/auth');
+
     auth = getAuth(firebaseApp);
     // Set persistence to inMemoryPersistence to prevent automatic localStorage access
-    setPersistence(auth, inMemoryPersistence).catch((error) => {
+    setPersistence(auth, inMemoryPersistence).catch((error: any) => {
       console.error('Error setting auth persistence:', error);
     });
   }
