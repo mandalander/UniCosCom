@@ -35,14 +35,12 @@ service cloud.firestore {
       match /posts/{postId} {
         allow list, get: if true;
         allow create: if isSignedIn();
-        allow update: if isSignedIn() && (resource.data.creatorId == request.auth.uid || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['voteCount'])));
-        allow delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+        allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
         match /comments/{commentId} {
           allow list, get: if true;
           allow create: if isSignedIn();
-          allow update: if isSignedIn() && (resource.data.creatorId == request.auth.uid || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['voteCount'])));
-          allow delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+          allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
            // Rules for comment votes
           match /votes/{userId} {
@@ -60,3 +58,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
