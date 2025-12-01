@@ -72,7 +72,6 @@ export default function ProfilePage() {
 
 
   return (
-  return (
     <div className="relative">
       {/* Gradient Banner */}
       <div className="h-48 w-full bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 rounded-t-xl relative overflow-hidden">

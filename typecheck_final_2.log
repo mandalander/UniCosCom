@@ -1,0 +1,17 @@
+
+> unicoscom@0.1.0 typecheck
+> tsc --noEmit
+
+functions/src/genkit-sample.ts(30,5): error TS2322: Type 'GenkitPlugin' is not assignable to type 'GenkitPlugin | GenkitPluginV2'.
+  Type 'import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").c' is not assignable to type 'import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").c'.
+    Types of parameters 'genkit' and 'genkit' are incompatible.
+      Type 'import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").G' is not assignable to type 'import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").G'.
+        The types of 'options.plugins' are incompatible between these types.
+          Type '(import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").c | import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").b)[] | undefined' is not assignable to type '(import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").c | import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").b)[] | undefined'.
+            Type '(import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").c | import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").b)[]' is not assignable to type '(import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").c | import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").b)[]'.
+              Type 'import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").c | import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").b' is not assignable to type 'import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").c | import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").b'.
+                Type 'GenkitPlugin' is not assignable to type 'GenkitPlugin | GenkitPluginV2'.
+                  Type 'import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").c' is not assignable to type 'import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").c'.
+                    Types of parameters 'genkit' and 'genkit' are incompatible.
+                      Property 'defineDynamicActionProvider' is missing in type 'import("C:/Users/dawid/Desktop/UniCosCom/node_modules/genkit/lib/index-D0wVUZ6a").G' but required in type 'import("C:/Users/dawid/Desktop/UniCosCom/functions/node_modules/genkit/lib/index-CUOWfGVG").G'.
+functions/src/genkit-sample.ts(44,34): error TS2589: Type instantiation is excessively deep and possibly infinite.

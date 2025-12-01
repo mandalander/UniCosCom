@@ -64,6 +64,8 @@ export const translations = {
     userPosts: 'Posty użytkownika {{username}}',
     userHasNoPosts: 'Ten użytkownik nie opublikował jeszcze żadnych postów.',
     userNotFound: 'Nie znaleziono użytkownika.',
+    profileDetails: 'Szczegóły profilu',
+    profileInfo: 'Informacje',
 
 
     // Edit Profile Page
@@ -237,7 +239,7 @@ export const translations = {
     sortLatest: 'Najnowsze',
     sortTop: 'Najlepsze',
     sortOldest: 'Najstarsze',
-    latestPosts: 'Najnowsze posty',
+
 
     // Settings & Profile
     changePassword: 'Zmień hasło',
@@ -255,6 +257,14 @@ export const translations = {
     passwordUpdateError: 'Błąd aktualizacji hasła.',
     wrongPassword: 'Nieprawidłowe hasło.',
     tooManyRequests: 'Zbyt wiele prób. Spróbuj ponownie później.',
+    errorSavingSettings: 'Błąd zapisywania ustawień.',
+    fileTooLarge: 'Plik jest zbyt duży.',
+    invalidFileType: 'Nieprawidłowy typ pliku.',
+    addImage: 'Dodaj zdjęcie',
+    addVideo: 'Dodaj wideo',
+    success: 'Sukces',
+    posts: 'Posty',
+    communities: 'Społeczności',
 
   },
   en: {
@@ -321,6 +331,8 @@ export const translations = {
     userPosts: "Posts by {{username}}",
     userHasNoPosts: 'This user has not published any posts yet.',
     userNotFound: 'User not found.',
+    profileDetails: 'Profile Details',
+    profileInfo: 'Information',
 
     // Edit Profile Page
     editProfileTitle: 'Edit Profile',
@@ -492,7 +504,7 @@ export const translations = {
     sortLatest: 'Latest',
     sortTop: 'Top',
     sortOldest: 'Oldest',
-    latestPosts: 'Latest Posts',
+
 
     // Settings & Profile
     changePassword: 'Change Password',
@@ -510,6 +522,14 @@ export const translations = {
     passwordUpdateError: 'Error updating password.',
     wrongPassword: 'Incorrect password.',
     tooManyRequests: 'Too many requests. Try again later.',
+    errorSavingSettings: 'Error saving settings.',
+    fileTooLarge: 'File is too large.',
+    invalidFileType: 'Invalid file type.',
+    addImage: 'Add Image',
+    addVideo: 'Add Video',
+    success: 'Success',
+    posts: 'Posts',
+    communities: 'Communities',
   },
 };
 

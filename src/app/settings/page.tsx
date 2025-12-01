@@ -14,6 +14,10 @@ import { Switch } from '@/components/ui/switch';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '../components/language-provider';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { UserProfile } from '@/lib/types';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -21,10 +25,67 @@ export default function SettingsPage() {
   const [mounted, setMounted] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(false);
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [loadingSettings, setLoadingSettings] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      if (!user || !firestore) return;
+      setLoadingSettings(true);
+      try {
+        const userDocRef = doc(firestore, 'users', user.uid);
+        const docSnap = await getDoc(userDocRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data() as UserProfile;
+          if (data.settings) {
+            setEmailNotifications(data.settings.emailNotifications ?? true);
+            setPushNotifications(data.settings.pushNotifications ?? false);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching settings:", error);
+      } finally {
+        setLoadingSettings(false);
+      }
+    };
+
+    if (mounted && user) {
+      fetchSettings();
+    }
+  }, [user, firestore, mounted]);
+
+  const handleNotificationChange = async (type: 'email' | 'push', value: boolean) => {
+    if (type === 'email') setEmailNotifications(value);
+    if (type === 'push') setPushNotifications(value);
+
+    if (!user || !firestore) return;
+
+    try {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await setDoc(userDocRef, {
+        settings: {
+          emailNotifications: type === 'email' ? value : emailNotifications,
+          pushNotifications: type === 'push' ? value : pushNotifications,
+        }
+      }, { merge: true });
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      toast({
+        variant: "destructive",
+        title: t('error'),
+        description: t('errorSavingSettings'),
+      });
+      // Revert state on error
+      if (type === 'email') setEmailNotifications(!value);
+      if (type === 'push') setPushNotifications(!value);
+    }
+  };
 
   if (!mounted) {
     return (
@@ -111,14 +172,22 @@ export default function SettingsPage() {
               <Label>{t('emailNotifications')}</Label>
               <p className="text-sm text-muted-foreground">{t('emailNotificationsDescription')}</p>
             </div>
-            <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
+            <Switch
+              checked={emailNotifications}
+              onCheckedChange={(val) => handleNotificationChange('email', val)}
+              disabled={loadingSettings || !user}
+            />
           </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>{t('pushNotifications')}</Label>
               <p className="text-sm text-muted-foreground">{t('pushNotificationsDescription')}</p>
             </div>
-            <Switch checked={pushNotifications} onCheckedChange={setPushNotifications} />
+            <Switch
+              checked={pushNotifications}
+              onCheckedChange={(val) => handleNotificationChange('push', val)}
+              disabled={loadingSettings || !user}
+            />
           </div>
         </div>
       </CardContent>

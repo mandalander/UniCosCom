@@ -1,0 +1,5 @@
+
+> unicoscom@0.1.0 typecheck
+> tsc --noEmit
+
+src/app/profile/page.tsx(75,3): error TS1109: Expression expected.
