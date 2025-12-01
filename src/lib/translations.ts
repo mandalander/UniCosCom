@@ -216,10 +216,45 @@ export const translations = {
     post: 'post',
     comment: 'komentarz',
     viewContext: 'Zobacz kontekst',
+    emailNotifications: 'Powiadomienia Email',
+    emailNotificationsDescription: 'Otrzymuj powiadomienia na swój adres email.',
+    pushNotifications: 'Powiadomienia Push',
+    pushNotificationsDescription: 'Otrzymuj powiadomienia push w przeglądarce.',
 
     // Metadata
     metaTitle: 'Unicoscom',
     metaDescription: 'Unicoscom - Unikalny Kosmos Komunikacji i Społeczności.',
+
+    // Search
+    searchPlaceholder: 'Szukaj...',
+    enterSearchTerm: 'Wpisz frazę wyszukiwania.',
+    searchResultsFor: 'Wyniki wyszukiwania dla',
+    all: 'Wszystkie',
+    users: 'Użytkownicy',
+    noResults: 'Brak wyników.',
+
+    // Sorting
+    sortLatest: 'Najnowsze',
+    sortTop: 'Najlepsze',
+    sortOldest: 'Najstarsze',
+    latestPosts: 'Najnowsze posty',
+
+    // Settings & Profile
+    changePassword: 'Zmień hasło',
+    currentPassword: 'Obecne hasło',
+    currentPasswordPlaceholder: 'Wpisz obecne hasło',
+    newPassword: 'Nowe hasło',
+    newPasswordPlaceholder: 'Wpisz nowe hasło',
+    confirmNewPassword: 'Potwierdź nowe hasło',
+    confirmNewPasswordPlaceholder: 'Powtórz nowe hasło',
+    updatePassword: 'Zaktualizuj hasło',
+    saving: 'Zapisywanie...',
+    passwordsDoNotMatch: 'Hasła nie są identyczne.',
+    passwordTooShort: 'Hasło musi mieć co najmniej 6 znaków.',
+    passwordUpdated: 'Hasło zostało zaktualizowane.',
+    passwordUpdateError: 'Błąd aktualizacji hasła.',
+    wrongPassword: 'Nieprawidłowe hasło.',
+    tooManyRequests: 'Zbyt wiele prób. Spróbuj ponownie później.',
 
   },
   en: {
@@ -436,10 +471,45 @@ export const translations = {
     post: 'post',
     comment: 'comment',
     viewContext: 'View context',
+    emailNotifications: 'Email Notifications',
+    emailNotificationsDescription: 'Receive notifications via email.',
+    pushNotifications: 'Push Notifications',
+    pushNotificationsDescription: 'Receive push notifications in your browser.',
 
     // Metadata
     metaTitle: 'Unicoscom',
     metaDescription: 'Unicoscom - The Unique Cosmos of Communication and Community.',
+
+    // Search
+    searchPlaceholder: 'Search...',
+    enterSearchTerm: 'Enter a search term.',
+    searchResultsFor: 'Search results for',
+    all: 'All',
+    users: 'Users',
+    noResults: 'No results found.',
+
+    // Sorting
+    sortLatest: 'Latest',
+    sortTop: 'Top',
+    sortOldest: 'Oldest',
+    latestPosts: 'Latest Posts',
+
+    // Settings & Profile
+    changePassword: 'Change Password',
+    currentPassword: 'Current Password',
+    currentPasswordPlaceholder: 'Enter current password',
+    newPassword: 'New Password',
+    newPasswordPlaceholder: 'Enter new password',
+    confirmNewPassword: 'Confirm New Password',
+    confirmNewPasswordPlaceholder: 'Repeat new password',
+    updatePassword: 'Update Password',
+    saving: 'Saving...',
+    passwordsDoNotMatch: 'Passwords do not match.',
+    passwordTooShort: 'Password must be at least 6 characters long.',
+    passwordUpdated: 'Password updated successfully.',
+    passwordUpdateError: 'Error updating password.',
+    wrongPassword: 'Incorrect password.',
+    tooManyRequests: 'Too many requests. Try again later.',
   },
 };
 

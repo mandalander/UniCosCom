@@ -17,7 +17,7 @@ import { VoteButtons } from '@/components/vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
 import { ShareButton } from './share-button';
 
-type Post = {
+export type Post = {
     id: string;
     title: string;
     content: string;
@@ -44,7 +44,7 @@ type Comment = {
     voteCount: number;
 }
 
-const PostItem = ({ post }: { post: Post }) => {
+export const PostItem = ({ post }: { post: Post }) => {
     const { t, language } = useLanguage();
     const [comments, setComments] = useState<Comment[]>([]);
     const [isLoadingComments, setIsLoadingComments] = useState(false);
@@ -186,19 +186,33 @@ const PostItem = ({ post }: { post: Post }) => {
 }
 
 
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// ... (previous imports)
+
 export function PostFeed() {
     const { t } = useLanguage();
     const firestore = useFirestore();
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [sortBy, setSortBy] = useState<'latest' | 'top' | 'oldest'>('latest');
 
     useEffect(() => {
         if (!firestore) return;
         setIsLoading(true);
 
-        const postsQuery = query(collectionGroup(firestore, 'posts'), orderBy('createdAt', 'desc'), limit(25));
+        let q;
+        const postsRef = collectionGroup(firestore, 'posts');
 
-        const unsubscribe = onSnapshot(postsQuery, async (snapshot) => {
+        if (sortBy === 'latest') {
+            q = query(postsRef, orderBy('createdAt', 'desc'), limit(25));
+        } else if (sortBy === 'top') {
+            q = query(postsRef, orderBy('voteCount', 'desc'), limit(25));
+        } else {
+            q = query(postsRef, orderBy('createdAt', 'asc'), limit(25));
+        }
+
+        const unsubscribe = onSnapshot(q, async (snapshot) => {
             const postsDataPromises = snapshot.docs.map(async (postDoc) => {
                 const post = { id: postDoc.id, ...postDoc.data() } as Omit<Post, 'communityName' | 'communityId'>;
                 const communityRef = postDoc.ref.parent.parent;
@@ -216,9 +230,17 @@ export function PostFeed() {
             });
 
             const postsData = (await Promise.all(postsDataPromises))
-                .filter((p): p is Post => p !== null && p.createdAt)
-                .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                .filter((p): p is Post => p !== null && p.createdAt);
 
+            // Client-side sort as a fallback/refinement since Promise.all order isn't guaranteed to match snapshot order strictly if async ops vary, 
+            // though usually map preserves order. But explicit sort is safer.
+            if (sortBy === 'latest') {
+                postsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+            } else if (sortBy === 'top') {
+                postsData.sort((a, b) => b.voteCount - a.voteCount);
+            } else {
+                postsData.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+            }
 
             setPosts(postsData);
             setIsLoading(false);
@@ -228,12 +250,15 @@ export function PostFeed() {
         });
 
         return () => unsubscribe();
-    }, [firestore]);
+    }, [firestore, sortBy]);
 
 
     if (isLoading) {
         return (
             <div className="space-y-6">
+                <div className="flex justify-end mb-4">
+                    <Skeleton className="h-10 w-64" />
+                </div>
                 {[...Array(3)].map((_, i) => (
                     <Card key={i}>
                         <CardHeader>
@@ -261,6 +286,17 @@ export function PostFeed() {
 
     return (
         <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold tracking-tight">{t('latestPosts')}</h2>
+                <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as 'latest' | 'top' | 'oldest')} className="w-[400px]">
+                    <TabsList className="grid w-full grid-cols-3 glass">
+                        <TabsTrigger value="latest">{t('sortLatest') || "Latest"}</TabsTrigger>
+                        <TabsTrigger value="top">{t('sortTop') || "Top"}</TabsTrigger>
+                        <TabsTrigger value="oldest">{t('sortOldest') || "Oldest"}</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            </div>
+
             {posts && posts.length > 0 ? (
                 posts.map((post) => (
                     <PostItem key={post.id} post={post} />

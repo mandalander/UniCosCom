@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useDoc, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
-import { updateProfile, deleteUser } from 'firebase/auth';
+import { updateProfile, deleteUser, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
@@ -68,13 +68,18 @@ export default function EditProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Password Change State
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+
   const userDocRef = useMemo(() => {
     if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc(userDocRef);
-  
+
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
@@ -90,7 +95,7 @@ export default function EditProfilePage() {
       if (userProfile.birthDate) {
         setBirthDate(new Date(`${userProfile.birthDate}T00:00:00`));
       }
-      if(userProfile.photoURL) {
+      if (userProfile.photoURL) {
         setPhotoURL(userProfile.photoURL);
       }
       setBio(userProfile.bio || '');
@@ -100,11 +105,11 @@ export default function EditProfilePage() {
       setLinkedin(userProfile.linkedin || '');
       setGithub(userProfile.github || '');
     } else if (user) {
-        setDisplayName(user.displayName || '');
-        const nameParts = user.displayName?.split(' ') || ['', ''];
-        setFirstName(nameParts[0] || '');
-        setLastName(nameParts.slice(1).join(' ') || '');
-        setPhotoURL(user.photoURL || null);
+      setDisplayName(user.displayName || '');
+      const nameParts = user.displayName?.split(' ') || ['', ''];
+      setFirstName(nameParts[0] || '');
+      setLastName(nameParts.slice(1).join(' ') || '');
+      setPhotoURL(user.photoURL || null);
     }
   }, [user, userProfile]);
 
@@ -129,22 +134,22 @@ export default function EditProfilePage() {
       reader.readAsDataURL(file);
     }
   };
-  
+
   const handleSave = async () => {
     if (!user || !firestore || !auth.currentUser) return;
-  
+
     setIsSaving(true);
-  
+
     try {
       let finalPhotoUrl = userProfile?.photoURL || user?.photoURL;
-      
+
       if (newPhotoDataUrl) {
         const storage = getStorage();
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
         const snapshot = await uploadString(storageRef, newPhotoDataUrl, 'data_url');
         finalPhotoUrl = await getDownloadURL(snapshot.ref);
       }
-      
+
       await updateProfile(auth.currentUser, {
         displayName: displayName,
         photoURL: finalPhotoUrl,
@@ -173,29 +178,84 @@ export default function EditProfilePage() {
       batch.set(userDocRef, userPrivateData, { merge: true });
 
       const userPublicData = {
-          displayName: displayName,
-          photoURL: finalPhotoUrl,
-          updatedAt: serverTimestamp(),
+        displayName: displayName,
+        photoURL: finalPhotoUrl,
+        updatedAt: serverTimestamp(),
       };
       batch.set(userProfileDocRef, userPublicData, { merge: true });
 
       await batch.commit();
-  
+
       await auth.currentUser.reload();
-  
+
       toast({
         title: t('editProfileSuccessTitle'),
         description: t('editProfileSuccessDescription'),
       });
-  
+
       router.push('/profile');
-  
+
     } catch (error) {
       console.error("Error saving profile:", error);
       toast({
         variant: "destructive",
         title: t('editProfileErrorTitle'),
         description: (error as Error).message || t('editProfileErrorDescription'),
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!user || !auth.currentUser || !user.email) return;
+
+    if (newPassword !== confirmNewPassword) {
+      toast({
+        variant: "destructive",
+        title: t('error'),
+        description: t('passwordsDoNotMatch'),
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        variant: "destructive",
+        title: t('error'),
+        description: t('passwordTooShort'),
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      await updatePassword(auth.currentUser, newPassword);
+
+      toast({
+        title: t('success'),
+        description: t('passwordUpdated'),
+      });
+
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+
+    } catch (error: any) {
+      console.error("Error updating password:", error);
+      let description = t('passwordUpdateError');
+      if (error.code === 'auth/wrong-password') {
+        description = t('wrongPassword');
+      } else if (error.code === 'auth/too-many-requests') {
+        description = t('tooManyRequests');
+      }
+      toast({
+        variant: "destructive",
+        title: t('error'),
+        description: description,
       });
     } finally {
       setIsSaving(false);
@@ -225,7 +285,7 @@ export default function EditProfilePage() {
       }
 
       const batch = writeBatch(firestore);
-      
+
       // 2. Delete user documents from Firestore
       const userDocRef = doc(firestore, 'users', user.uid);
       const userProfileDocRef = doc(firestore, 'userProfiles', user.uid);
@@ -268,7 +328,7 @@ export default function EditProfilePage() {
   if (!isUserLoading && !user) {
     return null;
   }
-  
+
   return (
     <div className="space-y-6">
       <header>
@@ -289,32 +349,32 @@ export default function EditProfilePage() {
                 <div className="grid gap-4 items-center">
                   <Label>{t('profilePhoto')}</Label>
                   <div className='flex items-center gap-4'>
-                      <Avatar className="h-20 w-20">
-                          <AvatarImage src={newPhotoDataUrl || photoURL || undefined} />
-                          <AvatarFallback>{getInitials(displayName, user?.email)}</AvatarFallback>
-                      </Avatar>
-                      <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isSaving}>
-                          {t('changePhoto')}
-                      </Button>
-                      <Input 
-                          ref={fileInputRef}
-                          type="file" 
-                          className="hidden" 
-                          accept="image/png, image/jpeg"
-                          onChange={handleFileChange}
-                      />
+                    <Avatar className="h-20 w-20">
+                      <AvatarImage src={newPhotoDataUrl || photoURL || undefined} />
+                      <AvatarFallback>{getInitials(displayName, user?.email)}</AvatarFallback>
+                    </Avatar>
+                    <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isSaving}>
+                      {t('changePhoto')}
+                    </Button>
+                    <Input
+                      ref={fileInputRef}
+                      type="file"
+                      className="hidden"
+                      accept="image/png, image/jpeg"
+                      onChange={handleFileChange}
+                    />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="displayName">{t('profileDisplayName')}</Label>
-                    <Input
-                      id="displayName"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder={t('profileDisplayName')}
-                      disabled={isSaving}
-                    />
-                  </div>
+                  <Label htmlFor="displayName">{t('profileDisplayName')}</Label>
+                  <Input
+                    id="displayName"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={t('profileDisplayName')}
+                    disabled={isSaving}
+                  />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="firstName">{t('profileFirstName')}</Label>
@@ -326,7 +386,7 @@ export default function EditProfilePage() {
                       disabled={isSaving}
                     />
                   </div>
-                   <div className="grid gap-2">
+                  <div className="grid gap-2">
                     <Label htmlFor="lastName">{t('profileLastName')}</Label>
                     <Input
                       id="lastName"
@@ -351,27 +411,27 @@ export default function EditProfilePage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="location">{t('profileLocation')}</Label>
-                        <Input
-                            id="location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            placeholder={t('editProfileLocationPlaceholder')}
-                            disabled={isSaving}
-                        />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="website">{t('profileWebsite')}</Label>
-                        <Input
-                            id="website"
-                            type="url"
-                            value={website}
-                            onChange={(e) => setWebsite(e.target.value)}
-                            placeholder={t('editProfileWebsitePlaceholder')}
-                            disabled={isSaving}
-                        />
-                    </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="location">{t('profileLocation')}</Label>
+                    <Input
+                      id="location"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder={t('editProfileLocationPlaceholder')}
+                      disabled={isSaving}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="website">{t('profileWebsite')}</Label>
+                    <Input
+                      id="website"
+                      type="url"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      placeholder={t('editProfileWebsitePlaceholder')}
+                      disabled={isSaving}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid gap-2">
@@ -396,38 +456,38 @@ export default function EditProfilePage() {
                     </div>
                   </RadioGroup>
                 </div>
-                
+
                 <div className="grid gap-2">
                   <Label htmlFor="birthDate">{t('profileBirthDate')}</Label>
-                   <Popover>
-                      <PopoverTrigger asChild>
+                  <Popover>
+                    <PopoverTrigger asChild>
                       <Button
-                          variant={"outline"}
-                          className={cn(
+                        variant={"outline"}
+                        className={cn(
                           "w-[240px] justify-start text-left font-normal",
                           !birthDate && "text-muted-foreground"
-                          )}
-                          disabled={isSaving}
+                        )}
+                        disabled={isSaving}
                       >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {birthDate ? format(birthDate, "PPP", { locale: language === 'pl' ? pl : enUS }) : <span>{t('editProfileBirthDatePlaceholder')}</span>}
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {birthDate ? format(birthDate, "PPP", { locale: language === 'pl' ? pl : enUS }) : <span>{t('editProfileBirthDatePlaceholder')}</span>}
                       </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={birthDate}
-                          onSelect={setBirthDate}
-                          initialFocus
-                          captionLayout="dropdown-buttons"
-                          fromYear={1900}
-                          toYear={new Date().getFullYear()}
-                          locale={language === 'pl' ? pl : enUS}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={birthDate}
+                        onSelect={setBirthDate}
+                        initialFocus
+                        captionLayout="dropdown-buttons"
+                        fromYear={1900}
+                        toYear={new Date().getFullYear()}
+                        locale={language === 'pl' ? pl : enUS}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label>{t('profileSocialLinks')}</Label>
                   <div className="flex items-center gap-2">
@@ -472,46 +532,84 @@ export default function EditProfilePage() {
           </Card>
         </TabsContent>
         <TabsContent value="security">
-           <Card>
+          <Card>
             <CardHeader>
-                <CardTitle>{t('editProfileTabSecurity')}</CardTitle>
-                <CardDescription>{t('securityPrivacyDescription')}</CardDescription>
+              <CardTitle>{t('editProfileTabSecurity')}</CardTitle>
+              <CardDescription>{t('securityPrivacyDescription')}</CardDescription>
             </CardHeader>
-            <CardContent>
-               {/* Content for Security & Privacy will go here */}
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">{t('changePassword')}</h3>
+                <div className="grid gap-2">
+                  <Label htmlFor="currentPassword">{t('currentPassword')}</Label>
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder={t('currentPasswordPlaceholder')}
+                    disabled={isSaving}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="newPassword">{t('newPassword')}</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder={t('newPasswordPlaceholder')}
+                    disabled={isSaving}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="confirmNewPassword">{t('confirmNewPassword')}</Label>
+                  <Input
+                    id="confirmNewPassword"
+                    type="password"
+                    value={confirmNewPassword}
+                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                    placeholder={t('confirmNewPasswordPlaceholder')}
+                    disabled={isSaving}
+                  />
+                </div>
+                <Button onClick={handleChangePassword} disabled={isSaving}>
+                  {isSaving ? t('saving') : t('updatePassword')}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="danger-zone">
           <Card className="border-destructive">
             <CardHeader>
-                <CardTitle>{t('dangerZone')}</CardTitle>
-                <CardDescription>{t('dangerZoneDescription')}</CardDescription>
+              <CardTitle>{t('dangerZone')}</CardTitle>
+              <CardDescription>{t('dangerZoneDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
-                <div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" disabled={isDeleting}>
-                        {isDeleting ? t('deleteAccountDeleting') : t('deleteAccountButton')}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>{t('deleteAccountDialogTitle')}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t('deleteAccountDialogDescription')}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter onClick={(e) => e.preventDefault()}>
-                        <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeleting}>
-                          {t('deleteAccountConfirm')}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+              <div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" disabled={isDeleting}>
+                      {isDeleting ? t('deleteAccountDeleting') : t('deleteAccountButton')}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t('deleteAccountDialogTitle')}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t('deleteAccountDialogDescription')}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter onClick={(e) => e.preventDefault()}>
+                      <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeleting}>
+                        {t('deleteAccountConfirm')}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

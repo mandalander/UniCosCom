@@ -10,6 +10,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '../components/language-provider';
@@ -18,6 +19,8 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -98,6 +101,24 @@ export default function SettingsPage() {
             >
               {t('polish')}
             </Button>
+          </div>
+        </div>
+
+        <div className="space-y-4 pt-4 border-t">
+          <h3 className="text-lg font-medium">{t('notificationsTitle')}</h3>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>{t('emailNotifications')}</Label>
+              <p className="text-sm text-muted-foreground">{t('emailNotificationsDescription')}</p>
+            </div>
+            <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>{t('pushNotifications')}</Label>
+              <p className="text-sm text-muted-foreground">{t('pushNotificationsDescription')}</p>
+            </div>
+            <Switch checked={pushNotifications} onCheckedChange={setPushNotifications} />
           </div>
         </div>
       </CardContent>

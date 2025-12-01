@@ -1,4 +1,5 @@
 'use client';
+
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { User as UserIcon } from 'lucide-react';
 import { NotificationBell } from './notification-bell';
+import { SearchBar } from './search-bar';
 
 export function TopNavBar() {
   const { t } = useLanguage();
@@ -41,8 +43,9 @@ export function TopNavBar() {
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between glass px-4 sm:px-6 mb-4 rounded-b-xl mx-2 mt-2">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-1">
         <SidebarTrigger />
+        <SearchBar />
       </div>
       <div className="flex items-center gap-4">
         {isUserLoading ? (
