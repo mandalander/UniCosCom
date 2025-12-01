@@ -285,6 +285,8 @@ export const translations = {
     reportDismissed: 'Zgłoszenie odrzucone.',
     submitting: 'Wysyłanie...',
     submitReport: 'Wyślij zgłoszenie',
+    reportedContent: 'Zgłoszona treść',
+    moderationDescription: 'Zarządzaj zgłoszoną treścią i dbaj o bezpieczeństwo społeczności.',
 
     // Messages
     messages: "Wiadomości",
@@ -583,6 +585,8 @@ export const translations = {
     reportDismissed: 'Report dismissed.',
     submitting: 'Submitting...',
     submitReport: 'Submit Report',
+    reportedContent: 'Reported Content',
+    moderationDescription: 'Manage reported content and keep the community safe.',
 
     // Messages
     messages: "Messages",
