@@ -12,6 +12,8 @@ import { Search, Plus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 
+import { NewConversationDialog } from './new-conversation-dialog';
+
 interface ConversationListProps {
     selectedId: string | null;
     onSelect: (id: string) => void;
@@ -67,9 +69,7 @@ export function ConversationList({ selectedId, onSelect }: ConversationListProps
             <div className="p-4 border-b space-y-4">
                 <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold">{t('messages')}</h2>
-                    <Button size="icon" variant="ghost">
-                        <Plus className="h-5 w-5" />
-                    </Button>
+                    <NewConversationDialog onConversationCreated={onSelect} />
                 </div>
                 <div className="relative">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

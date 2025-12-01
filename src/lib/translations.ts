@@ -27,6 +27,9 @@ export const translations = {
     register: 'Zarejestruj się',
     signInWithGoogle: 'Zaloguj się z Google',
     signUpWithGoogle: 'Zarejestruj się z Google',
+    emailAlreadyInUse: 'Ten email jest już używany.',
+    invalidCredentials: 'Nieprawidłowy email lub hasło.',
+    weakPassword: 'Hasło jest za słabe.',
 
     // Home Page
     homeTitle: 'Najnowsze posty',
@@ -280,6 +283,8 @@ export const translations = {
     deleteContent: 'Usuń treść',
     contentDeleted: 'Treść usunięta i zgłoszenie rozwiązane.',
     reportDismissed: 'Zgłoszenie odrzucone.',
+    submitting: 'Wysyłanie...',
+    submitReport: 'Wyślij zgłoszenie',
 
     // Messages
     messages: "Wiadomości",
@@ -293,6 +298,7 @@ export const translations = {
     offline: "Niedostępny",
     lastMessage: "Ostatnia wiadomość",
     newConversation: "Nowa rozmowa",
+    typeToSearch: "Wpisz, aby wyszukać użytkowników",
 
   },
   en: {
@@ -322,6 +328,9 @@ export const translations = {
     register: 'Sign up',
     signInWithGoogle: 'Sign in with Google',
     signUpWithGoogle: 'Sign up with Google',
+    emailAlreadyInUse: 'Email is already in use.',
+    invalidCredentials: 'Invalid email or password.',
+    weakPassword: 'Password is too weak.',
 
     // Home Page
     homeTitle: 'Latest Posts',
@@ -572,6 +581,8 @@ export const translations = {
     deleteContent: 'Delete Content',
     contentDeleted: 'Content deleted and report resolved.',
     reportDismissed: 'Report dismissed.',
+    submitting: 'Submitting...',
+    submitReport: 'Submit Report',
 
     // Messages
     messages: "Messages",
@@ -585,6 +596,7 @@ export const translations = {
     offline: "Offline",
     lastMessage: "Last message",
     newConversation: "New Conversation",
+    typeToSearch: "Type to search for users",
   },
 };
 

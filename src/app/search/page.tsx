@@ -72,7 +72,9 @@ export default function SearchPage() {
                         communitiesMap.set(doc.id, { id: doc.id, ...doc.data() } as Community);
                     });
                 });
-                setCommunities(Array.from(communitiesMap.values()));
+                const communitiesData = Array.from(communitiesMap.values());
+                communitiesData.sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''));
+                setCommunities(communitiesData);
 
                 // --- Search Users ---
                 const usersRef = collection(firestore, 'userProfiles');
@@ -92,18 +94,12 @@ export default function SearchPage() {
                         usersMap.set(doc.id, { uid: doc.id, ...doc.data() } as UserProfile);
                     });
                 });
-                setUsers(Array.from(usersMap.values()));
+                const usersData = Array.from(usersMap.values());
+                usersData.sort((a: any, b: any) => (a.displayName || '').localeCompare(b.displayName || ''));
+                setUsers(usersData);
 
                 // --- Search Posts ---
-                // Strategy: Try to find by title prefix.
-                // Note: collectionGroup queries with inequality on a field ('title') require an index on that field.
                 const postsRef = collectionGroup(firestore, 'posts');
-
-                // We'll try to fetch by title. 
-                // If this fails (missing index), we might fall back or just show the error.
-                // We also fetch recent posts as a fallback/supplement if the query is short? 
-                // No, let's stick to the search query to be precise.
-
                 const postQueries = [
                     query(postsRef, where('title', '>=', q), where('title', '<=', q + '\uf8ff'), limit(20))
                 ];
@@ -118,8 +114,6 @@ export default function SearchPage() {
 
                 postSnapshots.forEach(snap => {
                     snap.docs.forEach(doc => {
-                        // For collectionGroup, ref.parent.parent is the document that contains the subcollection
-                        // e.g. communities/{communityId}/posts/{postId} -> parent.parent.id = communityId
                         postsMap.set(doc.id, {
                             id: doc.id,
                             ...doc.data(),
@@ -129,15 +123,16 @@ export default function SearchPage() {
                 });
 
                 const postsData = Array.from(postsMap.values());
+                // Sort posts by createdAt desc
+                postsData.sort((a: any, b: any) => {
+                    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                    return timeB - timeA;
+                });
 
-                // Fetch community names for posts
-                // Optimization: Deduplicate community IDs to fetch
-                const communityIds = Array.from(new Set(postsData.map(p => p.communityId).filter(Boolean)));
-                // In a real app, we'd batch fetch these. For now, we'll just set a placeholder or fetch if we have few.
-                // Let's just set the placeholder as before to be safe and fast.
                 const postsWithCommunityNames = postsData.map(post => ({
                     ...post,
-                    communityName: 'Community' // You might want to fetch this properly later
+                    communityName: 'Community'
                 }));
 
                 setPosts(postsWithCommunityNames);
@@ -152,7 +147,6 @@ export default function SearchPage() {
 
             } catch (error: any) {
                 console.error("Search error:", error);
-                // Check for missing index error
                 if (error.code === 'failed-precondition' && error.message.includes('index')) {
                     setError(`Missing Index: ${error.message}`);
                 } else {

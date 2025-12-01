@@ -13,11 +13,9 @@ import { useLanguage } from '../components/language-provider';
 import { useState } from 'react';
 import {
   useAuth,
-  initiateEmailSignUp,
-  initiateEmailSignIn,
   initiateSignInWithProvider,
 } from '@/firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
@@ -33,18 +31,22 @@ export default function LoginPage() {
     setError(null);
     try {
       if (isRegistering) {
-        await initiateEmailSignUp(auth, email, password);
+        await createUserWithEmailAndPassword(auth, email, password);
       } else {
-        await initiateEmailSignIn(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
       }
-      // Note: Email auth functions in non-blocking-login.tsx are currently void/non-blocking.
-      // If we want to await them, we'd need to change them or use the raw firebase functions here too.
-      // For now, let's assume the user wants to fix Google Login specifically as requested.
-      // But to be consistent, we should probably just let the auth state listener handle the redirect in a real app.
-      // However, to match the existing pattern but fix the race condition:
       router.push('/');
     } catch (e: any) {
-      setError(e.message);
+      console.error("Auth Error:", e);
+      let errorMessage = e.message || "Authentication failed.";
+      if (e.code === 'auth/email-already-in-use') {
+        errorMessage = t('emailAlreadyInUse') || "Email is already in use.";
+      } else if (e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+        errorMessage = t('invalidCredentials') || "Invalid email or password.";
+      } else if (e.code === 'auth/weak-password') {
+        errorMessage = t('weakPassword') || "Password is too weak.";
+      }
+      setError(errorMessage);
     }
   };
 
