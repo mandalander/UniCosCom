@@ -29,6 +29,8 @@ type Post = {
   createdAt: any;
   updatedAt?: any;
   voteCount: number;
+  mediaUrl?: string | null;
+  mediaType?: 'image' | 'video' | null;
 };
 
 export default function PostPage() {
@@ -49,7 +51,7 @@ export default function PostPage() {
     const date = timestamp.toDate();
     return formatDistanceToNow(date, { addSuffix: true, locale: language === 'pl' ? pl : enUS });
   };
-  
+
   const getInitials = (name?: string | null) => {
     return name ? name.charAt(0).toUpperCase() : <User className="h-5 w-5" />;
   };
@@ -62,8 +64,8 @@ export default function PostPage() {
         <Skeleton className="h-10 w-3/4" />
         <Skeleton className="h-6 w-1/2" />
         <div className="space-y-4 pt-4">
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
         </div>
       </div>
     );
@@ -77,64 +79,73 @@ export default function PostPage() {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-            <div className="flex items-start gap-4">
-                <div className="flex-1">
-                   <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10">
-                                <AvatarImage src={post.creatorPhotoURL} />
-                                <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="text-xs text-muted-foreground">
-                                    <span>
-                                      {t('postedByPrefix')}{' '}
-                                      <Link href={`/profile/${post.creatorId}`} className="text-primary hover:underline">{post.creatorDisplayName}</Link>
-                                    </span>
-                                    {' • '}
-                                    {formatDate(post.createdAt)}
-                                    {post.updatedAt && <span className='text-muted-foreground italic'> ({t('edited')})</span>}
-                                </p>
-                                <CardTitle className="text-xl mt-1">{post.title}</CardTitle>
-                            </div>
-                        </div>
-                        {isOwner && <PostItemActions communityId={communityId} post={post} />}
-                   </div>
+          <div className="flex items-start gap-4">
+            <div className="flex-1">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={post.creatorPhotoURL} />
+                    <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      <span>
+                        {t('postedByPrefix')}{' '}
+                        <Link href={`/profile/${post.creatorId}`} className="text-primary hover:underline">{post.creatorDisplayName}</Link>
+                      </span>
+                      {' • '}
+                      {formatDate(post.createdAt)}
+                      {post.updatedAt && <span className='text-muted-foreground italic'> ({t('edited')})</span>}
+                    </p>
+                    <CardTitle className="text-xl mt-1">{post.title}</CardTitle>
+                  </div>
                 </div>
+                {isOwner && <PostItemActions communityId={communityId} post={post} />}
+              </div>
             </div>
+          </div>
         </CardHeader>
         <CardContent className="pl-16">
           <p className="whitespace-pre-wrap">{post.content}</p>
+          {post.mediaUrl && (
+            <div className="mt-4 rounded-lg overflow-hidden border bg-black/5">
+              {post.mediaType === 'image' ? (
+                <img src={post.mediaUrl} alt="Post content" className="w-full h-auto max-h-[600px] object-contain" />
+              ) : post.mediaType === 'video' ? (
+                <video src={post.mediaUrl} controls className="w-full h-auto max-h-[600px]" />
+              ) : null}
+            </div>
+          )}
         </CardContent>
         <CardFooter className="pl-16">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <VoteButtons
-                    targetType="post"
-                    targetId={post.id}
-                    creatorId={post.creatorId}
-                    communityId={communityId}
-                    initialVoteCount={post.voteCount}
-                />
-                 <Link href={`/community/${communityId}/post/${post.id}`} passHref>
-                    <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2">
-                        <MessageSquare className='h-5 w-5' /> <span>{t('commentsTitle')}</span>
-                    </Button>
-                </Link>
-                <ShareButton post={{...post, communityId}} />
-            </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <VoteButtons
+              targetType="post"
+              targetId={post.id}
+              creatorId={post.creatorId}
+              communityId={communityId}
+              initialVoteCount={post.voteCount}
+            />
+            <Link href={`/community/${communityId}/post/${post.id}`} passHref>
+              <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2">
+                <MessageSquare className='h-5 w-5' /> <span>{t('commentsTitle')}</span>
+              </Button>
+            </Link>
+            <ShareButton post={{ ...post, communityId }} />
+          </div>
         </CardFooter>
       </Card>
-      
+
       <div className="space-y-6">
         <h2 className="text-2xl font-bold">{t('commentsTitle')}</h2>
-        
+
         <Card>
-            <CardHeader>
-                <CardTitle>{t('addComment')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-               <CreateCommentForm communityId={communityId} postId={postId} />
-            </CardContent>
+          <CardHeader>
+            <CardTitle>{t('addComment')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CreateCommentForm communityId={communityId} postId={postId} />
+          </CardContent>
         </Card>
 
         <CommentList communityId={communityId} postId={postId} />

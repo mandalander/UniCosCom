@@ -29,6 +29,8 @@ type Post = {
     communityId: string;
     communityName: string;
     voteCount: number;
+    mediaUrl?: string | null;
+    mediaType?: 'image' | 'video' | null;
 };
 
 type Comment = {
@@ -109,7 +111,16 @@ const PostItem = ({ post }: { post: Post }) => {
                     </div>
                 </CardHeader>
                 <CardContent className='pl-16'>
-                    <p className="line-clamp-4">{post.content}</p>
+                    <p className="line-clamp-4 whitespace-pre-wrap">{post.content}</p>
+                    {post.mediaUrl && (
+                        <div className="mt-4 rounded-lg overflow-hidden border bg-black/5">
+                            {post.mediaType === 'image' ? (
+                                <img src={post.mediaUrl} alt="Post content" className="w-full h-auto max-h-[500px] object-contain" />
+                            ) : post.mediaType === 'video' ? (
+                                <video src={post.mediaUrl} controls className="w-full h-auto max-h-[500px]" />
+                            ) : null}
+                        </div>
+                    )}
                 </CardContent>
                 <CardFooter className='flex-col items-start gap-4 pl-16'>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
