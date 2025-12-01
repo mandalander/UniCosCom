@@ -14,7 +14,7 @@ export default function Home() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/20 blur-[120px] animate-pulse delay-1000" />
       </div>
 
-      <div className="container mx-auto max-w-4xl space-y-12 py-8">
+      <div className="container mx-auto space-y-12 py-8">
         {/* Hero Section */}
         <div className="text-center space-y-6 animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight font-heading">

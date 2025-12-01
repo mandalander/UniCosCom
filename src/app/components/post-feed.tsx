@@ -82,8 +82,8 @@ export const PostItem = ({ post }: { post: Post }) => {
     const isModerator = !!(user && user.uid === post.communityCreatorId);
 
     return (
-        <Card className="flex glass-card border-none transition-all hover:shadow-lg">
-            <div className="flex-1">
+        <Card className="flex flex-col h-full glass-card border-none transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
+            <div className="flex flex-col h-full">
                 <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
                         <div className='flex items-center gap-3'>
@@ -91,8 +91,8 @@ export const PostItem = ({ post }: { post: Post }) => {
                                 <AvatarImage src={post.creatorPhotoURL} />
                                 <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
                             </Avatar>
-                            <div>
-                                <CardDescription className='text-xs'>
+                            <div className="min-w-0">
+                                <CardDescription className='text-xs truncate'>
                                     <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold">{post.communityName}</Link>
                                     <span className='mx-1'>•</span>
                                     <span>
@@ -103,7 +103,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                                     <span>{formatDate(post.createdAt)}</span>
                                     {post.updatedAt && <span className='text-muted-foreground italic text-xs'> ({t('edited')})</span>}
                                 </CardDescription>
-                                <CardTitle className='leading-tight text-lg mt-1'>
+                                <CardTitle className='leading-tight text-lg mt-1 line-clamp-2'>
                                     <Link href={`/community/${post.communityId}/post/${post.id}`} className='hover:underline'>
                                         {post.title}
                                     </Link>
@@ -113,27 +113,26 @@ export const PostItem = ({ post }: { post: Post }) => {
                         {(isOwner || isModerator) && <PostItemActions communityId={post.communityId} post={post} isOwner={isOwner} isModerator={isModerator} />}
                     </div>
                 </CardHeader>
-                <CardContent className='pl-16'>
-                    <p className="line-clamp-4 whitespace-pre-wrap">{post.content}</p>
+                <CardContent className='pl-4 pr-4 flex-1'>
+                    <p className="line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground mb-4">{post.content}</p>
                     {post.mediaUrl && (
-                        <div className="mt-4 rounded-lg overflow-hidden border bg-black/5">
+                        <div className="rounded-lg overflow-hidden border bg-black/5 aspect-video relative">
                             {post.mediaType === 'image' ? (
                                 <Image
                                     src={post.mediaUrl}
                                     alt="Post content"
-                                    width={0}
-                                    height={0}
-                                    sizes="100vw"
-                                    className="w-full h-auto max-h-[500px] object-contain"
+                                    fill
+                                    className="object-cover transition-transform duration-500 hover:scale-105"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 />
                             ) : post.mediaType === 'video' ? (
-                                <video src={post.mediaUrl} controls className="w-full h-auto max-h-[500px]" />
+                                <video src={post.mediaUrl} controls className="w-full h-full object-cover" />
                             ) : null}
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className='flex-col items-start gap-4 pl-16'>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CardFooter className='flex-col items-start gap-4 pl-4 pr-4 pb-4 mt-auto border-t pt-4 bg-black/5 dark:bg-white/5'>
+                    <div className="flex items-center justify-between w-full text-sm text-muted-foreground">
                         <VoteButtons
                             targetType="post"
                             targetId={post.id}
@@ -141,55 +140,14 @@ export const PostItem = ({ post }: { post: Post }) => {
                             communityId={post.communityId}
                             initialVoteCount={post.voteCount || 0}
                         />
-                        <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
-                            <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2">
-                                <MessageSquare className='h-5 w-5' /> <span>{t('commentsTitle')}</span>
-                            </Button>
-                        </Link>
-                        <ShareButton post={post} />
-                    </div>
-                    <div className="w-full space-y-3">
-                        {isLoadingComments ? (
-                            <Skeleton className="h-10 w-full" />
-                        ) : (
-                            comments.map(comment => {
-                                const isCommentOwner = !!(user && user.uid === comment.creatorId);
-                                return (
-                                    <div key={comment.id} className='text-sm p-2 rounded-md bg-muted/50'>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <Avatar className="h-6 w-6">
-                                                    <AvatarImage src={comment.creatorPhotoURL} />
-                                                    <AvatarFallback className="text-xs">{getInitials(comment.creatorDisplayName)}</AvatarFallback>
-                                                </Avatar>
-                                                <Link href={`/profile/${comment.creatorId}`} className="font-semibold text-primary hover:underline">{comment.creatorDisplayName}</Link>
-                                                <span className="text-xs text-muted-foreground">• {formatDate(comment.createdAt)}</span>
-                                            </div>
-                                            {(isCommentOwner || isModerator) && (
-                                                <CommentItemActions
-                                                    communityId={post.communityId}
-                                                    postId={post.id}
-                                                    comment={comment}
-                                                    isOwner={isCommentOwner}
-                                                    isModerator={isModerator}
-                                                />
-                                            )}
-                                        </div>
-                                        <p className='mt-2 pl-8'>{comment.content}</p>
-                                        <div className="pl-8 mt-2">
-                                            <VoteButtons
-                                                targetType="comment"
-                                                targetId={comment.id}
-                                                creatorId={comment.creatorId}
-                                                communityId={post.communityId}
-                                                postId={post.id}
-                                                initialVoteCount={comment.voteCount || 0}
-                                            />
-                                        </div>
-                                    </div>
-                                )
-                            })
-                        )}
+                        <div className="flex items-center gap-2">
+                            <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
+                                <Button variant="ghost" size="sm" className="rounded-full h-8 px-3 text-xs flex items-center gap-1.5">
+                                    <MessageSquare className='h-4 w-4' /> <span>{t('commentsTitle')}</span>
+                                </Button>
+                            </Link>
+                            <ShareButton post={post} />
+                        </div>
                     </div>
                 </CardFooter>
             </div>
@@ -313,9 +271,11 @@ export function PostFeed() {
             </div>
 
             {posts && posts.length > 0 ? (
-                posts.map((post) => (
-                    <PostItem key={post.id} post={post} />
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {posts.map((post) => (
+                        <PostItem key={post.id} post={post} />
+                    ))}
+                </div>
             ) : (
                 <p className='text-center text-muted-foreground'>{t('noPostsGlobal')}</p>
             )}
