@@ -77,7 +77,7 @@ const PostItem = ({ post }: { post: Post }) => {
     const isOwner = user && user.uid === post.creatorId;
 
     return (
-        <Card className="flex">
+        <Card className="flex glass-card border-none transition-all hover:shadow-lg">
             <div className="flex-1">
                 <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">

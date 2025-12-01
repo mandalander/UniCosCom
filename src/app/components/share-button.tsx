@@ -46,7 +46,7 @@ export function ShareButton({ post }: ShareButtonProps) {
   };
 
   return (
-    <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2" onClick={handleShare}>
+    <Button variant="ghost" className="rounded-full h-auto p-2 text-sm flex items-center gap-2 hover:scale-105 hover:bg-primary/10 hover:text-primary transition-all duration-300" onClick={handleShare}>
       <Share2 className="h-5 w-5" />
       <span>{t('share')}</span>
     </Button>

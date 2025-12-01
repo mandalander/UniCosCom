@@ -30,33 +30,33 @@ export function CommunityList() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(3)].map((_, i) => (
-            <Card key={i}>
+          <Card key={i}>
             <CardHeader>
-                <Skeleton className="h-6 w-1/2" />
-                <Skeleton className="h-4 w-3/4 mt-2" />
+              <Skeleton className="h-6 w-1/2" />
+              <Skeleton className="h-4 w-3/4 mt-2" />
             </CardHeader>
             <CardContent>
-                <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
             </CardContent>
-            </Card>
+          </Card>
         ))}
       </div>
     )
   }
 
   return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {communities && communities.length > 0 ? (
-          communities.map((community) => (
-            <Link href={`/community/${community.id}`} key={community.id} className="block hover:no-underline">
-                <Card className="h-full hover:border-primary transition-colors">
-                    <CardHeader>
-                        <CardTitle>{community.name}</CardTitle>
-                        <CardDescription className="line-clamp-2">{community.description}</CardDescription>
-                    </CardHeader>
-                </Card>
-            </Link>
-          ))
+        communities.map((community) => (
+          <Link href={`/community/${community.id}`} key={community.id} className="block hover:no-underline group">
+            <Card className="h-full glass-card border-none hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+              <CardHeader>
+                <CardTitle className="group-hover:text-primary transition-colors">{community.name}</CardTitle>
+                <CardDescription className="line-clamp-2">{community.description}</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        ))
       ) : (
         <p>{t('noCommunitiesYet')}</p>
       )}

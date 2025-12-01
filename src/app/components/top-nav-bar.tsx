@@ -40,7 +40,7 @@ export function TopNavBar() {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-sidebar px-4 sm:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between glass px-4 sm:px-6 mb-4 rounded-b-xl mx-2 mt-2">
       <div className="flex items-center gap-4">
         <SidebarTrigger />
       </div>
@@ -52,16 +52,16 @@ export function TopNavBar() {
             <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full ring-2 ring-primary/20 hover:ring-primary/50 transition-all">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName ?? user.email ?? 'User'} />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary">
                       {getInitials(user.displayName, user.email)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56 glass" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
@@ -83,7 +83,7 @@ export function TopNavBar() {
             </DropdownMenu>
           </>
         ) : (
-          <Button asChild variant="default">
+          <Button asChild className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-lg shadow-violet-500/20 transition-all duration-300 hover:scale-105">
             <Link href="/login">{t('login')}</Link>
           </Button>
         )}
@@ -91,5 +91,3 @@ export function TopNavBar() {
     </header>
   );
 }
-
-    

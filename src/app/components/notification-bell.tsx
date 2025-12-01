@@ -97,7 +97,7 @@ export function NotificationBell() {
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-10 w-10">
+        <Button variant="ghost" size="icon" className="relative h-10 w-10 hover:animate-shake transition-all">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute top-2 right-2 flex h-2 w-2">
@@ -110,7 +110,7 @@ export function NotificationBell() {
       <PopoverContent className="w-80" align="end">
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-             <h4 className="font-medium text-sm">{t('notifications')}</h4>
+            <h4 className="font-medium text-sm">{t('notifications')}</h4>
           </div>
           <div className="grid gap-1">
             {isLoading ? (
@@ -149,4 +149,3 @@ export function NotificationBell() {
   );
 }
 
-    
