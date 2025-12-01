@@ -26,11 +26,11 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { useLanguage } from './language-provider';
 import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
@@ -50,19 +50,19 @@ interface CreatePostDialogProps {
 
 export function CreatePostDialog({ children, communities }: CreatePostDialogProps) {
   const { t } = useLanguage();
-  const { user } = useUser();
+  const { user, isUserLoading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
-  
+
   const communityIdFromPath = pathname.startsWith('/community/') ? pathname.split('/')[2] : undefined;
 
   const FormSchema = z.object({
     communityId: z.string({
-        required_error: t('mustSelectCommunity')
+      required_error: t('mustSelectCommunity')
     }),
     title: z.string().min(3, {
       message: t('postTitleMinLength'),
@@ -71,19 +71,19 @@ export function CreatePostDialog({ children, communities }: CreatePostDialogProp
       message: t('postContentMinLength'),
     }),
   });
-  
+
   const form = useForm<z.infer<typeof FormSchema>>({
-      resolver: zodResolver(FormSchema),
-      defaultValues: {
-          communityId: communityIdFromPath || undefined,
-          title: '',
-          content: '',
-      },
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      communityId: communityIdFromPath || undefined,
+      title: '',
+      content: '',
+    },
   });
 
   useEffect(() => {
-    if(communityIdFromPath) {
-        form.setValue('communityId', communityIdFromPath);
+    if (communityIdFromPath) {
+      form.setValue('communityId', communityIdFromPath);
     }
   }, [communityIdFromPath, form]);
 
@@ -128,75 +128,77 @@ export function CreatePostDialog({ children, communities }: CreatePostDialogProp
           <DialogTitle>{t('createNewPost')}</DialogTitle>
           <DialogDescription>{t('createPostDialogDescription')}</DialogDescription>
         </DialogHeader>
-        
-        {!user ? (
-             <div className="py-8 text-center">
-                <p className="mb-4">{t('logInToCreatePost')}</p>
-                <Button onClick={() => router.push('/login')}>{t('login')}</Button>
-            </div>
+
+        {userLoading ? (
+          <div className="py-8 text-center">{t('loading')}</div>
+        ) : !user ? (
+          <div className="py-8 text-center">
+            <p className="mb-4">{t('logInToCreatePost')}</p>
+            <Button onClick={() => router.push('/login')}>{t('login')}</Button>
+          </div>
         ) : (
-            <Form {...form}>
+          <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
-                <FormField
+              <FormField
                 control={form.control}
                 name="communityId"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>{t('community')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
+                      <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder={t('selectCommunityPlaceholder')} />
+                          <SelectValue placeholder={t('selectCommunityPlaceholder')} />
                         </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
+                      </FormControl>
+                      <SelectContent>
                         {communities.map((community) => (
-                            <SelectItem key={community.id} value={community.id}>
+                          <SelectItem key={community.id} value={community.id}>
                             {community.name}
-                            </SelectItem>
+                          </SelectItem>
                         ))}
-                        </SelectContent>
+                      </SelectContent>
                     </Select>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
-                <FormField
+              />
+              <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>{t('postTitle')}</FormLabel>
                     <FormControl>
-                        <Input placeholder={t('postTitlePlaceholder')} {...field} />
+                      <Input placeholder={t('postTitlePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
-                <FormField
+              />
+              <FormField
                 control={form.control}
                 name="content"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>{t('postContent')}</FormLabel>
                     <FormControl>
-                        <Textarea placeholder={t('postContentPlaceholder')} {...field} rows={6} />
+                      <Textarea placeholder={t('postContentPlaceholder')} {...field} rows={6} />
                     </FormControl>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
-                 <DialogFooter>
-                    <DialogClose asChild>
-                        <Button type="button" variant="outline">{t('cancel')}</Button>
-                    </DialogClose>
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting ? t('creatingPost') : t('createPost')}
-                    </Button>
-                </DialogFooter>
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">{t('cancel')}</Button>
+                </DialogClose>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? t('creatingPost') : t('createPost')}
+                </Button>
+              </DialogFooter>
             </form>
-            </Form>
+          </Form>
         )}
       </DialogContent>
     </Dialog>

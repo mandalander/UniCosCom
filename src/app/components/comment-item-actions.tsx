@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, Flag } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,7 @@ import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { DeleteConfirmationDialog } from './delete-confirmation-dialog';
 import { EditCommentForm } from './edit-comment-form';
+import { ReportDialog } from './report-dialog';
 
 type Comment = {
   id: string;
@@ -25,14 +26,17 @@ interface CommentItemActionsProps {
   communityId: string;
   postId: string;
   comment: Comment;
+  isModerator?: boolean;
+  isOwner?: boolean;
 }
 
-export function CommentItemActions({ communityId, postId, comment }: CommentItemActionsProps) {
+export function CommentItemActions({ communityId, postId, comment, isModerator, isOwner }: CommentItemActionsProps) {
   const { t } = useLanguage();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
 
   const handleDelete = async () => {
     if (!firestore) return;
@@ -59,15 +63,27 @@ export function CommentItemActions({ communityId, postId, comment }: CommentItem
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            <span>{t('edit')}</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)} className="text-destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
-            <span>{t('delete')}</span>
-          </DropdownMenuItem>
+          {isOwner && (
+            <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              <span>{t('edit')}</span>
+            </DropdownMenuItem>
+          )}
+          {(isOwner || isModerator) && (
+            <>
+              {isOwner && <DropdownMenuSeparator />}
+              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)} className="text-destructive">
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>{t('delete')}</span>
+              </DropdownMenuItem>
+            </>
+          )}
+          {!isOwner && (
+            <DropdownMenuItem onClick={() => setIsReportDialogOpen(true)}>
+              <Flag className="mr-2 h-4 w-4" />
+              <span>{t('report')}</span>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -83,6 +99,15 @@ export function CommentItemActions({ communityId, postId, comment }: CommentItem
         communityId={communityId}
         postId={postId}
         comment={comment}
+      />
+
+      <ReportDialog
+        isOpen={isReportDialogOpen}
+        onOpenChange={setIsReportDialogOpen}
+        targetId={comment.id}
+        targetType="comment"
+        targetContent={comment.content}
+        communityId={communityId}
       />
     </>
   );

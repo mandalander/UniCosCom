@@ -20,7 +20,7 @@ interface CreatePostFormProps {
 
 export function CreatePostForm({ communityId }: CreatePostFormProps) {
   const { t } = useLanguage();
-  const { user } = useUser();
+  const { user, isUserLoading: userLoading } = useUser();
   const firestore = useFirestore();
   const storage = useStorage();
   const { toast } = useToast();
@@ -151,6 +151,10 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
       setIsSubmitting(false);
     }
   };
+
+  if (userLoading) {
+    return <div className="p-4 text-center">{t('loading')}</div>;
+  }
 
   if (!user) {
     return (

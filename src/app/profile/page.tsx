@@ -70,7 +70,6 @@ export default function ProfilePage() {
   const displayFullName = [displayFirstName, displayLastName].filter(Boolean).join(' ');
   const displayName = userProfile?.displayName || user?.displayName || displayFullName || t('profileNoDisplayName');
 
-
   return (
     <div className="relative">
       {/* Gradient Banner */}
@@ -214,6 +213,6 @@ export default function ProfilePage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

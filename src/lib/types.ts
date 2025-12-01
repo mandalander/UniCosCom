@@ -24,3 +24,16 @@ export interface UserProfile {
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
 }
+
+export interface Report {
+    id: string;
+    reporterId: string;
+    reporterDisplayName: string;
+    targetId: string; // postId or commentId
+    targetType: 'post' | 'comment';
+    targetContent: string; // Preview of content
+    communityId: string;
+    reason: string;
+    status: 'pending' | 'resolved' | 'dismissed';
+    createdAt: any; // Timestamp
+}

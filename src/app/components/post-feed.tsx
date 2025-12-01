@@ -28,6 +28,7 @@ export type Post = {
     updatedAt?: any;
     communityId: string;
     communityName: string;
+    communityCreatorId?: string;
     voteCount: number;
     mediaUrl?: string | null;
     mediaType?: 'image' | 'video' | null;
@@ -76,7 +77,8 @@ export const PostItem = ({ post }: { post: Post }) => {
         return name ? name.charAt(0).toUpperCase() : <User className="h-5 w-5" />;
     };
 
-    const isOwner = user && user.uid === post.creatorId;
+    const isOwner = !!(user && user.uid === post.creatorId);
+    const isModerator = !!(user && user.uid === post.communityCreatorId);
 
     return (
         <Card className="flex glass-card border-none transition-all hover:shadow-lg">
@@ -107,7 +109,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                                 </CardTitle>
                             </div>
                         </div>
-                        {isOwner && <PostItemActions communityId={post.communityId} post={post} />}
+                        {(isOwner || isModerator) && <PostItemActions communityId={post.communityId} post={post} isOwner={isOwner} isModerator={isModerator} />}
                     </div>
                 </CardHeader>
                 <CardContent className='pl-16'>
@@ -143,7 +145,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                             <Skeleton className="h-10 w-full" />
                         ) : (
                             comments.map(comment => {
-                                const isCommentOwner = user && user.uid === comment.creatorId;
+                                const isCommentOwner = !!(user && user.uid === comment.creatorId);
                                 return (
                                     <div key={comment.id} className='text-sm p-2 rounded-md bg-muted/50'>
                                         <div className="flex items-center justify-between">
@@ -155,11 +157,13 @@ export const PostItem = ({ post }: { post: Post }) => {
                                                 <Link href={`/profile/${comment.creatorId}`} className="font-semibold text-primary hover:underline">{comment.creatorDisplayName}</Link>
                                                 <span className="text-xs text-muted-foreground">• {formatDate(comment.createdAt)}</span>
                                             </div>
-                                            {isCommentOwner && (
+                                            {(isCommentOwner || isModerator) && (
                                                 <CommentItemActions
                                                     communityId={post.communityId}
                                                     postId={post.id}
                                                     comment={comment}
+                                                    isOwner={isCommentOwner}
+                                                    isModerator={isModerator}
                                                 />
                                             )}
                                         </div>
@@ -220,12 +224,15 @@ export function PostFeed() {
                 if (!communityRef) return null;
 
                 const communitySnap = await getDoc(communityRef);
-                const communityName = communitySnap.exists() ? communitySnap.data().name : 'Unknown Community';
+                const communityData = communitySnap.exists() ? communitySnap.data() : null;
+                const communityName = communityData ? communityData.name : 'Unknown Community';
+                const communityCreatorId = communityData ? communityData.creatorId : null;
 
                 return {
                     ...post,
                     communityId: communityRef.id,
                     communityName: communityName,
+                    communityCreatorId: communityCreatorId,
                 } as Post;
             });
 

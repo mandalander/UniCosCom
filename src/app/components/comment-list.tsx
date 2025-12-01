@@ -1,6 +1,6 @@
 'use client';
 
-import { useFirestore, useCollection, useUser, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useUser } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -26,8 +26,8 @@ type Comment = {
 };
 
 interface CommentListProps {
-    communityId: string;
-    postId: string;
+  communityId: string;
+  postId: string;
 }
 
 export function CommentList({ communityId, postId }: CommentListProps) {
@@ -54,21 +54,21 @@ export function CommentList({ communityId, postId }: CommentListProps) {
 
   if (isLoading) {
     return (
-       <div className="space-y-4">
+      <div className="space-y-4">
         {[...Array(2)].map((_, i) => (
-            <Card key={i}>
-                <CardHeader className='flex-row items-center gap-3 space-y-0'>
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-3 w-32" />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4 mt-2" />
-                </CardContent>
-            </Card>
+          <Card key={i}>
+            <CardHeader className='flex-row items-center gap-3 space-y-0'>
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4 mt-2" />
+            </CardContent>
+          </Card>
         ))}
       </div>
     )
@@ -78,48 +78,48 @@ export function CommentList({ communityId, postId }: CommentListProps) {
     <div className="space-y-4">
       {comments && comments.length > 0 ? (
         comments.map((comment) => {
-            const isOwner = user && user.uid === comment.creatorId;
-            return (
-              <Card key={comment.id} className="bg-muted/50">
-                <CardHeader className='flex-row items-center justify-between gap-3 space-y-0 pb-2'>
-                    <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src={comment.creatorPhotoURL} />
-                            <AvatarFallback>{getInitials(comment.creatorDisplayName)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="text-sm">
-                                <Link href={`/profile/${comment.creatorId}`} className="font-semibold text-primary hover:underline">{comment.creatorDisplayName}</Link>
-                                <span className="text-xs text-muted-foreground ml-2">
-                                  • {formatDate(comment.createdAt)}
-                                  {comment.updatedAt && <span className='italic'> ({t('edited')})</span>}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                     {isOwner && (
-                        <CommentItemActions 
-                            communityId={communityId} 
-                            postId={postId} 
-                            comment={comment} 
-                        />
-                    )}
-                </CardHeader>
-                <CardContent className="pl-14">
+          const isOwner = user && user.uid === comment.creatorId;
+          return (
+            <Card key={comment.id} className="bg-muted/50">
+              <CardHeader className='flex-row items-center justify-between gap-3 space-y-0 pb-2'>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={comment.creatorPhotoURL} />
+                    <AvatarFallback>{getInitials(comment.creatorDisplayName)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm">
+                      <Link href={`/profile/${comment.creatorId}`} className="font-semibold text-primary hover:underline">{comment.creatorDisplayName}</Link>
+                      <span className="text-xs text-muted-foreground ml-2">
+                        • {formatDate(comment.createdAt)}
+                        {comment.updatedAt && <span className='italic'> ({t('edited')})</span>}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                {isOwner && (
+                  <CommentItemActions
+                    communityId={communityId}
+                    postId={postId}
+                    comment={comment}
+                  />
+                )}
+              </CardHeader>
+              <CardContent className="pl-14">
                 <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
-                </CardContent>
-                 <CardFooter className="pl-14">
-                    <VoteButtons
-                        targetType="comment"
-                        targetId={comment.id}
-                        creatorId={comment.creatorId}
-                        communityId={communityId}
-                        postId={postId}
-                        initialVoteCount={comment.voteCount}
-                    />
-                </CardFooter>
-              </Card>
-            )
+              </CardContent>
+              <CardFooter className="pl-14">
+                <VoteButtons
+                  targetType="comment"
+                  targetId={comment.id}
+                  creatorId={comment.creatorId}
+                  communityId={communityId}
+                  postId={postId}
+                  initialVoteCount={comment.voteCount}
+                />
+              </CardFooter>
+            </Card>
+          )
         })
       ) : (
         <p>{t('noCommentsYet')}</p>
