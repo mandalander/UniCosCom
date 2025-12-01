@@ -1,6 +1,7 @@
 'use client';
 import { useLanguage } from "./components/language-provider";
 import { PostFeed } from "./components/post-feed";
+import { AdBanner } from "./components/ad-banner";
 
 export default function Home() {
   const { t } = useLanguage();
@@ -23,6 +24,11 @@ export default function Home() {
             {t('homeDescription')}
           </p>
           <div className="h-1 w-24 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto rounded-full" />
+        </div>
+
+        {/* Ad Banner */}
+        <div className="animate-fade-in delay-200">
+          <AdBanner dataAdSlot="1234567890" />
         </div>
 
         {/* Feed Section */}
