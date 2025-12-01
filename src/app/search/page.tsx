@@ -51,61 +51,113 @@ export default function SearchPage() {
 
             setIsLoading(true);
             try {
-                // Search Communities
+                const capitalizedQ = q.charAt(0).toUpperCase() + q.slice(1);
+                const isLowercase = q !== capitalizedQ;
+
+                // --- Search Communities ---
                 const communitiesRef = collection(firestore, 'communities');
-                // Simple prefix search simulation
-                const communitiesQ = query(
-                    communitiesRef,
-                    where('name', '>=', q),
-                    where('name', '<=', q + '\uf8ff'),
-                    limit(10)
-                );
-                const communitiesSnapshot = await getDocs(communitiesQ);
-                const communitiesData = communitiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Community));
-                setCommunities(communitiesData);
+                const communityQueries = [
+                    query(communitiesRef, where('name', '>=', q), where('name', '<=', q + '\uf8ff'), limit(10))
+                ];
+                if (isLowercase) {
+                    communityQueries.push(
+                        query(communitiesRef, where('name', '>=', capitalizedQ), where('name', '<=', capitalizedQ + '\uf8ff'), limit(10))
+                    );
+                }
 
-                // Search Posts
-                const postsRef = collectionGroup(firestore, 'posts');
-                const postsQ = query(postsRef, orderBy('createdAt', 'desc'), limit(50));
-                const postsSnapshot = await getDocs(postsQ);
-
-                const postsData = postsSnapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data(), communityId: doc.ref.parent.parent?.id } as Post))
-                    .filter(post => {
-                        const match = post.title.toLowerCase().includes(q.toLowerCase()) || post.content.toLowerCase().includes(q.toLowerCase());
-                        return match;
+                const communitySnapshots = await Promise.all(communityQueries.map(q => getDocs(q)));
+                const communitiesMap = new Map();
+                communitySnapshots.forEach(snap => {
+                    snap.docs.forEach(doc => {
+                        communitiesMap.set(doc.id, { id: doc.id, ...doc.data() } as Community);
                     });
+                });
+                setCommunities(Array.from(communitiesMap.values()));
+
+                // --- Search Users ---
+                const usersRef = collection(firestore, 'userProfiles');
+                const userQueries = [
+                    query(usersRef, where('displayName', '>=', q), where('displayName', '<=', q + '\uf8ff'), limit(10))
+                ];
+                if (isLowercase) {
+                    userQueries.push(
+                        query(usersRef, where('displayName', '>=', capitalizedQ), where('displayName', '<=', capitalizedQ + '\uf8ff'), limit(10))
+                    );
+                }
+
+                const userSnapshots = await Promise.all(userQueries.map(q => getDocs(q)));
+                const usersMap = new Map();
+                userSnapshots.forEach(snap => {
+                    snap.docs.forEach(doc => {
+                        usersMap.set(doc.id, { uid: doc.id, ...doc.data() } as UserProfile);
+                    });
+                });
+                setUsers(Array.from(usersMap.values()));
+
+                // --- Search Posts ---
+                // Strategy: Try to find by title prefix.
+                // Note: collectionGroup queries with inequality on a field ('title') require an index on that field.
+                const postsRef = collectionGroup(firestore, 'posts');
+
+                // We'll try to fetch by title. 
+                // If this fails (missing index), we might fall back or just show the error.
+                // We also fetch recent posts as a fallback/supplement if the query is short? 
+                // No, let's stick to the search query to be precise.
+
+                const postQueries = [
+                    query(postsRef, where('title', '>=', q), where('title', '<=', q + '\uf8ff'), limit(20))
+                ];
+                if (isLowercase) {
+                    postQueries.push(
+                        query(postsRef, where('title', '>=', capitalizedQ), where('title', '<=', capitalizedQ + '\uf8ff'), limit(20))
+                    );
+                }
+
+                const postSnapshots = await Promise.all(postQueries.map(q => getDocs(q)));
+                const postsMap = new Map();
+
+                postSnapshots.forEach(snap => {
+                    snap.docs.forEach(doc => {
+                        // For collectionGroup, ref.parent.parent is the document that contains the subcollection
+                        // e.g. communities/{communityId}/posts/{postId} -> parent.parent.id = communityId
+                        postsMap.set(doc.id, {
+                            id: doc.id,
+                            ...doc.data(),
+                            communityId: doc.ref.parent.parent?.id
+                        } as Post);
+                    });
+                });
+
+                const postsData = Array.from(postsMap.values());
 
                 // Fetch community names for posts
-                const postsWithCommunityNames = await Promise.all(postsData.map(async (post) => {
-                    if (!post.communityId) return post;
-                    return { ...post, communityName: 'Community' };
+                // Optimization: Deduplicate community IDs to fetch
+                const communityIds = Array.from(new Set(postsData.map(p => p.communityId).filter(Boolean)));
+                // In a real app, we'd batch fetch these. For now, we'll just set a placeholder or fetch if we have few.
+                // Let's just set the placeholder as before to be safe and fast.
+                const postsWithCommunityNames = postsData.map(post => ({
+                    ...post,
+                    communityName: 'Community' // You might want to fetch this properly later
                 }));
+
                 setPosts(postsWithCommunityNames);
 
-                // Search Users
-                const usersRef = collection(firestore, 'userProfiles');
-                const usersQ = query(
-                    usersRef,
-                    where('displayName', '>=', q),
-                    where('displayName', '<=', q + '\uf8ff'),
-                    limit(10)
-                );
-                const usersSnapshot = await getDocs(usersQ);
-                const usersData = usersSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as UserProfile));
-                setUsers(usersData);
-
                 setDebugInfo({
-                    rawPosts: postsSnapshot.size,
-                    rawUsers: usersSnapshot.size,
-                    rawCommunities: communitiesSnapshot.size,
-                    firstPost: postsSnapshot.docs[0]?.data(),
-                    firstUser: usersSnapshot.docs[0]?.data(),
+                    q,
+                    capitalizedQ: isLowercase ? capitalizedQ : null,
+                    communitiesFound: communitiesMap.size,
+                    usersFound: usersMap.size,
+                    postsFound: postsMap.size,
                 });
 
             } catch (error: any) {
                 console.error("Search error:", error);
-                setError(error.message || "An error occurred during search.");
+                // Check for missing index error
+                if (error.code === 'failed-precondition' && error.message.includes('index')) {
+                    setError(`Missing Index: ${error.message}`);
+                } else {
+                    setError(error.message || "An error occurred during search.");
+                }
             } finally {
                 setIsLoading(false);
             }
