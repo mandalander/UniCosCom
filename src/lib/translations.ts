@@ -268,17 +268,6 @@ export const translations = {
 
     // Reporting
     report: 'Zgłoś',
-    reportContent: 'Zgłoś treść',
-    reportDescription: 'Wybierz powód zgłoszenia tej treści.',
-    reportReasonSpam: 'Spam',
-    reportReasonHarassment: 'Nękanie lub mowa nienawiści',
-    reportReasonMisinformation: 'Dezinformacja',
-    reportReasonOther: 'Inne',
-    reportDetails: 'Dodatkowe szczegóły (opcjonalnie)',
-    reportDetailsPlaceholder: 'Podaj dodatkowy kontekst...',
-    submitReport: 'Wyślij zgłoszenie',
-    submitting: 'Wysyłanie...',
-    reportSubmittedTitle: 'Zgłoszenie wysłane',
     reportSubmittedDescription: 'Dziękujemy za zgłoszenie. Wkrótce je rozpatrzymy.',
     reportError: 'Nie udało się wysłać zgłoszenia. Spróbuj ponownie.',
     moderationDashboard: 'Panel Moderatora',
@@ -291,6 +280,19 @@ export const translations = {
     deleteContent: 'Usuń treść',
     contentDeleted: 'Treść usunięta i zgłoszenie rozwiązane.',
     reportDismissed: 'Zgłoszenie odrzucone.',
+
+    // Messages
+    messages: "Wiadomości",
+    selectConversationToStart: "Wybierz rozmowę, aby rozpocząć czat",
+    typeMessage: "Wpisz wiadomość...",
+    send: "Wyślij",
+    noConversations: "Brak aktywnych rozmów",
+    startConversation: "Rozpocznij rozmowę",
+    searchUsers: "Szukaj użytkowników...",
+    online: "Dostępny",
+    offline: "Niedostępny",
+    lastMessage: "Ostatnia wiadomość",
+    newConversation: "Nowa rozmowa",
 
   },
   en: {
@@ -559,18 +561,6 @@ export const translations = {
 
     // Reporting
     report: 'Report',
-    reportContent: 'Report Content',
-    reportDescription: 'Please select a reason for reporting this content.',
-    reportReasonSpam: 'Spam',
-    reportReasonHarassment: 'Harassment or Hate Speech',
-    reportReasonMisinformation: 'Misinformation',
-    reportReasonOther: 'Other',
-    reportDetails: 'Additional Details (Optional)',
-    reportDetailsPlaceholder: 'Please provide any additional context...',
-    submitReport: 'Submit Report',
-    submitting: 'Submitting...',
-    reportSubmittedTitle: 'Report Submitted',
-    reportSubmittedDescription: 'Thank you for your report. We will review it shortly.',
     reportError: 'Failed to submit report. Please try again.',
     moderationDashboard: 'Moderation Dashboard',
     backToCommunity: 'Back to Community',
@@ -582,6 +572,19 @@ export const translations = {
     deleteContent: 'Delete Content',
     contentDeleted: 'Content deleted and report resolved.',
     reportDismissed: 'Report dismissed.',
+
+    // Messages
+    messages: "Messages",
+    selectConversationToStart: "Select a conversation to start chatting",
+    typeMessage: "Type a message...",
+    send: "Send",
+    noConversations: "No active conversations",
+    startConversation: "Start Conversation",
+    searchUsers: "Search users...",
+    online: "Online",
+    offline: "Offline",
+    lastMessage: "Last message",
+    newConversation: "New Conversation",
   },
 };
 

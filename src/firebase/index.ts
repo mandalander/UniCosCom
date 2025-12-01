@@ -41,11 +41,11 @@ export function getSdks(firebaseApp: FirebaseApp) {
     // Dynamically import firebase/auth to avoid SSR side effects
     // We use require here because this function is synchronous and we want to avoid top-level imports
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { getAuth, setPersistence, inMemoryPersistence } = require('firebase/auth');
+    const { getAuth, setPersistence, browserLocalPersistence } = require('firebase/auth');
 
     auth = getAuth(firebaseApp);
-    // Set persistence to inMemoryPersistence to prevent automatic localStorage access
-    setPersistence(auth, inMemoryPersistence).catch((error: any) => {
+    // Set persistence to browserLocalPersistence to allow auth to persist across reloads
+    setPersistence(auth, browserLocalPersistence).catch((error: any) => {
       console.error('Error setting auth persistence:', error);
     });
   }

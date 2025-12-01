@@ -1,13 +1,13 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   useFirestore,
   useDoc,
   useCollection,
-  useMemoFirebase,
+  useUser,
 } from '@/firebase';
-import { doc, collection, query, where, orderBy, getDoc, collectionGroup, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
+import { doc, collection, query, where, orderBy, getDoc, collectionGroup, setDoc, serverTimestamp } from 'firebase/firestore';
 import {
   Card,
   CardHeader,
@@ -19,7 +19,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, MessageSquare } from 'lucide-react';
+import { User as UserIcon, MessageSquare, Mail } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import Link from 'next/link';
@@ -52,6 +52,9 @@ export default function UserProfilePage() {
   const { id: userId } = useParams<{ id: string }>();
   const { t, language } = useLanguage();
   const firestore = useFirestore();
+  const { user } = useUser();
+  const router = useRouter();
+  const [isStartingChat, setIsStartingChat] = useState(false);
 
   const userProfileDocRef = useMemo(() => {
     if (!firestore || !userId) return null;
@@ -104,6 +107,57 @@ export default function UserProfilePage() {
 
     fetchCommunityDetails();
   }, [rawPostDocs, firestore]);
+
+  const handleMessage = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    if (!firestore || !userId || !userProfile) return;
+
+    setIsStartingChat(true);
+    try {
+      const participantIds = [user.uid, userId].sort();
+      const conversationId = participantIds.join('_');
+      const conversationRef = doc(firestore, 'conversations', conversationId);
+
+      const conversationDoc = await getDoc(conversationRef);
+
+      if (!conversationDoc.exists()) {
+        await setDoc(conversationRef, {
+          participants: participantIds,
+          participantDetails: {
+            [user.uid]: {
+              displayName: user.displayName || 'User',
+              photoURL: user.photoURL || null,
+            },
+            [userId]: {
+              displayName: userProfile.displayName,
+              photoURL: userProfile.photoURL || null,
+            }
+          },
+          createdAt: serverTimestamp(),
+          lastMessage: '',
+          lastMessageAt: serverTimestamp(),
+          unreadCounts: {
+            [user.uid]: 0,
+            [userId]: 0
+          }
+        });
+      }
+
+      // Redirect to messages page (ideally selecting this conversation)
+      // Since we don't have URL state for selection yet, we rely on it being the "latest" 
+      // or we can implement URL param selection in MessagesPage later.
+      // For now, let's just go to messages.
+      router.push('/messages');
+
+    } catch (error) {
+      console.error("Error starting chat:", error);
+    } finally {
+      setIsStartingChat(false);
+    }
+  };
 
   const getInitials = (name?: string | null) => {
     return name ? name.charAt(0).toUpperCase() : <UserIcon className="h-5 w-5" />;
@@ -159,17 +213,25 @@ export default function UserProfilePage() {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={userProfile.photoURL} alt={displayName} />
-              <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
-            </Avatar>
-            <div className="space-y-1">
-              <CardTitle className="text-2xl">{displayName}</CardTitle>
-              <CardDescription>
-                {t('profileJoinedDate')}: {formatCreationDate(userProfile.createdAt)}
-              </CardDescription>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={userProfile.photoURL} alt={displayName} />
+                <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <CardTitle className="text-2xl">{displayName}</CardTitle>
+                <CardDescription>
+                  {t('profileJoinedDate')}: {formatCreationDate(userProfile.createdAt)}
+                </CardDescription>
+              </div>
             </div>
+            {user && user.uid !== userId && (
+              <Button onClick={handleMessage} disabled={isStartingChat}>
+                <Mail className="mr-2 h-4 w-4" />
+                {t('startConversation') || "Message"}
+              </Button>
+            )}
           </div>
         </CardHeader>
       </Card>

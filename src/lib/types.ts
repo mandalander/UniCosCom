@@ -37,3 +37,27 @@ export interface Report {
     status: 'pending' | 'resolved' | 'dismissed';
     createdAt: any; // Timestamp
 }
+
+export interface Conversation {
+    id: string;
+    participants: string[]; // User IDs
+    participantDetails: {
+        [userId: string]: {
+            displayName: string;
+            photoURL: string | null;
+        }
+    };
+    lastMessage: string;
+    lastMessageAt: any; // Timestamp
+    unreadCounts: { [userId: string]: number };
+    createdAt: any;
+}
+
+export interface Message {
+    id: string;
+    conversationId: string;
+    senderId: string;
+    content: string;
+    createdAt: any;
+    readBy: string[]; // User IDs who read it
+}

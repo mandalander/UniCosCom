@@ -38,9 +38,12 @@ export default function SearchPage() {
     const [communities, setCommunities] = useState<Community[]>([]);
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [debugInfo, setDebugInfo] = useState<any>({});
 
     useEffect(() => {
         const fetchResults = async () => {
+            setError(null);
             if (!firestore || !q) {
                 setIsLoading(false);
                 return;
@@ -61,31 +64,27 @@ export default function SearchPage() {
                 const communitiesData = communitiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Community));
                 setCommunities(communitiesData);
 
-                // Search Posts (Client-side filtering for simplicity as collectionGroup + where + orderBy is complex)
-                // Note: In a real app, use Algolia or Typesense.
-                // We'll fetch recent posts and filter. This is not scalable but works for MVP.
+                // Search Posts
                 const postsRef = collectionGroup(firestore, 'posts');
                 const postsQ = query(postsRef, orderBy('createdAt', 'desc'), limit(50));
                 const postsSnapshot = await getDocs(postsQ);
+
                 const postsData = postsSnapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data(), communityId: doc.ref.parent.parent?.id } as Post))
-                    .filter(post => post.title.toLowerCase().includes(q.toLowerCase()) || post.content.toLowerCase().includes(q.toLowerCase()));
+                    .filter(post => {
+                        const match = post.title.toLowerCase().includes(q.toLowerCase()) || post.content.toLowerCase().includes(q.toLowerCase());
+                        return match;
+                    });
 
                 // Fetch community names for posts
                 const postsWithCommunityNames = await Promise.all(postsData.map(async (post) => {
                     if (!post.communityId) return post;
-                    // We could fetch community name here, but for now let's assume we might not have it or it's in the post data if we denormalized.
-                    // In post-feed we fetch it. Let's try to see if we can get it from the doc if we stored it.
-                    // If not, we might display "Community" or fetch it.
-                    // For MVP speed, let's assume we need to fetch it or it's missing.
-                    // Actually, let's just use a placeholder or fetch if needed.
                     return { ...post, communityName: 'Community' };
                 }));
                 setPosts(postsWithCommunityNames);
 
-
                 // Search Users
-                const usersRef = collection(firestore, 'users');
+                const usersRef = collection(firestore, 'userProfiles');
                 const usersQ = query(
                     usersRef,
                     where('displayName', '>=', q),
@@ -96,8 +95,17 @@ export default function SearchPage() {
                 const usersData = usersSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as UserProfile));
                 setUsers(usersData);
 
-            } catch (error) {
+                setDebugInfo({
+                    rawPosts: postsSnapshot.size,
+                    rawUsers: usersSnapshot.size,
+                    rawCommunities: communitiesSnapshot.size,
+                    firstPost: postsSnapshot.docs[0]?.data(),
+                    firstUser: usersSnapshot.docs[0]?.data(),
+                });
+
+            } catch (error: any) {
                 console.error("Search error:", error);
+                setError(error.message || "An error occurred during search.");
             } finally {
                 setIsLoading(false);
             }
@@ -108,6 +116,10 @@ export default function SearchPage() {
 
     if (!q) {
         return <div className="text-center mt-10">{t('enterSearchTerm') || "Please enter a search term."}</div>;
+    }
+
+    if (error) {
+        return <div className="text-center mt-10 text-red-500">Error: {error}</div>;
     }
 
     return (
@@ -211,6 +223,17 @@ export default function SearchPage() {
                     ) : <p className="text-center text-muted-foreground py-10">{t('noResults') || "No results found."}</p>}
                 </TabsContent>
             </Tabs>
+
+            <div className="mt-8 p-4 border rounded bg-muted/50 text-xs font-mono whitespace-pre-wrap">
+                <h3 className="font-bold mb-2">Debug Info:</h3>
+                <p>Query: "{q}"</p>
+                <p>Raw Posts Fetched: {debugInfo.rawPosts}</p>
+                <p>Raw Users Fetched: {debugInfo.rawUsers}</p>
+                <p>Raw Communities Fetched: {debugInfo.rawCommunities}</p>
+                <p>First Post Title: {debugInfo.firstPost?.title}</p>
+                <p>First User Name: {debugInfo.firstUser?.displayName}</p>
+                <p>Error: {error || 'None'}</p>
+            </div>
         </div>
     );
 }
