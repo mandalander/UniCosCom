@@ -236,6 +236,7 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
                 size="icon"
                 className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={clearFile}
+                aria-label={t('removeMedia') || "Remove media"}
               >
                 <X className="h-4 w-4" />
               </Button>

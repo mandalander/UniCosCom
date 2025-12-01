@@ -207,24 +207,11 @@ export const translations = {
     share: 'Udostępnij',
     linkCopied: 'Link skopiowany do schowka!',
     linkCopyFailed: 'Nie udało się skopiować linku.',
+    upvote: 'Głosuj w górę',
+    downvote: 'Głosuj w dół',
+    removeMedia: 'Usuń media',
 
-    // Notifications
-    notifications: 'Powiadomienia',
-    noNotifications: 'Brak nowych powiadomień.',
-    markAllAsRead: 'Oznacz wszystkie jako przeczytane',
-    userUpvotedYourPost: '{{username}} polubił(a) Twój post: "{{postTitle}}"',
-    userUpvotedYourComment: '{{username}} polubił(a) Twój komentarz do posta: "{{postTitle}}"',
-    notificationsTitle: 'Powiadomienia',
-    notificationsDescription: 'Tutaj zobaczysz powiadomienia o aktywności w Twoich postach i komentarzach.',
-    notificationVoted: 'Głosowanie',
-    notificationCommented: 'Komentarz',
-    post: 'post',
-    comment: 'komentarz',
-    viewContext: 'Zobacz kontekst',
-    emailNotifications: 'Powiadomienia Email',
-    emailNotificationsDescription: 'Otrzymuj powiadomienia na swój adres email.',
-    pushNotifications: 'Powiadomienia Push',
-    pushNotificationsDescription: 'Otrzymuj powiadomienia push w przeglądarce.',
+
 
     // Metadata
     metaTitle: 'Unicoscom',
@@ -287,6 +274,25 @@ export const translations = {
     submitReport: 'Wyślij zgłoszenie',
     reportedContent: 'Zgłoszona treść',
     moderationDescription: 'Zarządzaj zgłoszoną treścią i dbaj o bezpieczeństwo społeczności.',
+
+    // Notifications
+    notifications: 'Powiadomienia',
+    noNotifications: 'Brak nowych powiadomień.',
+    markAllAsRead: 'Oznacz wszystkie jako przeczytane',
+    userUpvotedYourPost: '{{username}} polubił Twój post: "{{postTitle}}"',
+    userUpvotedYourComment: '{{username}} polubił Twój komentarz w: "{{postTitle}}"',
+    userCommentedYourPost: '{{username}} skomentował Twój post: "{{postTitle}}"',
+    notificationsTitle: 'Powiadomienia',
+    notificationsDescription: 'Tutaj zobaczysz powiadomienia o aktywności dotyczącej Twoich postów i komentarzy.',
+    notificationVoted: 'Głos',
+    notificationCommented: 'Komentarz',
+    post: 'post',
+    comment: 'komentarz',
+    viewContext: 'Zobacz kontekst',
+    emailNotifications: 'Powiadomienia email',
+    emailNotificationsDescription: 'Otrzymuj powiadomienia na email.',
+    pushNotifications: 'Powiadomienia push',
+    pushNotificationsDescription: 'Otrzymuj powiadomienia push w przeglądarce.',
 
     // Messages
     messages: "Wiadomości",
@@ -508,6 +514,9 @@ export const translations = {
     share: 'Share',
     linkCopied: 'Link copied to clipboard!',
     linkCopyFailed: 'Failed to copy link.',
+    upvote: 'Upvote',
+    downvote: 'Downvote',
+    removeMedia: 'Remove media',
 
     // Notifications
     notifications: 'Notifications',
@@ -515,6 +524,7 @@ export const translations = {
     markAllAsRead: 'Mark all as read',
     userUpvotedYourPost: '{{username}} upvoted your post: "{{postTitle}}"',
     userUpvotedYourComment: '{{username}} upvoted your comment on: "{{postTitle}}"',
+    userCommentedYourPost: '{{username}} commented on your post: "{{postTitle}}"',
     notificationsTitle: 'Notifications',
     notificationsDescription: 'Here you will see notifications about activity on your posts and comments.',
     notificationVoted: 'Vote',

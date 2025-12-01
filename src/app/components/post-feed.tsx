@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { User, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
@@ -117,7 +118,14 @@ export const PostItem = ({ post }: { post: Post }) => {
                     {post.mediaUrl && (
                         <div className="mt-4 rounded-lg overflow-hidden border bg-black/5">
                             {post.mediaType === 'image' ? (
-                                <img src={post.mediaUrl} alt="Post content" className="w-full h-auto max-h-[500px] object-contain" />
+                                <Image
+                                    src={post.mediaUrl}
+                                    alt="Post content"
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    className="w-full h-auto max-h-[500px] object-contain"
+                                />
                             ) : post.mediaType === 'video' ? (
                                 <video src={post.mediaUrl} controls className="w-full h-auto max-h-[500px]" />
                             ) : null}

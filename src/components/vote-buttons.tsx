@@ -184,6 +184,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         )}
         onClick={() => handleVote(1)}
         disabled={isVoting}
+        aria-label={t('upvote') || "Upvote"}
       >
         <ArrowBigUp className={cn("h-5 w-5 transition-colors", userVote === 1 && "fill-current")} />
       </Button>
@@ -197,6 +198,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         )}
         onClick={() => handleVote(-1)}
         disabled={isVoting}
+        aria-label={t('downvote') || "Downvote"}
       >
         <ArrowBigDown className={cn("h-5 w-5 transition-colors", userVote === -1 && "fill-current")} />
       </Button>

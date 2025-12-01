@@ -32,6 +32,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 type Notification = {
   id: string;
   actorDisplayName: string;
+  type?: 'vote' | 'comment';
   targetType: 'post' | 'comment';
   targetTitle: string;
   communityId: string;
@@ -84,6 +85,14 @@ export function NotificationBell() {
   };
 
   const renderNotificationText = (notification: Notification) => {
+    if (notification.type === 'comment') {
+      return t('userCommentedYourPost', {
+        username: notification.actorDisplayName,
+        postTitle: notification.targetTitle,
+      }) || `${notification.actorDisplayName} skomentował(a) Twój post: ${notification.targetTitle}`;
+    }
+
+    // Default to vote if type is missing or 'vote'
     const key =
       notification.targetType === 'post'
         ? 'userUpvotedYourPost'
@@ -97,7 +106,7 @@ export function NotificationBell() {
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-10 w-10 hover:animate-shake transition-all">
+        <Button variant="ghost" size="icon" className="relative h-10 w-10 hover:animate-shake transition-all" aria-label={t('notifications') || "Notifications"}>
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute top-2 right-2 flex h-2 w-2">

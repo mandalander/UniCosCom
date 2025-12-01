@@ -16,9 +16,11 @@ import { useRouter } from 'next/navigation';
 interface CreateCommentFormProps {
   communityId: string;
   postId: string;
+  postAuthorId: string;
+  postTitle: string;
 }
 
-export function CreateCommentForm({ communityId, postId }: CreateCommentFormProps) {
+export function CreateCommentForm({ communityId, postId, postAuthorId, postTitle }: CreateCommentFormProps) {
   const { t } = useLanguage();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -64,6 +66,29 @@ export function CreateCommentForm({ communityId, postId }: CreateCommentFormProp
 
     try {
       await addDocumentNonBlocking(commentsColRef, commentData);
+
+      // Create notification for post author
+      if (user.uid !== postAuthorId) {
+        const notificationsRef = collection(firestore, 'userProfiles', postAuthorId, 'notifications');
+        const notificationData = {
+          recipientId: postAuthorId,
+          type: 'comment',
+          targetType: 'post',
+          targetId: postId,
+          targetTitle: postTitle,
+          communityId: communityId,
+          postId: postId,
+          actorId: user.uid,
+          actorDisplayName: user.displayName || 'Someone',
+          read: false,
+          createdAt: serverTimestamp(),
+        };
+        // We use addDoc here (via firestore directly or helper if available, but addDoc is standard)
+        // Since addDocumentNonBlocking is for specific collection structure, we'll use standard addDoc logic or just fire and forget
+        // Importing addDoc from firebase/firestore if not already imported
+        const { addDoc } = await import('firebase/firestore');
+        addDoc(notificationsRef, notificationData).catch(e => console.error("Error sending notification:", e));
+      }
 
       toast({
         title: t('commentAddedSuccessTitle'),
