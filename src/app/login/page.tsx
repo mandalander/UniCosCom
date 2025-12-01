@@ -58,6 +58,8 @@ export default function LoginPage() {
       router.push('/');
     } catch (e: any) {
       console.error("Google Sign-In Error:", e);
+      console.error("Error code:", e.code);
+      console.error("Error message:", e.message);
       setError(e.message || "Failed to sign in with Google.");
     }
   };

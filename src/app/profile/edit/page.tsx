@@ -3,10 +3,10 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useDoc, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
+import { useUser, useAuth, useFirestore, useStorage, useDoc, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { updateProfile, deleteUser, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
-import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -48,6 +48,7 @@ export default function EditProfilePage() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
+  const storage = useStorage();
   const router = useRouter();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -136,7 +137,7 @@ export default function EditProfilePage() {
   };
 
   const handleSave = async () => {
-    if (!user || !firestore || !auth.currentUser) return;
+    if (!user || !firestore || !auth.currentUser || !storage) return;
 
     setIsSaving(true);
 
@@ -144,7 +145,6 @@ export default function EditProfilePage() {
       let finalPhotoUrl = userProfile?.photoURL || user?.photoURL;
 
       if (newPhotoDataUrl) {
-        const storage = getStorage();
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
         const snapshot = await uploadString(storageRef, newPhotoDataUrl, 'data_url');
         finalPhotoUrl = await getDownloadURL(snapshot.ref);
@@ -263,14 +263,13 @@ export default function EditProfilePage() {
   };
 
   const handleDeleteAccount = async () => {
-    if (!user || !firestore || !auth.currentUser) return;
+    if (!user || !firestore || !auth.currentUser || !storage) return;
 
     setIsDeleting(true);
 
     try {
       // 1. Delete profile picture from Storage
       if (userProfile?.photoURL) {
-        const storage = getStorage();
         // Check if photoURL is a Firebase Storage URL
         if (userProfile.photoURL.includes('firebasestorage.googleapis.com')) {
           const photoRef = ref(storage, userProfile.photoURL);
