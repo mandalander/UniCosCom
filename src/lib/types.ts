@@ -73,8 +73,34 @@ export interface Comment {
     creatorId: string;
     creatorDisplayName: string;
     creatorPhotoURL?: string;
-    createdAt: any;
-    updatedAt?: any;
+    createdAt: Timestamp;
+    updatedAt?: Timestamp;
     voteCount: number;
     parentId?: string | null;
+}
+
+export interface Post {
+    id: string;
+    title: string;
+    content: string;
+    creatorId: string;
+    creatorDisplayName: string;
+    creatorPhotoURL?: string;
+    communityId: string;
+    communityName?: string; // Optional as it might be joined from community doc
+    createdAt: Timestamp;
+    updatedAt?: Timestamp;
+    voteCount: number;
+    mediaUrl?: string | null;
+    mediaType?: 'image' | 'video' | null;
+}
+
+export interface Community {
+    id: string;
+    name: string;
+    description: string;
+    creatorId: string;
+    creatorDisplayName: string;
+    createdAt: Timestamp;
+    membersCount?: number;
 }

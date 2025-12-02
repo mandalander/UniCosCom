@@ -14,22 +14,7 @@ import { PostItemActions } from './post-item-actions';
 import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from './share-button';
 
-export type Post = {
-    id: string;
-    title: string;
-    content: string;
-    creatorId: string;
-    creatorDisplayName: string;
-    creatorPhotoURL?: string;
-    createdAt: any;
-    updatedAt?: any;
-    communityId: string;
-    communityName: string;
-    communityCreatorId?: string;
-    voteCount: number;
-    mediaUrl?: string | null;
-    mediaType?: 'image' | 'video' | null;
-};
+import { Post } from '@/lib/types';
 
 export const PostItem = ({ post }: { post: Post }) => {
     const { t, language } = useLanguage();
@@ -60,7 +45,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                             </Avatar>
                             <div className="min-w-0">
                                 <CardDescription className='text-xs truncate'>
-                                    <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold">{post.communityName}</Link>
+                                    <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold">{post.communityName || t('community')}</Link>
                                     <span className='mx-1'>•</span>
                                     <span>
                                         {t('postedByPrefix')}{' '}

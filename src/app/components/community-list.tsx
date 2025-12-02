@@ -4,17 +4,11 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useLanguage } from "./language-provider";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { useCollection, useFirestore } from "@/firebase";
 import { collection, query, orderBy, limit } from "firebase/firestore";
 import { useMemo, useState } from 'react';
 import { Button } from "@/components/ui/button";
-
-type Community = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt?: any;
-};
+import { Community } from '@/lib/types';
 
 export function CommunityList() {
   const { t } = useLanguage();

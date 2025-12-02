@@ -20,19 +20,7 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import { useMemo } from 'react';
 
-type Post = {
-  id: string;
-  title: string;
-  content: string;
-  creatorId: string;
-  creatorDisplayName: string;
-  creatorPhotoURL?: string;
-  createdAt: any;
-  updatedAt?: any;
-  voteCount: number;
-  mediaUrl?: string | null;
-  mediaType?: 'image' | 'video' | null;
-};
+import { Post } from '@/lib/types';
 
 export default function PostPage() {
   const { id: communityId, postId } = useParams<{ id: string; postId: string }>();

@@ -18,15 +18,8 @@ import { ShareButton } from '@/app/components/share-button';
 import { PostItemActions } from '@/app/components/post-item-actions';
 import { useMemo } from 'react';
 import { JoinButton } from '@/app/components/join-button';
-import { PostItem, Post } from '@/app/components/post-item';
-
-type Community = {
-  id: string;
-  name: string;
-  description: string;
-  creatorId: string;
-  creatorDisplayName: string;
-};
+import { PostItem } from '@/app/components/post-item';
+import { Post, Community } from '@/lib/types';
 
 export default function CommunityPage() {
   const { id: communityId } = useParams<{ id: string }>();
