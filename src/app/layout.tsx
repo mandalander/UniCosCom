@@ -84,12 +84,13 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="UniCosCom" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7558071569357753"
-          crossOrigin="anonymous"
-        ></script>
       </head>
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7558071569357753"
+        crossOrigin="anonymous"
+        strategy="afterInteractive"
+      />
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`} suppressHydrationWarning>
         <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
         <ThemeProvider
