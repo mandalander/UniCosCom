@@ -28,7 +28,7 @@ export default function Home() {
 
         {/* Ad Banner */}
         <div className="animate-fade-in delay-200">
-          <AdBanner dataAdSlot="1234567890" />
+          <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" dataFullWidthResponsive={false} />
         </div>
 
         {/* Feed Section */}

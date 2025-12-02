@@ -255,7 +255,7 @@ export const translations = {
     wrongPassword: 'Nieprawidłowe hasło.',
     tooManyRequests: 'Zbyt wiele prób. Spróbuj ponownie później.',
     errorSavingSettings: 'Błąd zapisywania ustawień.',
-    fileTooLarge: 'Plik jest zbyt duży.',
+
     invalidFileType: 'Nieprawidłowy typ pliku.',
     addImage: 'Dodaj zdjęcie',
     addVideo: 'Dodaj wideo',
@@ -593,7 +593,7 @@ export const translations = {
     wrongPassword: 'Incorrect password.',
     tooManyRequests: 'Too many requests. Try again later.',
     errorSavingSettings: 'Error saving settings.',
-    fileTooLarge: 'File is too large.',
+
     invalidFileType: 'Invalid file type.',
     addImage: 'Add Image',
     addVideo: 'Add Video',
@@ -642,5 +642,6 @@ export const translations = {
     fileTooLarge: 'File is too large (max 5MB)',
   },
 };
+// End of translations
 
 
