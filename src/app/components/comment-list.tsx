@@ -1,16 +1,23 @@
-import { CommentThread } from './comment-thread';
+'use client';
 
-// ... imports ...
+import { useMemo } from 'react';
+import { useFirestore, useCollection, useUser } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from './language-provider';
+import { CommentThread } from './comment-thread';
+import { Comment } from '@/lib/types';
 
 interface CommentListProps {
   communityId: string;
   postId: string;
-  postAuthorId?: string; // Optional for now, but should pass it
+  postAuthorId?: string;
   postTitle?: string;
 }
 
 export function CommentList({ communityId, postId, postAuthorId, postTitle }: CommentListProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const firestore = useFirestore();
   const { user } = useUser();
 
@@ -53,7 +60,7 @@ export function CommentList({ communityId, postId, postAuthorId, postTitle }: Co
           <CommentThread
             key={comment.id}
             comment={comment}
-            replies={[]} // Not used in recursion logic directly
+            // replies={[]} // Removed
             allComments={comments || []}
             communityId={communityId}
             postId={postId}

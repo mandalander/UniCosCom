@@ -12,6 +12,7 @@ export const translations = {
     privacyPolicyTitle: 'Polityka Prywatności',
     termsTitle: 'Regulamin Serwisu',
     loadMore: 'Załaduj więcej',
+    myCommunities: 'Moje społeczności',
 
     // Top Nav Bar
     login: 'Zaloguj się',
@@ -138,6 +139,10 @@ export const translations = {
     communityName: 'Nazwa',
     communityDescription: 'Opis',
     logInToCreateCommunity: 'Zaloguj się, aby móc tworzyć nowe społeczności.',
+    dbConnectionError: 'Błąd połączenia z bazą danych.',
+    communityNameRequired: 'Nazwa społeczności nie może być pusta.',
+    communityCreatedSuccess: 'Społeczność "{{name}}" jest tworzona.',
+    creatingCommunity: 'Tworzenie...',
 
     // Community List
     communitiesTitle: 'Społeczności',
@@ -186,6 +191,7 @@ export const translations = {
     typeYourCommentPlaceholder: 'Napisz komentarz...',
     commentCannotBeEmpty: 'Komentarz nie może być pusty.',
     noCommentsYet: 'Nikt jeszcze nie skomentował tego posta.',
+    reply: 'Odpowiedz',
 
     // Actions (Edit, Delete, Vote)
     edit: 'Edytuj',
@@ -269,6 +275,17 @@ export const translations = {
     submitReport: 'Wyślij zgłoszenie',
     reportedContent: 'Zgłoszona treść',
     moderationDescription: 'Zarządzaj zgłoszoną treścią i dbaj o bezpieczeństwo społeczności.',
+    reportContent: 'Zgłoś treść',
+    reportDescription: 'Wybierz powód zgłoszenia tej treści.',
+    reportReasonSpam: 'Spam',
+    reportReasonHarassment: 'Nękanie lub mowa nienawiści',
+    reportReasonMisinformation: 'Dezinformacja',
+    reportReasonOther: 'Inne',
+    reportDetails: 'Dodatkowe szczegóły (opcjonalne)',
+    reportDetailsPlaceholder: 'Podaj dodatkowy kontekst...',
+    reportSubmittedTitle: 'Zgłoszenie wysłane',
+    reportSubmittedDescription: 'Dziękujemy za zgłoszenie. Wkrótce je rozpatrzymy.',
+    reportError: 'Nie udało się wysłać zgłoszenia. Spróbuj ponownie.',
 
     // Notifications
     notifications: 'Powiadomienia',
@@ -316,6 +333,7 @@ export const translations = {
     privacyPolicyTitle: 'Privacy Policy',
     termsTitle: 'Terms of Service',
     loadMore: 'Load More',
+    myCommunities: 'My Communities',
 
     // Top Nav Bar
     login: 'Log in',
@@ -440,6 +458,10 @@ export const translations = {
     communityName: 'Name',
     communityDescription: 'Description',
     logInToCreateCommunity: 'Log in to create a new community.',
+    dbConnectionError: 'Database connection error.',
+    communityNameRequired: 'Community name cannot be empty.',
+    communityCreatedSuccess: 'Community "{{name}}" is being created.',
+    creatingCommunity: 'Creating...',
 
     // Community List
     communitiesTitle: 'Communities',
@@ -488,6 +510,7 @@ export const translations = {
     typeYourCommentPlaceholder: 'Type your comment...',
     commentCannotBeEmpty: 'Comment cannot be empty.',
     noCommentsYet: 'No one has commented on this post yet.',
+    reply: 'Reply',
 
     // Actions (Edit, Delete, Vote)
     edit: 'Edit',
@@ -587,6 +610,17 @@ export const translations = {
     submitReport: 'Submit Report',
     reportedContent: 'Reported Content',
     moderationDescription: 'Manage reported content and keep the community safe.',
+    reportContent: 'Report Content',
+    reportDescription: 'Please select a reason for reporting this content.',
+    reportReasonSpam: 'Spam',
+    reportReasonHarassment: 'Harassment or Hate Speech',
+    reportReasonMisinformation: 'Misinformation',
+    reportReasonOther: 'Other',
+    reportDetails: 'Additional Details (Optional)',
+    reportDetailsPlaceholder: 'Please provide any additional context...',
+    reportSubmittedTitle: 'Report Submitted',
+    reportSubmittedDescription: 'Thank you for your report. We will review it shortly.',
+    reportError: 'Failed to submit report. Please try again.',
 
     // Messages
     messages: "Messages",

@@ -66,3 +66,15 @@ export interface Message {
     createdAt: any;
     readBy: string[]; // User IDs who read it
 }
+
+export interface Comment {
+    id: string;
+    content: string;
+    creatorId: string;
+    creatorDisplayName: string;
+    creatorPhotoURL?: string;
+    createdAt: any;
+    updatedAt?: any;
+    voteCount: number;
+    parentId?: string | null;
+}

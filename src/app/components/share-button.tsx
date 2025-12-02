@@ -16,9 +16,10 @@ interface ShareButtonProps {
 export function ShareButton({ post }: ShareButtonProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
-  const postUrl = `${window.location.origin}/community/${post.communityId}/post/${post.id}`;
+
 
   const handleShare = async () => {
+    const postUrl = `${window.location.origin}/community/${post.communityId}/post/${post.id}`;
     if (navigator.share) {
       try {
         await navigator.share({

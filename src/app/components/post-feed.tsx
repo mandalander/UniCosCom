@@ -48,39 +48,48 @@ export function PostFeed() {
         }
 
         const unsubscribe = onSnapshot(q, async (snapshot) => {
-            const postsDataPromises = snapshot.docs.map(async (postDoc) => {
-                const post = { id: postDoc.id, ...postDoc.data() } as Omit<Post, 'communityName' | 'communityId'>;
-                const communityRef = postDoc.ref.parent.parent;
+            const postsData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                communityId: doc.ref.parent.parent?.id
+            })) as Post[];
 
-                if (!communityRef) return null;
+            // Extract unique community IDs
+            const communityIds = Array.from(new Set(postsData.map(p => p.communityId).filter(Boolean)));
 
-                const communitySnap = await getDoc(communityRef);
-                const communityData = communitySnap.exists() ? communitySnap.data() : null;
-                const communityName = communityData ? communityData.name : 'Unknown Community';
-                const communityCreatorId = communityData ? communityData.creatorId : null;
+            // Fetch communities in parallel (or use a cache if we had one, but simple batching here is better than N+1)
+            // Note: Firestore 'in' query is limited to 10, so we might need to chunk or just fetch individually but in parallel.
+            // For now, let's fetch individually but in parallel which is better than serial await in map.
+            // Actually, we can just fetch all unique communities.
 
-                return {
-                    ...post,
-                    communityId: communityRef.id,
-                    communityName: communityName,
-                    communityCreatorId: communityCreatorId,
-                } as Post;
+            const communityPromises = communityIds.map(async (id) => {
+                if (!id) return null;
+                const docRef = doc(firestore, 'communities', id);
+                const snap = await getDoc(docRef);
+                return { id, ...snap.data() } as { id: string, name: string, creatorId: string };
             });
 
-            const postsData = (await Promise.all(postsDataPromises))
-                .filter((p): p is Post => p !== null && p.createdAt);
+            const communities = (await Promise.all(communityPromises)).filter(Boolean);
+            const communityMap = new Map(communities.map(c => [c!.id, c]));
 
-            // Client-side sort as a fallback/refinement since Promise.all order isn't guaranteed to match snapshot order strictly if async ops vary, 
-            // though usually map preserves order. But explicit sort is safer.
+            const enrichedPosts = postsData.map(post => {
+                const community = communityMap.get(post.communityId);
+                return {
+                    ...post,
+                    communityName: community?.name || 'Unknown Community',
+                    communityCreatorId: community?.creatorId
+                };
+            }).filter(p => p.createdAt); // Filter out potential incomplete writes
+
             if (sortBy === 'latest') {
-                postsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                enrichedPosts.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
             } else if (sortBy === 'top') {
-                postsData.sort((a, b) => b.voteCount - a.voteCount);
+                enrichedPosts.sort((a, b) => b.voteCount - a.voteCount);
             } else {
-                postsData.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+                enrichedPosts.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
             }
 
-            setPosts(postsData);
+            setPosts(enrichedPosts);
             setIsLoading(false);
         }, (error: any) => {
             console.error("Error fetching posts:", error);

@@ -14,36 +14,26 @@ import { VoteButtons } from '@/components/vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
 import { CreateCommentForm } from './create-comment-form';
 
-type Comment = {
-    id: string;
-    content: string;
-    creatorId: string;
-    creatorDisplayName: string;
-    creatorPhotoURL?: string;
-    createdAt: any;
-    updatedAt?: any;
-    voteCount: number;
-    parentId?: string | null;
-};
+import { Comment } from '@/lib/types';
 
 interface CommentThreadProps {
     comment: Comment;
-    replies: Comment[];
+    // replies: Comment[]; // Removed redundant prop
     allComments: Comment[];
     communityId: string;
     postId: string;
-    postAuthorId: string; // We might not have this easily, maybe optional?
-    postTitle: string;    // Same here
+    postAuthorId: string;
+    postTitle: string;
     depth?: number;
 }
 
 export function CommentThread({
     comment,
-    replies,
+    // replies, // Removed
     allComments,
     communityId,
     postId,
-    postAuthorId, // Need to pass this down
+    postAuthorId,
     postTitle,
     depth = 0
 }: CommentThreadProps) {
@@ -137,7 +127,7 @@ export function CommentThread({
                 <CommentThread
                     key={reply.id}
                     comment={reply}
-                    replies={childReplies} // This prop is actually redundant if we pass allComments
+                    // replies={childReplies} // Removed
                     allComments={allComments}
                     communityId={communityId}
                     postId={postId}

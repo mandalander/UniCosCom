@@ -46,41 +46,10 @@ export function AppSidebar() {
 
   const { data: communities, isLoading: isLoadingCommunities } = useCollection<Community>(communitiesQuery);
 
+
+
   const [joinedCommunities, setJoinedCommunities] = useState<Community[]>([]);
   const [isLoadingJoinedCommunities, setIsLoadingJoinedCommunities] = useState(true);
-
-  useEffect(() => {
-    const fetchJoinedCommunities = async () => {
-      if (!user || !firestore) {
-        setJoinedCommunities([]);
-        setIsLoadingJoinedCommunities(false);
-        return;
-      }
-
-      // This is a bit inefficient, ideally we'd have a 'joinedCommunities' subcollection on the user
-      // or an array of IDs. For now, let's query the user's communityMemberships subcollection.
-      try {
-        const membershipsRef = collection(firestore, 'users', user.uid, 'communityMemberships');
-        const q = query(membershipsRef, orderBy('joinedAt', 'desc'));
-        // We need to listen to this to update the sidebar in real-time when user joins/leaves
-        // But for now let's just fetch once or use onSnapshot if we want real-time.
-        // Let's use onSnapshot for better UX.
-
-        // Actually, we can't use onSnapshot easily inside this useEffect without cleanup, 
-        // and we are already using useCollection for communities.
-        // Let's use a custom hook or just manual onSnapshot here.
-
-        // Simplified: Fetch IDs then fetch community details? 
-        // Or just store communityName in the membership doc (denormalization).
-        // We did store communityName in JoinButton!
-
-        // So we can just query the memberships.
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    // fetchJoinedCommunities();
-  }, [user, firestore]);
 
   // Let's use useCollection for memberships too
   const membershipsQuery = useMemo(() => {
