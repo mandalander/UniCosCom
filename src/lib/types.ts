@@ -77,6 +77,8 @@ export interface Comment {
     updatedAt?: Timestamp;
     voteCount: number;
     parentId?: string | null;
+    mediaUrl?: string | null;
+    mediaType?: 'image' | 'video' | null;
 }
 
 export interface Post {
@@ -104,4 +106,20 @@ export interface Community {
     creatorDisplayName: string;
     createdAt: Timestamp;
     membersCount?: number;
+}
+
+export interface Notification {
+    id: string;
+    recipientId: string;
+    type: 'vote' | 'comment';
+    targetType: 'post' | 'comment';
+    targetId: string;
+    targetTitle?: string;
+    communityId: string;
+    postId: string;
+    actorId: string;
+    actorDisplayName: string;
+    actorPhotoURL?: string;
+    read: boolean;
+    createdAt: any;
 }

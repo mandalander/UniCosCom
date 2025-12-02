@@ -14,21 +14,7 @@ import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-type Notification = {
-    id: string;
-    recipientId: string;
-    type: 'vote' | 'comment'; // Rozszerzone na przyszłość, choć obecnie głównie vote
-    targetType: 'post' | 'comment';
-    targetId: string;
-    targetTitle?: string;
-    communityId: string;
-    postId: string;
-    actorId: string;
-    actorDisplayName: string;
-    actorPhotoURL?: string; // Opcjonalnie, jeśli dodamy to do danych powiadomienia
-    read: boolean;
-    createdAt: any;
-};
+import { Notification } from '@/lib/types';
 
 export function NotificationsList() {
     const { t, language } = useLanguage();
