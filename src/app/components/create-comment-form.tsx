@@ -1,11 +1,28 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { useLanguage } from './language-provider';
+import { useUser, useFirestore, addDocumentNonBlocking, useStorage } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
+import { collection, serverTimestamp } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 import { Image as ImageIcon, X } from 'lucide-react';
 import { uploadString, getDownloadURL, ref } from 'firebase/storage';
-import { useStorage } from '@/firebase';
 
-// ... (imports)
+interface CreateCommentFormProps {
+  communityId: string;
+  postId: string;
+  postAuthorId: string;
+  postTitle: string;
+  parentId?: string | null;
+  onCancel?: () => void;
+}
 
 export function CreateCommentForm({ communityId, postId, postAuthorId, postTitle, parentId, onCancel }: CreateCommentFormProps) {
   const { t } = useLanguage();
