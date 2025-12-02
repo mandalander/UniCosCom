@@ -46,6 +46,65 @@ export function AppSidebar() {
 
   const { data: communities, isLoading: isLoadingCommunities } = useCollection<Community>(communitiesQuery);
 
+  const [joinedCommunities, setJoinedCommunities] = useState<Community[]>([]);
+  const [isLoadingJoinedCommunities, setIsLoadingJoinedCommunities] = useState(true);
+
+  useEffect(() => {
+    const fetchJoinedCommunities = async () => {
+      if (!user || !firestore) {
+        setJoinedCommunities([]);
+        setIsLoadingJoinedCommunities(false);
+        return;
+      }
+
+      // This is a bit inefficient, ideally we'd have a 'joinedCommunities' subcollection on the user
+      // or an array of IDs. For now, let's query the user's communityMemberships subcollection.
+      try {
+        const membershipsRef = collection(firestore, 'users', user.uid, 'communityMemberships');
+        const q = query(membershipsRef, orderBy('joinedAt', 'desc'));
+        // We need to listen to this to update the sidebar in real-time when user joins/leaves
+        // But for now let's just fetch once or use onSnapshot if we want real-time.
+        // Let's use onSnapshot for better UX.
+
+        // Actually, we can't use onSnapshot easily inside this useEffect without cleanup, 
+        // and we are already using useCollection for communities.
+        // Let's use a custom hook or just manual onSnapshot here.
+
+        // Simplified: Fetch IDs then fetch community details? 
+        // Or just store communityName in the membership doc (denormalization).
+        // We did store communityName in JoinButton!
+
+        // So we can just query the memberships.
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    // fetchJoinedCommunities();
+  }, [user, firestore]);
+
+  // Let's use useCollection for memberships too
+  const membershipsQuery = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(collection(firestore, 'users', user.uid, 'communityMemberships'), orderBy('joinedAt', 'desc'));
+  }, [user, firestore]);
+
+  const { data: memberships, isLoading: isLoadingMemberships } = useCollection<{ communityName: string }>(membershipsQuery);
+
+  useEffect(() => {
+    if (memberships) {
+      // Map memberships to Community objects (we only have name and ID from the doc ID)
+      const joined = memberships.map(m => ({
+        id: m.id,
+        name: m.communityName
+      }));
+      setJoinedCommunities(joined);
+      setIsLoadingJoinedCommunities(false);
+    } else if (!isLoadingMemberships) {
+      setJoinedCommunities([]);
+      setIsLoadingJoinedCommunities(false);
+    }
+  }, [memberships, isLoadingMemberships]);
+
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
     { href: '/notifications', label: t('notificationsTitle') || "Powiadomienia", icon: Bell, requiresAuth: true },
@@ -102,18 +161,18 @@ export function AppSidebar() {
           <SidebarGroupLabel asChild>
             <Link href="/explore" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               <Users className="h-4 w-4 group-hover:text-primary transition-colors" />
-              <span>{t('communitiesTitle')}</span>
+              <span>{t('myCommunities') || "My Communities"}</span>
             </Link>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenuSub>
-              {isLoadingCommunities ? (
+              {isLoadingJoinedCommunities ? (
                 <>
                   <SidebarMenuSkeleton showIcon={false} />
                   <SidebarMenuSkeleton showIcon={false} />
                 </>
-              ) : communities && communities.length > 0 ? (
-                communities.map((community) => (
+              ) : joinedCommunities && joinedCommunities.length > 0 ? (
+                joinedCommunities.map((community) => (
                   <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
                     <Link href={`/community/${community.id}`}>
                       <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
@@ -125,6 +184,34 @@ export function AppSidebar() {
               ) : (
                 <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
               )}
+            </SidebarMenuSub>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <span className="px-2 py-1.5 text-sm font-medium text-muted-foreground">{t('communitiesTitle')}</span>
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenuSub>
+              {isLoadingCommunities ? (
+                <SidebarMenuSkeleton showIcon={false} />
+              ) : communities && communities.length > 0 ? (
+                communities.slice(0, 5).map((community) => (
+                  <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
+                    <Link href={`/community/${community.id}`}>
+                      <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
+                        {community.name}
+                      </span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                ))
+              ) : null}
+              <SidebarMenuSubButton asChild>
+                <Link href="/explore" className="text-xs text-muted-foreground hover:text-primary">
+                  {t('loadMore') || "See all"}
+                </Link>
+              </SidebarMenuSubButton>
             </SidebarMenuSub>
           </SidebarGroupContent>
         </SidebarGroup>
