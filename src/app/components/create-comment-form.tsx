@@ -18,9 +18,11 @@ interface CreateCommentFormProps {
   postId: string;
   postAuthorId: string;
   postTitle: string;
+  parentId?: string | null;
+  onCancel?: () => void;
 }
 
-export function CreateCommentForm({ communityId, postId, postAuthorId, postTitle }: CreateCommentFormProps) {
+export function CreateCommentForm({ communityId, postId, postAuthorId, postTitle, parentId, onCancel }: CreateCommentFormProps) {
   const { t } = useLanguage();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -62,6 +64,7 @@ export function CreateCommentForm({ communityId, postId, postAuthorId, postTitle
       upvotes: 0,
       downvotes: 0,
       voteCount: 0,
+      parentId: parentId || null,
     };
 
     try {
@@ -133,9 +136,16 @@ export function CreateCommentForm({ communityId, postId, postAuthorId, postTitle
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? t('commenting') : t('addComment')}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? t('commenting') : t('addComment')}
+          </Button>
+          {onCancel && (
+            <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
+              {t('cancel') || "Cancel"}
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );

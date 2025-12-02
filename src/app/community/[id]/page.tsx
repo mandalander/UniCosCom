@@ -117,7 +117,9 @@ export default function CommunityPage() {
           <CardTitle>{t('createNewPost')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <CreatePostForm communityId={communityId} />
+          <CardContent>
+            <CreatePostForm communityId={communityId} communityName={community.name} />
+          </CardContent>
         </CardContent>
       </Card>
 

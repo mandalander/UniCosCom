@@ -180,6 +180,12 @@ export default function EditProfilePage() {
       const userPublicData = {
         displayName: displayName,
         photoURL: finalPhotoUrl,
+        bio: bio,
+        location: location,
+        website: website,
+        twitter: twitter,
+        linkedin: linkedin,
+        github: github,
         updatedAt: serverTimestamp(),
       };
       batch.set(userProfileDocRef, userPublicData, { merge: true });

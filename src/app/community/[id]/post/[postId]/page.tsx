@@ -161,7 +161,12 @@ export default function PostPage() {
           </CardContent>
         </Card>
 
-        <CommentList communityId={communityId} postId={postId} />
+        <CommentList
+          communityId={communityId}
+          postId={postId}
+          postAuthorId={post.creatorId}
+          postTitle={post.title}
+        />
       </div>
     </div>
   );

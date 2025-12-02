@@ -16,9 +16,10 @@ import { Image as ImageIcon, Video, X } from 'lucide-react';
 
 interface CreatePostFormProps {
   communityId: string;
+  communityName: string;
 }
 
-export function CreatePostForm({ communityId }: CreatePostFormProps) {
+export function CreatePostForm({ communityId, communityName }: CreatePostFormProps) {
   const { t } = useLanguage();
   const { user, isUserLoading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -129,6 +130,7 @@ export function CreatePostForm({ communityId }: CreatePostFormProps) {
         voteCount: 0,
         mediaUrl: mediaUrl,
         mediaType: mediaType,
+        communityName: communityName, // Save community name
       };
 
       await addDocumentNonBlocking(postsColRef, postData);

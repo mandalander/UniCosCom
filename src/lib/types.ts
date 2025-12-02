@@ -33,10 +33,13 @@ export interface Report {
     targetType: 'post' | 'comment';
     targetContent: string; // Preview of content
     communityId: string;
+    postId?: string; // Optional, for comments to find parent post
     reason: string;
     status: 'pending' | 'resolved' | 'dismissed';
     createdAt: any; // Timestamp
 }
+
+
 
 export interface Conversation {
     id: string;
@@ -57,6 +60,8 @@ export interface Message {
     id: string;
     conversationId: string;
     senderId: string;
+    voteCount: number;
+    parentId?: string | null;
     content: string;
     createdAt: any;
     readBy: string[]; // User IDs who read it

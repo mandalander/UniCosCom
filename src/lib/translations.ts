@@ -11,6 +11,7 @@ export const translations = {
     loading: 'Ładowanie...',
     privacyPolicyTitle: 'Polityka Prywatności',
     termsTitle: 'Regulamin Serwisu',
+    loadMore: 'Załaduj więcej',
 
     // Top Nav Bar
     login: 'Zaloguj się',
@@ -258,12 +259,6 @@ export const translations = {
 
     // Reporting
     report: 'Zgłoś',
-    reportSubmittedDescription: 'Dziękujemy za zgłoszenie. Wkrótce je rozpatrzymy.',
-    reportError: 'Nie udało się wysłać zgłoszenia. Spróbuj ponownie.',
-    moderationDashboard: 'Panel Moderatora',
-    backToCommunity: 'Powrót do społeczności',
-    pendingReports: 'Oczekujące zgłoszenia',
-    noReports: 'Brak oczekujących zgłoszeń.',
     reportedBy: 'Zgłoszone przez',
     reason: 'Powód',
     dismiss: 'Odrzuć',
@@ -320,6 +315,7 @@ export const translations = {
     loading: 'Loading...',
     privacyPolicyTitle: 'Privacy Policy',
     termsTitle: 'Terms of Service',
+    loadMore: 'Load More',
 
     // Top Nav Bar
     login: 'Log in',
@@ -582,12 +578,6 @@ export const translations = {
 
     // Reporting
     report: 'Report',
-    reportError: 'Failed to submit report. Please try again.',
-    moderationDashboard: 'Moderation Dashboard',
-    backToCommunity: 'Back to Community',
-    pendingReports: 'Pending Reports',
-    noReports: 'No pending reports.',
-    reportedBy: 'Reported by',
     reason: 'Reason',
     dismiss: 'Dismiss',
     deleteContent: 'Delete Content',

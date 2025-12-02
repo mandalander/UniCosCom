@@ -90,45 +90,24 @@ export function ModerationDashboard() {
             let contentRef;
             if (report.targetType === 'post') {
                 contentRef = doc(firestore, 'communities', report.communityId, 'posts', report.targetId);
-            } else {
-                // Comments are subcollections of posts. We might need the postId to find the comment path easily.
-                // If the report doesn't store postId for comments, we might have trouble finding the parent post 
-                // without querying. 
-                // Let's assume for MVP we might have trouble if we didn't store postId on comment reports.
-                // Checking types.ts -> Report doesn't explicitly have postId for comments.
-                // But let's check if we can get it from the report data or if we need to fetch it.
-                // Actually, for comments, the path is communities/{cid}/posts/{pid}/comments/{commentId}.
-                // If we don't have pid, we can't construct the path easily.
-                // A workaround for now: If it's a comment, we might need to find its parent.
-                // OR, we can try to fetch the document using collectionGroup if we assume IDs are unique enough 
-                // or if we just mark it as "content deleted" in the report for now if we can't find it.
-
-                // BETTER APPROACH for MVP: 
-                // If we can't easily delete the comment because of missing path info, 
-                // we'll just resolve the report and log a warning, or try to delete if we can.
-                // Ideally, we should update the Report type to include `postId` for comments.
-                // For now, let's assume we can only delete posts reliably, or we try to find the comment.
-
-                // Wait, if we use collectionGroup for comments, we can find it by ID?
-                // No, deleteDoc needs a specific path.
-
-                // Let's stick to deleting posts for now, and for comments just mark resolved 
-                // (or implement a recursive search if needed, but that's expensive).
-                // Actually, let's look at how we create reports.
-                // If targetType is comment, we might want to store postId in the report in the future.
-
-                // For this implementation, I will attempt to delete if it's a post.
-                // If it's a comment, I will just mark the report as resolved and show a toast saying 
-                // "Automatic deletion for comments not fully supported yet" if we can't find the path.
-
-                if (report.targetType === 'comment') {
-                    // Try to find the comment? 
-                    // Let's just resolve the report for now to avoid crashing.
-                    console.warn("Deleting comments via dashboard not fully implemented yet (missing postId).");
+            } else if (report.targetType === 'comment') {
+                if (report.postId) {
+                    contentRef = doc(firestore, 'communities', report.communityId, 'posts', report.postId, 'comments', report.targetId);
+                } else {
+                    console.warn("Cannot delete comment: missing postId in report.");
+                    toast({
+                        variant: "destructive",
+                        title: t('error'),
+                        description: "Cannot delete this comment (missing parent post info)."
+                    });
+                    // We don't return here, we let it resolve the report but not delete content if we can't find it.
+                    // Or maybe we should stop? Let's stop to be safe.
+                    setProcessingId(null);
+                    return;
                 }
             }
 
-            if (report.targetType === 'post' && contentRef) {
+            if (contentRef) {
                 batch.delete(contentRef);
             }
 

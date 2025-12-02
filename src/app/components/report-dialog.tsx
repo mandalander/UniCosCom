@@ -25,6 +25,7 @@ interface ReportDialogProps {
     targetType: 'post' | 'comment';
     targetContent: string;
     communityId: string;
+    postId?: string; // Optional, for comments
 }
 
 export function ReportDialog({
@@ -34,6 +35,7 @@ export function ReportDialog({
     targetType,
     targetContent,
     communityId,
+    postId,
 }: ReportDialogProps) {
     const { t } = useLanguage();
     const { user } = useUser();
@@ -48,7 +50,7 @@ export function ReportDialog({
 
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'communities', communityId, 'reports'), {
+            const reportData: any = {
                 reporterId: user.uid,
                 reporterDisplayName: user.displayName || 'Anonymous',
                 targetId,
@@ -59,7 +61,13 @@ export function ReportDialog({
                 description, // Optional additional details
                 status: 'pending',
                 createdAt: serverTimestamp(),
-            });
+            };
+
+            if (postId) {
+                reportData.postId = postId;
+            }
+
+            await addDoc(collection(firestore, 'communities', communityId, 'reports'), reportData);
 
             toast({
                 title: t('reportSubmittedTitle') || "Report Submitted",
