@@ -88,6 +88,7 @@ export interface Post {
     creatorPhotoURL?: string;
     communityId: string;
     communityName?: string; // Optional as it might be joined from community doc
+    communityCreatorId?: string;
     createdAt: Timestamp;
     updatedAt?: Timestamp;
     voteCount: number;
