@@ -15,10 +15,10 @@ import { pl, enUS } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { PostItemActions } from './post-item-actions';
 import { VoteButtons } from '@/components/vote-buttons';
-import { CommentItemActions } from './comment-item-actions';
-import { ShareButton } from './share-button';
 
-import { PostItem, Post } from './post-item';
+
+import { PostItem } from './post-item';
+import { Post } from '@/lib/types';
 
 
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
