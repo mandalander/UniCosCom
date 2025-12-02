@@ -85,6 +85,11 @@ export function CommentThread({
                 </CardHeader>
                 <CardContent className="pl-14">
                     <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
+                    {comment.mediaUrl && comment.mediaType === 'image' && (
+                        <div className="mt-2">
+                            <img src={comment.mediaUrl} alt="Comment attachment" className="rounded-md max-h-60 object-cover" />
+                        </div>
+                    )}
                 </CardContent>
                 <CardFooter className="pl-14 py-2">
                     <div className="flex items-center gap-4">

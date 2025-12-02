@@ -317,19 +317,6 @@ export const translations = {
     searchUsers: "Szukaj użytkowników...",
     online: "Dostępny",
     offline: "Niedostępny",
-    lastMessage: "Ostatnia wiadomość",
-    newConversation: "Nowa rozmowa",
-    typeToSearch: "Wpisz, aby wyszukać użytkowników",
-
-  },
-  en: {
-    // App Sidebar
-    main: 'Home',
-    explore: 'Communities',
-    profile: 'Profile',
-    settings: 'Settings',
-    appNavigator: 'Unicoscom',
-    createNewCommunity: 'Create new community',
     loading: 'Loading...',
     privacyPolicyTitle: 'Privacy Policy',
     termsTitle: 'Terms of Service',
@@ -637,6 +624,27 @@ export const translations = {
     lastMessage: "Last message",
     newConversation: "New Conversation",
     typeToSearch: "Type to search for users",
+    typeToSearch: "Type to search for users",
+    newNotification: 'New Notification',
+    fileTooLarge: 'File is too large (max 5MB)',
   },
-};
+  newNotification: 'Nowe powiadomienie',
+  fileTooLarge: 'Plik jest zbyt duży (maks. 5MB)',
+},
+  en: {
+    // ... (existing en keys)
+    main: 'Home',
+    explore: 'Communities',
+// ... (I need to be careful not to overwrite the whole en object, I should append to it)
+// Wait, replace_file_content replaces a block. I need to target the end of pl object and end of en object separately or do it in one go if they are adjacent.
+// They are adjacent in the file but the previous tool call showed them at the end.
+// Let's look at the file content again.
+// Lines 324 is end of pl object.
+// Lines 640 is end of en object.
+// Lines 641-648 are the wrongly placed keys.
+// I need to:
+// 1. Remove lines 641-648.
+// 2. Add keys to pl object (around line 324).
+// 3. Add keys to en object (around line 640).
+
 
