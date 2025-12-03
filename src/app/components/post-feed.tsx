@@ -294,8 +294,8 @@ export function PostFeed() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col items-center gap-4">
-                <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as 'latest' | 'top' | 'oldest')} className="w-[400px]">
-                    <TabsList className="grid w-full grid-cols-3 glass">
+                <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as 'latest' | 'top' | 'oldest')} className="w-auto">
+                    <TabsList className="glass">
                         <TabsTrigger value="latest">{t('sortLatest') || "Latest"}</TabsTrigger>
                         <TabsTrigger value="top">{t('sortTop') || "Top"}</TabsTrigger>
                         <TabsTrigger value="oldest">{t('sortOldest') || "Oldest"}</TabsTrigger>
