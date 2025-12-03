@@ -39,7 +39,7 @@ export default function LoginPage() {
       }
       router.push('/');
     } catch (e: any) {
-      let errorMessage = e.message;
+      let errorMessage = t('invalidCredentials');
       if (t) {
         switch (e.code) {
           case 'auth/invalid-credential':
