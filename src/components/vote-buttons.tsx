@@ -157,7 +157,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
 
       const isDeleteOperation = newVoteValue === 0;
-      const writeOperation = isDeleteOperation ? 'delete' : 'write';
+      const writeOperation = isDeleteOperation ? 'delete' : 'create';
       
       const permissionError = new FirestorePermissionError({
         path: voteDocRef.path,
