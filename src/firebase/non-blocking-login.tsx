@@ -41,6 +41,10 @@ export function initiateEmailSignIn(authInstance: Auth, email: string, password:
 /** Initiate sign-in with a provider (e.g., Google) via a popup (non-blocking). */
 export function initiateSignInWithProvider(authInstance: Auth, provider: AuthProvider): void {
   signInWithPopup(authInstance, provider).catch(error => {
+    // Silently handle popup cancellation by the user.
+    if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+      return;
+    }
     console.error("Provider sign-in error:", error);
     // The user might have closed the popup, which can be an error.
     // We log it but don't re-throw to avoid unhandled promise rejections
