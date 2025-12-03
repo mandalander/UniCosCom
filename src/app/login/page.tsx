@@ -39,7 +39,23 @@ export default function LoginPage() {
       }
       router.push('/');
     } catch (e: any) {
-      setError(e.message);
+      let errorMessage = e.message;
+      switch (e.code) {
+        case 'auth/invalid-credential':
+        case 'auth/wrong-password':
+          errorMessage = t('authErrorInvalidCredential');
+          break;
+        case 'auth/user-not-found':
+          errorMessage = t('authErrorUserNotFound');
+          break;
+        case 'auth/email-already-in-use':
+          errorMessage = t('authErrorEmailAlreadyInUse');
+          break;
+        case 'auth/weak-password':
+          errorMessage = t('authErrorWeakPassword');
+          break;
+      }
+      setError(errorMessage);
     }
   };
 

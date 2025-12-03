@@ -27,6 +27,11 @@ export const translations = {
     register: 'Zarejestruj się',
     signInWithGoogle: 'Zaloguj się z Google',
     signUpWithGoogle: 'Zarejestruj się z Google',
+    authErrorInvalidCredential: 'Nieprawidłowy e-mail lub hasło.',
+    authErrorUserNotFound: 'Użytkownik o podanym adresie e-mail nie istnieje.',
+    authErrorEmailAlreadyInUse: 'Konto z tym adresem e-mail już istnieje.',
+    authErrorWeakPassword: 'Hasło jest zbyt słabe. Powinno mieć co najmniej 6 znaków.',
+
 
     // Home Page
     homeTitle: 'Najnowsze posty',
@@ -322,6 +327,10 @@ export const translations = {
     register: 'Sign up',
     signInWithGoogle: 'Sign in with Google',
     signUpWithGoogle: 'Sign up with Google',
+    authErrorInvalidCredential: 'Invalid email or password.',
+    authErrorUserNotFound: 'No user found with this email.',
+    authErrorEmailAlreadyInUse: 'An account with this email already exists.',
+    authErrorWeakPassword: 'Password is too weak. It should be at least 6 characters.',
 
     // Home Page
     homeTitle: 'Latest Posts',
@@ -561,6 +570,7 @@ export const translations = {
 
     // Reporting
     report: 'Report',
+    reportSubmittedDescription: 'Thank you for your report. We will review it shortly.',
     reportError: 'Failed to submit report. Please try again.',
     moderationDashboard: 'Moderation Dashboard',
     backToCommunity: 'Back to Community',
@@ -587,4 +597,3 @@ export const translations = {
     newConversation: "New Conversation",
   },
 };
-
