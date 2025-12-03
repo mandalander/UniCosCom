@@ -86,7 +86,7 @@ export function TopNavBar() {
             </DropdownMenu>
           </>
         ) : (
-          <Button asChild className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-lg shadow-violet-500/20 transition-all duration-300 hover:scale-105">
+          <Button asChild className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-600 text-white shadow-lg shadow-violet-500/20 transition-all duration-300 hover:scale-105 text-sm px-3 py-1 whitespace-nowrap">
             <Link href="/login">{t('login')}</Link>
           </Button>
         )}
