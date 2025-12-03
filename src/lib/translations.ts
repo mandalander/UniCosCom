@@ -33,6 +33,7 @@ export const translations = {
     authErrorUserNotFound: 'Użytkownik o podanym adresie e-mail nie istnieje.',
     authErrorEmailAlreadyInUse: 'Konto z tym adresem e-mail już istnieje.',
     authErrorWeakPassword: 'Hasło jest zbyt słabe. Powinno mieć co najmniej 6 znaków.',
+    authErrorInvalidEmail: 'Nieprawidłowy format adresu e-mail.',
     invalidCredentials: 'Nieprawidłowy email lub hasło.',
 
 
@@ -359,6 +360,7 @@ export const translations = {
     authErrorUserNotFound: 'No user found with this email.',
     authErrorEmailAlreadyInUse: 'An account with this email already exists.',
     authErrorWeakPassword: 'Password is too weak. It should be at least 6 characters.',
+    authErrorInvalidEmail: 'The email address is badly formatted.',
     invalidCredentials: 'Invalid email or password.',
 
     // Home Page

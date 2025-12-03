@@ -53,6 +53,9 @@ export default function LoginPage() {
           case 'auth/weak-password':
             errorMessage = t('authErrorWeakPassword');
             break;
+          case 'auth/invalid-email':
+            errorMessage = t('authErrorInvalidEmail');
+            break;
           default:
             errorMessage = t('invalidCredentials');
             break;
