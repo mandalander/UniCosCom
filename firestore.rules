@@ -40,7 +40,7 @@ service cloud.firestore {
         // Rules for post votes
         match /votes/{userId} {
           allow read: if true;
-          allow write: if isOwner(userId);
+          allow write: if isSignedIn();
         }
 
         match /comments/{commentId} {
@@ -51,7 +51,7 @@ service cloud.firestore {
           // Rules for comment votes
           match /votes/{userId} {
             allow read: if true;
-            allow write: if isOwner(userId);
+            allow write: if isSignedIn();
           }
         }
       }
