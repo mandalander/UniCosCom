@@ -12,7 +12,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { AdBanner } from './ad-banner';
 import { PostItemActions } from './post-item-actions';
 import { VoteButtons } from '@/components/vote-buttons';
 
@@ -146,8 +147,20 @@ export function PostFeed() {
 
             {posts && posts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {posts.map((post) => (
-                        <PostItem key={post.id} post={post} />
+                    {posts.map((post, index) => (
+                        <React.Fragment key={post.id}>
+                            <PostItem post={post} />
+                            {(index + 1) % 5 === 0 && (
+                                <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                                    <AdBanner
+                                        dataAdSlot="1234567890"
+                                        dataAdFormat="fluid"
+                                        dataFullWidthResponsive={true}
+                                        className="my-6"
+                                    />
+                                </div>
+                            )}
+                        </React.Fragment>
                     ))}
                 </div>
             ) : (

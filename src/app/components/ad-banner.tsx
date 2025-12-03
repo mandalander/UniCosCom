@@ -30,7 +30,7 @@ export function AdBanner({
     }, []);
 
     return (
-        <div className={`my-4 overflow-hidden rounded-lg border bg-background/50 text-center shadow-sm w-full px-4 sm:px-0 max-w-xs mx-auto ${className}`}>
+        <div className={`my-4 overflow-hidden rounded-lg border bg-background/50 text-center shadow-sm w-full mx-auto max-w-[320px] sm:max-w-md md:max-w-2xl ${className}`}>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground py-1 bg-muted/30">
                 Reklama
             </div>
