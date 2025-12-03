@@ -17,7 +17,7 @@ import {
   initiateEmailSignIn,
   initiateSignInWithProvider,
 } from '@/firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
@@ -37,27 +37,18 @@ export default function LoginPage() {
       } else {
         await initiateEmailSignIn(auth, email, password);
       }
-      // Note: Email auth functions in non-blocking-login.tsx are currently void/non-blocking.
-      // If we want to await them, we'd need to change them or use the raw firebase functions here too.
-      // For now, let's assume the user wants to fix Google Login specifically as requested.
-      // But to be consistent, we should probably just let the auth state listener handle the redirect in a real app.
-      // However, to match the existing pattern but fix the race condition:
       router.push('/');
     } catch (e: any) {
       setError(e.message);
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setError(null);
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      router.push('/');
-    } catch (e: any) {
-      console.error("Google Sign-In Error:", e);
-      setError(e.message || "Failed to sign in with Google.");
-    }
+    const provider = new GoogleAuthProvider();
+    initiateSignInWithProvider(auth, provider);
+    // The onAuthStateChanged listener will handle the redirect.
+    // No need for router.push('/') here to avoid race conditions.
   };
 
   return (
@@ -95,6 +86,9 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
           <Button onClick={handleAuthAction} className="w-full">
             {isRegistering ? t('register') : t('login')}
           </Button>
@@ -111,11 +105,6 @@ export default function LoginPage() {
               {isRegistering ? t('login') : t('register')}
             </Button>
           </div>
-          {error && (
-            <div className="mt-4 text-center text-sm text-red-500">
-              {error}
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
