@@ -159,7 +159,6 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         const isDeleteOperation = newVoteValue === 0;
         const operationType = isDeleteOperation ? 'delete' : 'write';
         
-        // This is the correct implementation for contextual error reporting.
         const permissionError = new FirestorePermissionError({
             path: voteDocRef.path,
             operation: operationType,
