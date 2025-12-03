@@ -25,6 +25,7 @@ import { useUser, useFirestore, useCollection } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
+import { AdBanner } from './ad-banner';
 
 type Community = {
   id: string;
@@ -44,6 +45,34 @@ export function AppSidebar() {
   }, [firestore]);
 
   const { data: communities, isLoading: isLoadingCommunities } = useCollection<Community>(communitiesQuery);
+
+
+
+  const [joinedCommunities, setJoinedCommunities] = useState<Community[]>([]);
+  const [isLoadingJoinedCommunities, setIsLoadingJoinedCommunities] = useState(true);
+
+  // Let's use useCollection for memberships too
+  const membershipsQuery = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(collection(firestore, 'users', user.uid, 'communityMemberships'), orderBy('joinedAt', 'desc'));
+  }, [user, firestore]);
+
+  const { data: memberships, isLoading: isLoadingMemberships } = useCollection<{ communityName: string }>(membershipsQuery);
+
+  useEffect(() => {
+    if (memberships) {
+      // Map memberships to Community objects (we only have name and ID from the doc ID)
+      const joined = memberships.map(m => ({
+        id: m.id,
+        name: m.communityName
+      }));
+      setJoinedCommunities(joined);
+      setIsLoadingJoinedCommunities(false);
+    } else if (!isLoadingMemberships) {
+      setJoinedCommunities([]);
+      setIsLoadingJoinedCommunities(false);
+    }
+  }, [memberships, isLoadingMemberships]);
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
@@ -101,18 +130,18 @@ export function AppSidebar() {
           <SidebarGroupLabel asChild>
             <Link href="/explore" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               <Users className="h-4 w-4 group-hover:text-primary transition-colors" />
-              <span>{t('communitiesTitle')}</span>
+              <span>{t('myCommunities') || "My Communities"}</span>
             </Link>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenuSub>
-              {isLoadingCommunities ? (
+              {isLoadingJoinedCommunities ? (
                 <>
                   <SidebarMenuSkeleton showIcon={false} />
                   <SidebarMenuSkeleton showIcon={false} />
                 </>
-              ) : communities && communities.length > 0 ? (
-                communities.map((community) => (
+              ) : joinedCommunities && joinedCommunities.length > 0 ? (
+                joinedCommunities.map((community) => (
                   <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
                     <Link href={`/community/${community.id}`}>
                       <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
@@ -125,6 +154,39 @@ export function AppSidebar() {
                 <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
               )}
             </SidebarMenuSub>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <span className="px-2 py-1.5 text-sm font-medium text-muted-foreground">{t('communitiesTitle')}</span>
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenuSub>
+              {isLoadingCommunities ? (
+                <SidebarMenuSkeleton showIcon={false} />
+              ) : communities && communities.length > 0 ? (
+                communities.slice(0, 5).map((community) => (
+                  <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
+                    <Link href={`/community/${community.id}`}>
+                      <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
+                        {community.name}
+                      </span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                ))
+              ) : null}
+              <SidebarMenuSubButton asChild>
+                <Link href="/explore" className="text-xs text-muted-foreground hover:text-primary">
+                  {t('loadMore') || "See all"}
+                </Link>
+              </SidebarMenuSubButton>
+            </SidebarMenuSub>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <AdBanner dataAdSlot="0987654321" dataAdFormat="rectangle" className="mx-2" />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

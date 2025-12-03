@@ -51,14 +51,60 @@ export default function PrivacyPolicyPage() {
                     </section>
 
                     <section>
-                        <h2 className="text-xl font-semibold mb-2">5. Prawa Użytkownika</h2>
+                        <h2 className="text-xl font-semibold mb-2">5. Reklamy i Usługi Stron Trzecich</h2>
+                        <p className="mb-2">
+                            Serwis wykorzystuje Google AdSense do wyświetlania reklam. Google AdSense używa plików cookie i technologii śledzenia w celu:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-1 mb-2">
+                            <li>Wyświetlania reklam dostosowanych do zainteresowań użytkownika</li>
+                            <li>Pomiaru skuteczności reklam</li>
+                            <li>Zbierania statystyk dotyczących odwiedzin strony</li>
+                        </ul>
+                        <p className="mb-2">
+                            Google, jako zewnętrzny dostawca usług reklamowych, używa plików cookie do wyświetlania reklam na podstawie poprzednich odwiedzin użytkownika w naszym serwisie lub innych witrynach internetowych.
+                        </p>
+                        <p className="mb-2">
+                            Użytkownicy mogą zrezygnować ze spersonalizowanych reklam, odwiedzając stronę{' '}
+                            <a
+                                href="https://www.google.com/settings/ads"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                            >
+                                Ustawienia reklam Google
+                            </a>
+                            {' '}lub stronę{' '}
+                            <a
+                                href="http://www.aboutads.info"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                            >
+                                www.aboutads.info
+                            </a>.
+                        </p>
+                        <p>
+                            Więcej informacji o tym, jak Google zarządza danymi w reklamach, można znaleźć w{' '}
+                            <a
+                                href="https://policies.google.com/technologies/partner-sites"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                            >
+                                Polityce Prywatności Google
+                            </a>.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold mb-2">6. Prawa Użytkownika</h2>
                         <p>
                             Użytkownik ma prawo do wglądu w swoje dane, ich edycji (poprzez ustawienia profilu) oraz żądania ich usunięcia (opcja "Usuń konto" w ustawieniach).
                         </p>
                     </section>
 
                     <section>
-                        <h2 className="text-xl font-semibold mb-2">6. Zmiany Polityki Prywatności</h2>
+                        <h2 className="text-xl font-semibold mb-2">7. Zmiany Polityki Prywatności</h2>
                         <p>
                             Zastrzegamy sobie prawo do wprowadzania zmian w Polityce Prywatności. O wszelkich zmianach Użytkownicy zostaną poinformowani z odpowiednim wyprzedzeniem.
                         </p>

@@ -1,6 +1,7 @@
 'use client';
 import { useLanguage } from "./components/language-provider";
 import { PostFeed } from "./components/post-feed";
+import { AdBanner } from "./components/ad-banner";
 
 export default function Home() {
   const { t } = useLanguage();
@@ -13,7 +14,7 @@ export default function Home() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/20 blur-[120px] animate-pulse delay-1000" />
       </div>
 
-      <div className="container mx-auto max-w-4xl space-y-12 py-8">
+      <div className="container mx-auto space-y-12 py-8">
         {/* Hero Section */}
         <div className="text-center space-y-6 animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight font-heading">
@@ -23,6 +24,11 @@ export default function Home() {
             {t('homeDescription')}
           </p>
           <div className="h-1 w-24 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto rounded-full" />
+        </div>
+
+        {/* Ad Banner */}
+        <div className="animate-fade-in delay-200">
+          <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" dataFullWidthResponsive={true} />
         </div>
 
         {/* Feed Section */}

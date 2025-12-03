@@ -15,7 +15,7 @@ import {
   useAuth,
   initiateEmailSignUp,
   initiateEmailSignIn,
-  initiateSignInWithProvider,
+  initiateSignInWithProvider
 } from '@/firebase';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -44,16 +44,17 @@ export default function LoginPage() {
         switch (e.code) {
           case 'auth/invalid-credential':
           case 'auth/wrong-password':
-            errorMessage = t('authErrorInvalidCredential');
-            break;
           case 'auth/user-not-found':
-            errorMessage = t('authErrorUserNotFound');
+            errorMessage = t('authErrorInvalidCredential');
             break;
           case 'auth/email-already-in-use':
             errorMessage = t('authErrorEmailAlreadyInUse');
             break;
           case 'auth/weak-password':
             errorMessage = t('authErrorWeakPassword');
+            break;
+          default:
+            errorMessage = t('invalidCredentials');
             break;
         }
       }

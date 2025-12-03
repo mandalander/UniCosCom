@@ -25,6 +25,7 @@ interface ReportDialogProps {
     targetType: 'post' | 'comment';
     targetContent: string;
     communityId: string;
+    postId?: string; // Optional, for comments
 }
 
 export function ReportDialog({
@@ -34,6 +35,7 @@ export function ReportDialog({
     targetType,
     targetContent,
     communityId,
+    postId,
 }: ReportDialogProps) {
     const { t } = useLanguage();
     const { user } = useUser();
@@ -48,7 +50,7 @@ export function ReportDialog({
 
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'communities', communityId, 'reports'), {
+            const reportData = {
                 reporterId: user.uid,
                 reporterDisplayName: user.displayName || 'Anonymous',
                 targetId,
@@ -59,11 +61,14 @@ export function ReportDialog({
                 description, // Optional additional details
                 status: 'pending',
                 createdAt: serverTimestamp(),
-            });
+                ...(postId ? { postId } : {})
+            };
+
+            await addDoc(collection(firestore, 'communities', communityId, 'reports'), reportData);
 
             toast({
-                title: t('reportSubmittedTitle') || "Report Submitted",
-                description: t('reportSubmittedDescription') || "Thank you for your report. We will review it shortly.",
+                title: t('reportSubmittedTitle'),
+                description: t('reportSubmittedDescription'),
             });
             onOpenChange(false);
             setDescription('');
@@ -73,7 +78,7 @@ export function ReportDialog({
             toast({
                 variant: "destructive",
                 title: t('error'),
-                description: t('reportError') || "Failed to submit report. Please try again.",
+                description: t('reportError'),
             });
         } finally {
             setIsSubmitting(false);
@@ -84,37 +89,37 @@ export function ReportDialog({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>{t('reportContent') || "Report Content"}</DialogTitle>
+                    <DialogTitle>{t('reportContent')}</DialogTitle>
                     <DialogDescription>
-                        {t('reportDescription') || "Please select a reason for reporting this content."}
+                        {t('reportDescription')}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <RadioGroup value={reason} onValueChange={setReason} className="grid gap-2">
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="spam" id="spam" />
-                            <Label htmlFor="spam">{t('reportReasonSpam') || "Spam"}</Label>
+                            <Label htmlFor="spam">{t('reportReasonSpam')}</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="harassment" id="harassment" />
-                            <Label htmlFor="harassment">{t('reportReasonHarassment') || "Harassment or Hate Speech"}</Label>
+                            <Label htmlFor="harassment">{t('reportReasonHarassment')}</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="misinformation" id="misinformation" />
-                            <Label htmlFor="misinformation">{t('reportReasonMisinformation') || "Misinformation"}</Label>
+                            <Label htmlFor="misinformation">{t('reportReasonMisinformation')}</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="other" id="other" />
-                            <Label htmlFor="other">{t('reportReasonOther') || "Other"}</Label>
+                            <Label htmlFor="other">{t('reportReasonOther')}</Label>
                         </div>
                     </RadioGroup>
                     <div className="grid gap-2">
-                        <Label htmlFor="description">{t('reportDetails') || "Additional Details (Optional)"}</Label>
+                        <Label htmlFor="description">{t('reportDetails')}</Label>
                         <Textarea
                             id="description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder={t('reportDetailsPlaceholder') || "Please provide any additional context..."}
+                            placeholder={t('reportDetailsPlaceholder')}
                         />
                     </div>
                 </div>
@@ -123,7 +128,7 @@ export function ReportDialog({
                         {t('cancel')}
                     </Button>
                     <Button onClick={handleSubmit} disabled={isSubmitting}>
-                        {isSubmitting ? t('submitting') : t('submitReport') || "Submit Report"}
+                        {isSubmitting ? t('submitting') : t('submitReport')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

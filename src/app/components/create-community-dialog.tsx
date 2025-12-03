@@ -39,19 +39,19 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
       return;
     }
     if (!firestore) {
-       toast({
+      toast({
         variant: "destructive",
-        title: "Błąd",
-        description: "Błąd połączenia z bazą danych.",
+        title: t('error'),
+        description: t('dbConnectionError'),
       });
       return;
     }
 
     if (!communityName.trim()) {
-       toast({
+      toast({
         variant: "destructive",
-        title: "Błąd",
-        description: "Nazwa społeczności nie może być pusta.",
+        title: t('error'),
+        description: t('communityNameRequired'),
       });
       return;
     }
@@ -65,14 +65,14 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
       creatorId: user.uid,
       createdAt: serverTimestamp(),
     };
-    
+
     addDocumentNonBlocking(communitiesColRef, communityData);
 
     toast({
-      title: "Sukces!",
-      description: `Społeczność "${communityName}" jest tworzona.`,
+      title: t('success'),
+      description: t('communityCreatedSuccess', { name: communityName }),
     });
-    
+
     setCommunityName('');
     setDescription('');
     setOpen(false);
@@ -118,7 +118,7 @@ export function CreateCommunityDialog({ children }: { children: React.ReactNode 
             <Button variant="outline" disabled={isCreating}>{t('cancel')}</Button>
           </DialogClose>
           <Button onClick={handleCreate} disabled={isCreating}>
-            {isCreating ? "Tworzenie..." : t('createCommunity')}
+            {isCreating ? t('creatingCommunity') : t('createCommunity')}
           </Button>
         </DialogFooter>
       </DialogContent>

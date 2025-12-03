@@ -7,7 +7,7 @@ import {
   useCollection,
   useUser,
 } from '@/firebase';
-import { doc, collection, query, where, orderBy, getDoc, collectionGroup, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, collection, query, where, orderBy, getDoc, collectionGroup, setDoc, serverTimestamp, limit } from 'firebase/firestore';
 import {
   Card,
   CardHeader,
@@ -19,7 +19,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, MessageSquare, Mail } from 'lucide-react';
+import { User as UserIcon, MessageSquare, Mail, MapPin, Globe, Twitter, Linkedin, Github, Link as LinkIcon } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import Link from 'next/link';
@@ -31,6 +31,12 @@ import { useEffect, useState, useMemo } from 'react';
 type UserProfile = {
   displayName: string;
   photoURL?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  twitter?: string;
+  linkedin?: string;
+  github?: string;
   createdAt: any;
 };
 
@@ -61,20 +67,21 @@ export default function UserProfilePage() {
     return doc(firestore, 'userProfiles', userId);
   }, [firestore, userId]);
 
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [areCommunityDetailsLoading, setAreCommunityDetailsLoading] = useState(false);
+  const [postsLimit, setPostsLimit] = useState(10);
+
   const userPostsQuery = useMemo(() => {
     if (!firestore || !userId) return null;
     return query(
       collectionGroup(firestore, 'posts'),
       where('creatorId', '==', userId),
-      orderBy('createdAt', 'desc')
+      orderBy('createdAt', 'desc'),
+      limit(postsLimit)
     );
-  }, [firestore, userId]);
+  }, [firestore, userId, postsLimit]);
 
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileDocRef);
   const { data: rawPostDocs, isLoading: arePostsLoading } = useCollection<Omit<Post, 'communityId' | 'communityName'>>(userPostsQuery);
-
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [areCommunityDetailsLoading, setAreCommunityDetailsLoading] = useState(false);
 
   useEffect(() => {
     const fetchCommunityDetails = async () => {
@@ -85,28 +92,55 @@ export default function UserProfilePage() {
 
       setAreCommunityDetailsLoading(true);
 
-      const postsWithCommunityData = await Promise.all(
-        rawPostDocs.map(async (postData) => {
-          const communityRef = postData.ref.ref.parent.parent;
-          if (!communityRef) return { ...postData, communityId: 'unknown', communityName: 'Unknown' };
+      // 1. Identify posts missing communityName
+      const postsNeedingCommunityName = rawPostDocs.filter((p: any) => !p.communityName);
 
-          const communitySnap = await getDoc(communityRef);
-          const communityName = communitySnap.exists() ? communitySnap.data().name : 'Unknown';
+      // 2. Collect unique community IDs for those posts
+      const communityIdsToFetch = Array.from(new Set(postsNeedingCommunityName.map(p => p.ref.ref.parent.parent?.id).filter(Boolean))) as string[];
 
-          return {
-            ...postData,
-            communityId: communityRef.id,
-            communityName: communityName,
-          } as Post;
-        })
-      );
+      // 3. Fetch missing communities (batch)
+      const communityNameMap = new Map<string, string>();
+      if (communityIdsToFetch.length > 0) {
+        // Firestore 'in' query supports max 10 items. We might need to chunk if > 10.
+        // For simplicity/MVP, let's just do Promise.all with getDoc for now, but memoized/cached if possible.
+        // Or better, just fetch them individually but in parallel, which is what we had, BUT we can deduplicate requests.
 
-      setPosts(postsWithCommunityData);
+        await Promise.all(communityIdsToFetch.map(async (cid) => {
+          const communityRef = doc(firestore, 'communities', cid);
+          const snap = await getDoc(communityRef);
+          if (snap.exists()) {
+            communityNameMap.set(cid, snap.data().name);
+          } else {
+            communityNameMap.set(cid, 'Unknown');
+          }
+        }));
+      }
+
+      // 4. Merge data
+      const postsWithData = rawPostDocs.map((postData: any) => {
+        const communityRef = postData.ref.ref.parent.parent;
+        const communityId = communityRef?.id || 'unknown';
+
+        // Use denormalized name if available, otherwise fallback to fetched map
+        const communityName = postData.communityName || communityNameMap.get(communityId) || 'Unknown';
+
+        return {
+          ...postData,
+          communityId: communityId,
+          communityName: communityName,
+        } as Post;
+      });
+
+      setPosts(postsWithData);
       setAreCommunityDetailsLoading(false);
     };
 
     fetchCommunityDetails();
   }, [rawPostDocs, firestore]);
+
+  const handleLoadMore = () => {
+    setPostsLimit(prev => prev + 10);
+  };
 
   const handleMessage = async () => {
     if (!user) {
@@ -213,21 +247,64 @@ export default function UserProfilePage() {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
+          <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
+            <div className="flex items-start space-x-4">
+              <Avatar className="h-20 w-20 md:h-24 md:w-24">
                 <AvatarImage src={userProfile.photoURL} alt={displayName} />
                 <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
               </Avatar>
-              <div className="space-y-1">
-                <CardTitle className="text-2xl">{displayName}</CardTitle>
-                <CardDescription>
-                  {t('profileJoinedDate')}: {formatCreationDate(userProfile.createdAt)}
-                </CardDescription>
+              <div className="space-y-2">
+                <div>
+                  <CardTitle className="text-2xl md:text-3xl">{displayName}</CardTitle>
+                  <CardDescription className="flex items-center gap-2 mt-1">
+                    <span>{t('profileJoinedDate')}: {formatCreationDate(userProfile.createdAt)}</span>
+                  </CardDescription>
+                </div>
+
+                {userProfile.bio && (
+                  <p className="text-sm text-muted-foreground max-w-lg whitespace-pre-wrap">
+                    {userProfile.bio}
+                  </p>
+                )}
+
+                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                  {userProfile.location && (
+                    <div className="flex items-center gap-1">
+                      <MapPin size={16} />
+                      <span>{userProfile.location}</span>
+                    </div>
+                  )}
+                  {userProfile.website && (
+                    <div className="flex items-center gap-1">
+                      <Globe size={16} />
+                      <a href={userProfile.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary">
+                        {userProfile.website.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-3 pt-1">
+                  {userProfile.twitter && (
+                    <a href={`https://twitter.com/${userProfile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                      <Twitter size={20} />
+                    </a>
+                  )}
+                  {userProfile.linkedin && (
+                    <a href={userProfile.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                      <Linkedin size={20} />
+                    </a>
+                  )}
+                  {userProfile.github && (
+                    <a href={`https://github.com/${userProfile.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                      <Github size={20} />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
             {user && user.uid !== userId && (
-              <Button onClick={handleMessage} disabled={isStartingChat}>
+              <Button onClick={handleMessage} disabled={isStartingChat} className="w-full md:w-auto">
                 <Mail className="mr-2 h-4 w-4" />
                 {t('startConversation') || "Message"}
               </Button>
@@ -294,6 +371,14 @@ export default function UserProfilePage() {
           </div>
         ) : (
           <p className="text-muted-foreground text-center py-8">{t('userHasNoPosts')}</p>
+        )}
+
+        {posts && posts.length >= postsLimit && (
+          <div className="flex justify-center pt-4">
+            <Button variant="outline" onClick={handleLoadMore} disabled={arePostsLoading || areCommunityDetailsLoading}>
+              {arePostsLoading ? t('loading') : t('loadMore') || "Load More"}
+            </Button>
+          </div>
         )}
       </div>
     </div>

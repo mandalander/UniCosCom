@@ -18,35 +18,35 @@ export function UserDataSync() {
 
       const isNewUser = !userDocSnap.exists();
       const signInProvider = user.providerData?.[0]?.providerId;
-      
+
       // Sync on first-time sign-in or when displayName changes
       if (isNewUser || user.displayName !== userDocSnap.data()?.displayName || user.photoURL !== userDocSnap.data()?.photoURL) {
-         try {
-           const userData: any = {
-             uid: user.uid,
-             email: user.email,
-             displayName: user.displayName,
-             photoURL: user.photoURL,
-             updatedAt: serverTimestamp(),
-           };
-           
-           const userProfileData: any = {
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-              updatedAt: serverTimestamp(),
-           };
+        try {
+          const userData: Record<string, any> = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            updatedAt: serverTimestamp(),
+          };
 
-           if(isNewUser){
-              userData.createdAt = serverTimestamp();
-              const nameParts = user.displayName?.split(' ') || [];
-              userData.firstName = nameParts[0] || '';
-              userData.lastName = nameParts.slice(1).join(' ') || '';
-              
-              userProfileData.createdAt = serverTimestamp();
-           }
+          const userProfileData: Record<string, any> = {
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            updatedAt: serverTimestamp(),
+          };
 
-           await setDoc(userDocRef, userData, { merge: true });
-           await setDoc(userProfileDocRef, userProfileData, { merge: true });
+          if (isNewUser) {
+            userData.createdAt = serverTimestamp();
+            const nameParts = user.displayName?.split(' ') || [];
+            userData.firstName = nameParts[0] || '';
+            userData.lastName = nameParts.slice(1).join(' ') || '';
+
+            userProfileData.createdAt = serverTimestamp();
+          }
+
+          await setDoc(userDocRef, userData, { merge: true });
+          await setDoc(userProfileDocRef, userProfileData, { merge: true });
 
         } catch (error) {
           console.error("Error syncing user data:", error);

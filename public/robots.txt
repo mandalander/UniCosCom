@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://uni-cos-com.vercel.app/sitemap.xml
+
+# Disallow admin/moderation pages
+User-agent: *
+Disallow: /moderation/
+
+# Allow all other pages
+User-agent: *
+Allow: /

@@ -17,21 +17,10 @@ import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from '@/app/components/share-button';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { useMemo } from 'react';
 
-type Post = {
-  id: string;
-  title: string;
-  content: string;
-  creatorId: string;
-  creatorDisplayName: string;
-  creatorPhotoURL?: string;
-  createdAt: any;
-  updatedAt?: any;
-  voteCount: number;
-  mediaUrl?: string | null;
-  mediaType?: 'image' | 'video' | null;
-};
+import { Post } from '@/lib/types';
 
 export default function PostPage() {
   const { id: communityId, postId } = useParams<{ id: string; postId: string }>();
@@ -110,7 +99,14 @@ export default function PostPage() {
           {post.mediaUrl && (
             <div className="mt-4 rounded-lg overflow-hidden border bg-black/5">
               {post.mediaType === 'image' ? (
-                <img src={post.mediaUrl} alt="Post content" className="w-full h-auto max-h-[600px] object-contain" />
+                <NextImage
+                  src={post.mediaUrl}
+                  alt="Post content"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-full h-auto max-h-[600px] object-contain"
+                />
               ) : post.mediaType === 'video' ? (
                 <video src={post.mediaUrl} controls className="w-full h-auto max-h-[600px]" />
               ) : null}
@@ -144,11 +140,21 @@ export default function PostPage() {
             <CardTitle>{t('addComment')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <CreateCommentForm communityId={communityId} postId={postId} />
+            <CreateCommentForm
+              communityId={communityId}
+              postId={postId}
+              postAuthorId={post.creatorId}
+              postTitle={post.title}
+            />
           </CardContent>
         </Card>
 
-        <CommentList communityId={communityId} postId={postId} />
+        <CommentList
+          communityId={communityId}
+          postId={postId}
+          postAuthorId={post.creatorId}
+          postTitle={post.title}
+        />
       </div>
     </div>
   );

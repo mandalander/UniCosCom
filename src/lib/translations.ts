@@ -11,6 +11,8 @@ export const translations = {
     loading: 'Ładowanie...',
     privacyPolicyTitle: 'Polityka Prywatności',
     termsTitle: 'Regulamin Serwisu',
+    loadMore: 'Załaduj więcej',
+    myCommunities: 'Moje społeczności',
 
     // Top Nav Bar
     login: 'Zaloguj się',
@@ -31,6 +33,7 @@ export const translations = {
     authErrorUserNotFound: 'Użytkownik o podanym adresie e-mail nie istnieje.',
     authErrorEmailAlreadyInUse: 'Konto z tym adresem e-mail już istnieje.',
     authErrorWeakPassword: 'Hasło jest zbyt słabe. Powinno mieć co najmniej 6 znaków.',
+    invalidCredentials: 'Nieprawidłowy email lub hasło.',
 
 
     // Home Page
@@ -139,6 +142,10 @@ export const translations = {
     communityName: 'Nazwa',
     communityDescription: 'Opis',
     logInToCreateCommunity: 'Zaloguj się, aby móc tworzyć nowe społeczności.',
+    dbConnectionError: 'Błąd połączenia z bazą danych.',
+    communityNameRequired: 'Nazwa społeczności nie może być pusta.',
+    communityCreatedSuccess: 'Społeczność "{{name}}" jest tworzona.',
+    creatingCommunity: 'Tworzenie...',
 
     // Community List
     communitiesTitle: 'Społeczności',
@@ -187,6 +194,7 @@ export const translations = {
     typeYourCommentPlaceholder: 'Napisz komentarz...',
     commentCannotBeEmpty: 'Komentarz nie może być pusty.',
     noCommentsYet: 'Nikt jeszcze nie skomentował tego posta.',
+    reply: 'Odpowiedz',
 
     // Actions (Edit, Delete, Vote)
     edit: 'Edytuj',
@@ -209,24 +217,11 @@ export const translations = {
     share: 'Udostępnij',
     linkCopied: 'Link skopiowany do schowka!',
     linkCopyFailed: 'Nie udało się skopiować linku.',
+    upvote: 'Głosuj w górę',
+    downvote: 'Głosuj w dół',
+    removeMedia: 'Usuń media',
 
-    // Notifications
-    notifications: 'Powiadomienia',
-    noNotifications: 'Brak nowych powiadomień.',
-    markAllAsRead: 'Oznacz wszystkie jako przeczytane',
-    userUpvotedYourPost: '{{username}} polubił(a) Twój post: "{{postTitle}}"',
-    userUpvotedYourComment: '{{username}} polubił(a) Twój komentarz do posta: "{{postTitle}}"',
-    notificationsTitle: 'Powiadomienia',
-    notificationsDescription: 'Tutaj zobaczysz powiadomienia o aktywności w Twoich postach i komentarzach.',
-    notificationVoted: 'Głosowanie',
-    notificationCommented: 'Komentarz',
-    post: 'post',
-    comment: 'komentarz',
-    viewContext: 'Zobacz kontekst',
-    emailNotifications: 'Powiadomienia Email',
-    emailNotificationsDescription: 'Otrzymuj powiadomienia na swój adres email.',
-    pushNotifications: 'Powiadomienia Push',
-    pushNotificationsDescription: 'Otrzymuj powiadomienia push w przeglądarce.',
+
 
     // Metadata
     metaTitle: 'Unicoscom',
@@ -263,7 +258,7 @@ export const translations = {
     wrongPassword: 'Nieprawidłowe hasło.',
     tooManyRequests: 'Zbyt wiele prób. Spróbuj ponownie później.',
     errorSavingSettings: 'Błąd zapisywania ustawień.',
-    fileTooLarge: 'Plik jest zbyt duży.',
+
     invalidFileType: 'Nieprawidłowy typ pliku.',
     addImage: 'Dodaj zdjęcie',
     addVideo: 'Dodaj wideo',
@@ -273,18 +268,47 @@ export const translations = {
 
     // Reporting
     report: 'Zgłoś',
-    reportSubmittedDescription: 'Dziękujemy za zgłoszenie. Wkrótce je rozpatrzymy.',
-    reportError: 'Nie udało się wysłać zgłoszenia. Spróbuj ponownie.',
-    moderationDashboard: 'Panel Moderatora',
-    backToCommunity: 'Powrót do społeczności',
-    pendingReports: 'Oczekujące zgłoszenia',
-    noReports: 'Brak oczekujących zgłoszeń.',
     reportedBy: 'Zgłoszone przez',
     reason: 'Powód',
     dismiss: 'Odrzuć',
     deleteContent: 'Usuń treść',
     contentDeleted: 'Treść usunięta i zgłoszenie rozwiązane.',
     reportDismissed: 'Zgłoszenie odrzucone.',
+    submitting: 'Wysyłanie...',
+    submitReport: 'Wyślij zgłoszenie',
+    reportedContent: 'Zgłoszona treść',
+    moderationDescription: 'Zarządzaj zgłoszoną treścią i dbaj o bezpieczeństwo społeczności.',
+    moderationDashboard: 'Panel Moderatora',
+    reportContent: 'Zgłoś treść',
+    reportDescription: 'Wybierz powód zgłoszenia tej treści.',
+    reportReasonSpam: 'Spam',
+    reportReasonHarassment: 'Nękanie lub mowa nienawiści',
+    reportReasonMisinformation: 'Dezinformacja',
+    reportReasonOther: 'Inne',
+    reportDetails: 'Dodatkowe szczegóły (opcjonalne)',
+    reportDetailsPlaceholder: 'Podaj dodatkowy kontekst...',
+    reportSubmittedTitle: 'Zgłoszenie wysłane',
+    reportSubmittedDescription: 'Dziękujemy za zgłoszenie. Wkrótce je rozpatrzymy.',
+    reportError: 'Nie udało się wysłać zgłoszenia. Spróbuj ponownie.',
+
+    // Notifications
+    notifications: 'Powiadomienia',
+    noNotifications: 'Brak nowych powiadomień.',
+    markAllAsRead: 'Oznacz wszystkie jako przeczytane',
+    userUpvotedYourPost: '{{username}} polubił Twój post: "{{postTitle}}"',
+    userCommentedYourPost: '{{username}} skomentował Twój post: "{{postTitle}}"',
+    userUpvotedYourComment: '{{username}} polubił(a) Twój komentarz do posta: "{{postTitle}}"',
+    notificationsTitle: 'Powiadomienia',
+    notificationsDescription: 'Tutaj zobaczysz powiadomienia o aktywności w Twoich postach i komentarzach.',
+    notificationVoted: 'Głos',
+    notificationCommented: 'Komentarz',
+    post: 'post',
+    comment: 'komentarz',
+    viewContext: 'Zobacz kontekst',
+    emailNotifications: 'Powiadomienia email',
+    emailNotificationsDescription: 'Otrzymuj powiadomienia na email.',
+    pushNotifications: 'Powiadomienia push',
+    pushNotificationsDescription: 'Otrzymuj powiadomienia push w przeglądarce.',
 
     // Messages
     messages: "Wiadomości",
@@ -298,7 +322,9 @@ export const translations = {
     offline: "Niedostępny",
     lastMessage: "Ostatnia wiadomość",
     newConversation: "Nowa rozmowa",
-
+    typeToSearch: "Wpisz, aby wyszukać użytkowników",
+    newNotification: 'Nowe powiadomienie',
+    fileTooLarge: 'Plik jest zbyt duży (maks. 5MB)',
   },
   en: {
     // App Sidebar
@@ -311,6 +337,8 @@ export const translations = {
     loading: 'Loading...',
     privacyPolicyTitle: 'Privacy Policy',
     termsTitle: 'Terms of Service',
+    loadMore: 'Load More',
+    myCommunities: 'My Communities',
 
     // Top Nav Bar
     login: 'Log in',
@@ -331,6 +359,7 @@ export const translations = {
     authErrorUserNotFound: 'No user found with this email.',
     authErrorEmailAlreadyInUse: 'An account with this email already exists.',
     authErrorWeakPassword: 'Password is too weak. It should be at least 6 characters.',
+    invalidCredentials: 'Invalid email or password.',
 
     // Home Page
     homeTitle: 'Latest Posts',
@@ -436,6 +465,10 @@ export const translations = {
     communityName: 'Name',
     communityDescription: 'Description',
     logInToCreateCommunity: 'Log in to create a new community.',
+    dbConnectionError: 'Database connection error.',
+    communityNameRequired: 'Community name cannot be empty.',
+    communityCreatedSuccess: 'Community "{{name}}" is being created.',
+    creatingCommunity: 'Creating...',
 
     // Community List
     communitiesTitle: 'Communities',
@@ -484,6 +517,7 @@ export const translations = {
     typeYourCommentPlaceholder: 'Type your comment...',
     commentCannotBeEmpty: 'Comment cannot be empty.',
     noCommentsYet: 'No one has commented on this post yet.',
+    reply: 'Reply',
 
     // Actions (Edit, Delete, Vote)
     edit: 'Edit',
@@ -506,12 +540,16 @@ export const translations = {
     share: 'Share',
     linkCopied: 'Link copied to clipboard!',
     linkCopyFailed: 'Failed to copy link.',
+    upvote: 'Upvote',
+    downvote: 'Downvote',
+    removeMedia: 'Remove media',
 
     // Notifications
     notifications: 'Notifications',
     noNotifications: 'No new notifications.',
     markAllAsRead: 'Mark all as read',
     userUpvotedYourPost: '{{username}} upvoted your post: "{{postTitle}}"',
+    userCommentedYourPost: '{{username}} commented on your post: "{{postTitle}}"',
     userUpvotedYourComment: '{{username}} upvoted your comment on: "{{postTitle}}"',
     notificationsTitle: 'Notifications',
     notificationsDescription: 'Here you will see notifications about activity on your posts and comments.',
@@ -560,7 +598,7 @@ export const translations = {
     wrongPassword: 'Incorrect password.',
     tooManyRequests: 'Too many requests. Try again later.',
     errorSavingSettings: 'Error saving settings.',
-    fileTooLarge: 'File is too large.',
+
     invalidFileType: 'Invalid file type.',
     addImage: 'Add Image',
     addVideo: 'Add Video',
@@ -570,18 +608,28 @@ export const translations = {
 
     // Reporting
     report: 'Report',
-    reportSubmittedDescription: 'Thank you for your report. We will review it shortly.',
-    reportError: 'Failed to submit report. Please try again.',
-    moderationDashboard: 'Moderation Dashboard',
-    backToCommunity: 'Back to Community',
-    pendingReports: 'Pending Reports',
-    noReports: 'No pending reports.',
     reportedBy: 'Reported by',
     reason: 'Reason',
     dismiss: 'Dismiss',
     deleteContent: 'Delete Content',
     contentDeleted: 'Content deleted and report resolved.',
     reportDismissed: 'Report dismissed.',
+    submitting: 'Submitting...',
+    submitReport: 'Submit Report',
+    reportedContent: 'Reported Content',
+    moderationDescription: 'Manage reported content and keep the community safe.',
+    moderationDashboard: 'Moderation Dashboard',
+    reportContent: 'Report Content',
+    reportDescription: 'Please select a reason for reporting this content.',
+    reportReasonSpam: 'Spam',
+    reportReasonHarassment: 'Harassment or Hate Speech',
+    reportReasonMisinformation: 'Misinformation',
+    reportReasonOther: 'Other',
+    reportDetails: 'Additional Details (Optional)',
+    reportDetailsPlaceholder: 'Please provide any additional context...',
+    reportSubmittedTitle: 'Report Submitted',
+    reportSubmittedDescription: 'Thank you for your report. We will review it shortly.',
+    reportError: 'Failed to submit report. Please try again.',
 
     // Messages
     messages: "Messages",
@@ -595,5 +643,8 @@ export const translations = {
     offline: "Offline",
     lastMessage: "Last message",
     newConversation: "New Conversation",
+    typeToSearch: "Type to search for users",
+    newNotification: 'New Notification',
+    fileTooLarge: 'File is too large (max 5MB)',
   },
 };
