@@ -293,8 +293,7 @@ export function PostFeed() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold tracking-tight">{t('latestPosts')}</h2>
+            <div className="flex flex-col items-center gap-4">
                 <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as 'latest' | 'top' | 'oldest')} className="w-[400px]">
                     <TabsList className="grid w-full grid-cols-3 glass">
                         <TabsTrigger value="latest">{t('sortLatest') || "Latest"}</TabsTrigger>
@@ -302,6 +301,7 @@ export function PostFeed() {
                         <TabsTrigger value="oldest">{t('sortOldest') || "Oldest"}</TabsTrigger>
                     </TabsList>
                 </Tabs>
+                <h2 className="text-2xl font-bold tracking-tight">{t('latestPosts')}</h2>
             </div>
 
             {posts && posts.length > 0 ? (
