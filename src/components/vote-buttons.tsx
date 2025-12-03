@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/components/language-provider';
 import { cn } from '@/lib/utils';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 
 interface VoteButtonsProps {
@@ -155,7 +155,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       // Revert optimistic UI update on error.
       setVoteCount(prev => (prev || 0) - voteChange);
       setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-
+      
       const isDeleteOperation = newVoteValue === 0;
       const writeOperation = isDeleteOperation ? 'delete' : 'create';
       
@@ -163,7 +163,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         path: voteDocRef.path,
         operation: writeOperation,
         requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid }
-      });
+      } satisfies SecurityRuleContext);
 
       // Emit the contextual error for the listener to catch and throw.
       errorEmitter.emit('permission-error', permissionError);
