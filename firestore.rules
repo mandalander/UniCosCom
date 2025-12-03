@@ -37,26 +37,24 @@ service cloud.firestore {
         allow create: if isSignedIn();
         allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
+        // Rules for post votes
+        match /votes/{userId} {
+          allow read: if true;
+          allow write: if isOwner(userId);
+        }
+
         match /comments/{commentId} {
           allow list, get: if true;
           allow create: if isSignedIn();
           allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
-           // Rules for comment votes
+          // Rules for comment votes
           match /votes/{userId} {
             allow read: if true;
             allow write: if isOwner(userId);
           }
         }
-        
-        // Rules for post votes
-        match /votes/{userId} {
-            allow read: if true;
-            allow write: if isOwner(userId);
-        }
       }
     }
   }
 }
-
-    
