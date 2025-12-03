@@ -152,21 +152,22 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       }
 
     } catch (e: any) {
-      // Revert optimistic UI update on error.
-      setVoteCount(prev => (prev || 0) - voteChange);
-      setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-      
-      const isDeleteOperation = newVoteValue === 0;
-      const writeOperation = isDeleteOperation ? 'delete' : 'write';
-      
-      const permissionError = new FirestorePermissionError({
-        path: voteDocRef.path,
-        operation: writeOperation,
-        requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid }
-      } satisfies SecurityRuleContext);
+        // Revert optimistic UI update on error.
+        setVoteCount(prev => (prev || 0) - voteChange);
+        setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
+        
+        const isDeleteOperation = newVoteValue === 0;
+        const operationType = isDeleteOperation ? 'delete' : 'write';
+        
+        // This is the correct implementation for contextual error reporting.
+        const permissionError = new FirestorePermissionError({
+            path: voteDocRef.path,
+            operation: operationType,
+            requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid },
+        } satisfies SecurityRuleContext);
 
-      // Emit the contextual error for the listener to catch and throw.
-      errorEmitter.emit('permission-error', permissionError);
+        // Emit the contextual error for the global listener to catch and throw.
+        errorEmitter.emit('permission-error', permissionError);
 
     } finally {
       setIsVoting(false);
