@@ -18,14 +18,16 @@ export function AdBanner({
     const adRef = useRef<HTMLModElement>(null);
 
     useEffect(() => {
-        try {
-            // Check if the ad has already been loaded in this slot to prevent duplicate calls
-            if (adRef.current && adRef.current.innerHTML === '') {
+        if (adRef.current && adRef.current.getAttribute('data-ad-status') !== 'filled') {
+            try {
                 (window as any).adsbygoogle = (window as any).adsbygoogle || [];
                 (window as any).adsbygoogle.push({});
+                if (adRef.current) {
+                  adRef.current.setAttribute('data-ad-status', 'filled');
+                }
+            } catch (err) {
+                console.error('AdSense error:', err);
             }
-        } catch (err) {
-            console.error('AdSense error:', err);
         }
     }, []);
 
