@@ -16,7 +16,8 @@ service cloud.firestore {
 
       // Allow owner to read their own community memberships
       match /communityMemberships/{communityId} {
-        allow get, list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
       }
     }
 
