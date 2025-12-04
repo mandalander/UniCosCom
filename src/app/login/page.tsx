@@ -65,12 +65,16 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setError(null);
-    const provider = new GoogleAuthProvider();
-    initiateSignInWithProvider(auth, provider);
-    // The onAuthStateChanged listener will handle the redirect.
-    // No need for router.push('/') here to avoid race conditions.
+    try {
+      const provider = new GoogleAuthProvider();
+      await initiateSignInWithProvider(auth, provider);
+      router.push('/');
+    } catch (e: any) {
+      console.error('Google sign-in error:', e);
+      setError(t('authErrorGeneric') || 'Authentication error occurred.');
+    }
   };
 
   return (
