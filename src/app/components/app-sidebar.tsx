@@ -25,6 +25,7 @@ import { useUser, useFirestore, useCollection } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
+import { AdBanner } from './ad-banner';
 
 type Community = {
   id: string;
@@ -182,6 +183,14 @@ export function AppSidebar() {
                 </Link>
               </SidebarMenuSubButton>
             </SidebarMenuSub>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        {/* Small sidebar ad - hidden when collapsed */}
+        <SidebarGroup className="mt-auto group-data-[collapsible=icon]:hidden">
+          <SidebarGroupContent>
+            {!['/login', '/register', '/settings', '/notifications', '/messages', '/saved', '/privacy', '/terms'].some(path => pathname.startsWith(path)) && (
+              <AdBanner dataAdSlot="0987654321" dataAdFormat="rectangle" className="mx-1 !my-1 !max-w-full [&>ins]:!max-h-20" />
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
