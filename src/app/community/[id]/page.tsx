@@ -20,6 +20,8 @@ import { useMemo } from 'react';
 import { JoinButton } from '@/app/components/join-button';
 import { PostItem } from '@/app/components/post-item';
 import { Post, Community } from '@/lib/types';
+import { AdBanner } from '@/app/components/ad-banner';
+import React from 'react';
 
 export default function CommunityPage() {
   const { id: communityId } = useParams<{ id: string }>();
@@ -111,8 +113,18 @@ export default function CommunityPage() {
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">{t('postsTitle')}</h2>
         {mappedPosts && mappedPosts.length > 0 ? (
-          mappedPosts.map((post) => (
-            <PostItem key={post.id} post={post} />
+          mappedPosts.map((post, index) => (
+            <React.Fragment key={post.id}>
+              <PostItem post={post} />
+              {(index + 1) % 5 === 0 && (
+                <AdBanner
+                  dataAdSlot="1234567890"
+                  dataAdFormat="fluid"
+                  dataFullWidthResponsive={true}
+                  className="my-6"
+                />
+              )}
+            </React.Fragment>
           ))
         ) : (
           <p>{t('noPostsYet')}</p>

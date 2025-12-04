@@ -21,6 +21,7 @@ import NextImage from 'next/image';
 import { useMemo } from 'react';
 
 import { Post } from '@/lib/types';
+import { AdBanner } from '@/app/components/ad-banner';
 
 export default function PostPage() {
   const { id: communityId, postId } = useParams<{ id: string; postId: string }>();
@@ -131,6 +132,14 @@ export default function PostPage() {
           </div>
         </CardFooter>
       </Card>
+
+      <div className="my-8">
+        <AdBanner
+          dataAdSlot="1234567890"
+          dataAdFormat="auto"
+          dataFullWidthResponsive={true}
+        />
+      </div>
 
       <div className="space-y-6">
         <h2 className="text-2xl font-bold">{t('commentsTitle')}</h2>
