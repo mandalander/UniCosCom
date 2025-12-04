@@ -19,6 +19,7 @@ import {
 } from '@/firebase';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { UniCosComLogo } from '../components/unicoscom-logo';
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -73,14 +74,18 @@ export default function LoginPage() {
       router.push('/');
     } catch (e: any) {
       console.error('Google sign-in error:', e);
-      setError(t('authErrorGeneric') || 'Authentication error occurred.');
+      setError('Authentication error occurred.');
     }
   };
 
   return (
     <div className="flex items-center justify-center">
       <Card className="w-full max-w-sm">
-        <CardHeader>
+        <CardHeader className="flex flex-col items-center text-center">
+          <div className="mb-4 relative">
+            <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full animate-pulse-slow" />
+            <UniCosComLogo className="w-16 h-16 relative z-10" />
+          </div>
           <CardTitle className="text-2xl">
             {isRegistering ? t('register') : t('loginTitle')}
           </CardTitle>
