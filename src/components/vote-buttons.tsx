@@ -74,7 +74,14 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       return;
     }
 
-    const postRef = doc(firestore, 'communities', communityId, postId || targetId);
+    // For posts, use targetId; for comments, use postId
+    const actualPostId = targetType === 'post' ? targetId : postId;
+    if (!actualPostId) {
+      console.error('Cannot create notification: missing postId');
+      return;
+    }
+
+    const postRef = doc(firestore, 'communities', communityId, 'posts', actualPostId);
 
     getDocFromServer(postRef).then(postSnap => {
       const postTitle = postSnap.exists() ? postSnap.data().title : 'a post';
@@ -86,7 +93,7 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         targetId: targetId,
         targetTitle: postTitle,
         communityId: communityId,
-        postId: postId || targetId,
+        postId: actualPostId,
         actorId: user.uid,
         actorDisplayName: user.displayName || 'Someone',
         read: false,
@@ -152,21 +159,21 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       }
 
     } catch (e: any) {
-        // Revert optimistic UI update on error.
-        setVoteCount(prev => (prev || 0) - voteChange);
-        setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
-        
-        const isDeleteOperation = newVoteValue === 0;
-        const operationType = isDeleteOperation ? 'delete' : 'write';
-        
-        const permissionError = new FirestorePermissionError({
-            path: voteDocRef.path,
-            operation: operationType,
-            requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid },
-        } satisfies SecurityRuleContext);
+      // Revert optimistic UI update on error.
+      setVoteCount(prev => (prev || 0) - voteChange);
+      setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
 
-        // Emit the contextual error for the global listener to catch and throw.
-        errorEmitter.emit('permission-error', permissionError);
+      const isDeleteOperation = newVoteValue === 0;
+      const operationType = isDeleteOperation ? 'delete' : 'write';
+
+      const permissionError = new FirestorePermissionError({
+        path: voteDocRef.path,
+        operation: operationType,
+        requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid },
+      } satisfies SecurityRuleContext);
+
+      // Emit the contextual error for the global listener to catch and throw.
+      errorEmitter.emit('permission-error', permissionError);
 
     } finally {
       setIsVoting(false);
