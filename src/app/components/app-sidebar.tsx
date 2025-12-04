@@ -25,7 +25,6 @@ import { useUser, useFirestore, useCollection } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
-import { AdBanner } from './ad-banner';
 
 type Community = {
   id: string;
@@ -185,15 +184,8 @@ export function AppSidebar() {
             </SidebarMenuSub>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupContent>
-            {!['/login', '/register', '/settings', '/notifications', '/messages', '/saved', '/privacy', '/terms'].some(path => pathname.startsWith(path)) && (
-              <AdBanner dataAdSlot="0987654321" dataAdFormat="rectangle" className="mx-2" />
-            )}
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="glass border-t border-white/10 mt-auto p-2">
+      <SidebarFooter className="glass border-t border-white/10 p-2 shrink-0">
         <SidebarMenu>
           <SidebarMenuItem>
             <CreatePostDialog communities={communities || []}>

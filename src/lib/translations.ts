@@ -313,6 +313,8 @@ export const translations = {
     typeToSearch: "Wpisz, aby wyszukać użytkowników",
     newNotification: 'Nowe powiadomienie',
     fileTooLarge: 'Plik jest zbyt duży (maks. 5MB)',
+    savedPosts: 'Zapisane posty',
+    savedPostsDescription: 'Posty, które zapisałeś na później',
   },
   en: {
     // App Sidebar
@@ -621,5 +623,7 @@ export const translations = {
     typeToSearch: "Type to search for users",
     newNotification: 'New Notification',
     fileTooLarge: 'File is too large (max 5MB)',
+    savedPosts: 'Saved Posts',
+    savedPostsDescription: 'Posts you have bookmarked for later',
   },
 };
