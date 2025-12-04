@@ -79,7 +79,7 @@ export default function ProfilePage() {
         <div className="absolute top-10 left-10 w-20 h-20 bg-white/20 rounded-full blur-2xl" />
       </div>
 
-      <Card className="glass-card border-none -mt-12 mx-4 relative z-10 overflow-hidden">
+      <Card className="glass-card border-none -mt-12 mx-4 relative z-10">
         <CardContent className="pt-6">
           {isLoading ? (
             <div className="space-y-4">
