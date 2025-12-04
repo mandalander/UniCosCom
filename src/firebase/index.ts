@@ -55,4 +55,4 @@ export * from './errors';
 export * from './error-emitter';
 
 // Re-export useUser
-export { useUser } from './provider';
+export { useUser, useMemoFirebase } from './provider';
