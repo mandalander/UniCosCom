@@ -18,12 +18,13 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSkeleton
 } from '@/components/ui/sidebar';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
 import { useEffect, useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
 import { UniCosComLogo } from './unicoscom-logo';
 

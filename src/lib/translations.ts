@@ -13,6 +13,8 @@ export const translations = {
     termsTitle: 'Regulamin Serwisu',
     loadMore: 'Załaduj więcej',
     myCommunities: 'Moje społeczności',
+    joinedCommunities: 'Dołączone',
+    createdCommunities: 'Utworzone',
 
     // Top Nav Bar
     login: 'Zaloguj się',
@@ -329,6 +331,8 @@ export const translations = {
     termsTitle: 'Terms of Service',
     loadMore: 'Load More',
     myCommunities: 'My Communities',
+    joinedCommunities: 'Joined',
+    createdCommunities: 'Created',
 
     // Top Nav Bar
     login: 'Log in',
