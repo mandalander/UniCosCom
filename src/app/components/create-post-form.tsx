@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { collection, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
-import { Image as ImageIcon, Video, X } from 'lucide-react';
+import { Image as ImageIcon, Video, X, Save } from 'lucide-react';
 
 interface CreatePostFormProps {
   communityId: string;
@@ -30,6 +30,7 @@ export function CreatePostForm({ communityId, communityName }: CreatePostFormPro
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const FormSchema = z.object({
@@ -48,6 +49,46 @@ export function CreatePostForm({ communityId, communityName }: CreatePostFormPro
       content: '',
     },
   });
+
+  // Load draft on mount
+  useEffect(() => {
+    const draftKey = `post-draft-${communityId}`;
+    const savedDraft = localStorage.getItem(draftKey);
+
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        form.setValue('title', draft.title || '');
+        form.setValue('content', draft.content || '');
+        setLastSaved(new Date(draft.savedAt));
+      } catch (error) {
+        console.error('Error loading draft:', error);
+      }
+    }
+  }, [communityId, form]);
+
+  // Auto-save draft every 30 seconds
+  useEffect(() => {
+    const draftKey = `post-draft-${communityId}`;
+    const title = form.watch('title');
+    const content = form.watch('content');
+
+    // Only save if there's content
+    if (!title && !content) return;
+
+    const saveInterval = setInterval(() => {
+      const draft = {
+        title,
+        content,
+        savedAt: new Date().toISOString(),
+      };
+
+      localStorage.setItem(draftKey, JSON.stringify(draft));
+      setLastSaved(new Date());
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(saveInterval);
+  }, [communityId, form]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -139,6 +180,11 @@ export function CreatePostForm({ communityId, communityName }: CreatePostFormPro
         title: t('postCreatedSuccessTitle'),
         description: t('postCreatedSuccessDescription'),
       });
+
+      // Clear draft after successful submission
+      const draftKey = `post-draft-${communityId}`;
+      localStorage.removeItem(draftKey);
+      setLastSaved(null);
 
       form.reset();
       clearFile();
@@ -251,9 +297,21 @@ export function CreatePostForm({ communityId, communityName }: CreatePostFormPro
           )}
         </div>
 
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? t('creatingPost') : t('createPost')}
-        </Button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            {lastSaved && (
+              <>
+                <Save className="h-3 w-3" />
+                <span>
+                  {t('draftSaved') || 'Zapisano'} {new Date(lastSaved).toLocaleTimeString()}
+                </span>
+              </>
+            )}
+          </div>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? t('creatingPost') : t('createPost')}
+          </Button>
+        </div>
       </form>
     </Form>
   );

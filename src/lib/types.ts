@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
+import type { ReactionCounts } from './reactions';
 
 export interface UserSettings {
     emailNotifications: boolean;
@@ -79,6 +80,7 @@ export interface Comment {
     createdAt: Timestamp;
     updatedAt?: Timestamp;
     voteCount: number;
+    reactionCounts?: ReactionCounts;
     parentId?: string | null;
     mediaUrl?: string | null;
     mediaType?: 'image' | 'video' | null;
@@ -97,6 +99,7 @@ export interface Post {
     createdAt: Timestamp;
     updatedAt?: Timestamp;
     voteCount: number;
+    reactionCounts?: ReactionCounts;
     mediaUrl?: string | null;
     mediaType?: 'image' | 'video' | null;
 }

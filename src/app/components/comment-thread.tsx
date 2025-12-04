@@ -13,6 +13,9 @@ import { useUser } from '@/firebase';
 import { VoteButtons } from '@/components/vote-buttons';
 import { CommentItemActions } from './comment-item-actions';
 import { CreateCommentForm } from './create-comment-form';
+import { ReactionPicker } from './reaction-picker';
+import { ReactionDisplay } from './reaction-display';
+import { useReactions } from '@/hooks/use-reactions';
 
 import { Comment } from '@/lib/types';
 
@@ -40,6 +43,15 @@ export function CommentThread({
     const { t, language } = useLanguage();
     const { user } = useUser();
     const [isReplying, setIsReplying] = useState(false);
+
+    const { reactionCounts, userReaction, isReacting, toggleReaction } = useReactions({
+        targetType: 'comment',
+        targetId: comment.id,
+        creatorId: comment.creatorId,
+        communityId,
+        postId,
+        initialReactionCounts: comment.reactionCounts || {},
+    });
 
     const formatDate = (timestamp: any) => {
         if (!timestamp) return '';
@@ -91,7 +103,7 @@ export function CommentThread({
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="pl-14 py-2">
+                <CardFooter className="pl-14 py-2 flex-col items-start gap-2">
                     <div className="flex items-center gap-4">
                         <VoteButtons
                             targetType="comment"
@@ -100,6 +112,11 @@ export function CommentThread({
                             communityId={communityId}
                             postId={postId}
                             initialVoteCount={comment.voteCount}
+                        />
+                        <ReactionPicker
+                            onReact={toggleReaction}
+                            currentReaction={userReaction}
+                            disabled={isReacting}
                         />
                         <Button
                             variant="ghost"
@@ -111,6 +128,9 @@ export function CommentThread({
                             {t('reply') || "Reply"}
                         </Button>
                     </div>
+                    {reactionCounts && Object.keys(reactionCounts).length > 0 && (
+                        <ReactionDisplay reactionCounts={reactionCounts} compact />
+                    )}
                 </CardFooter>
 
                 {isReplying && (

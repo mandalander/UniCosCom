@@ -39,8 +39,14 @@ export default function CommunityPage() {
     return query(collection(firestore, 'communities', communityId, 'posts'), orderBy('createdAt', 'desc'));
   }, [firestore, communityId]);
 
+  const membersColRef = useMemo(() => {
+    if (!firestore || !communityId) return null;
+    return query(collection(firestore, 'communities', communityId, 'members'));
+  }, [firestore, communityId]);
+
   const { data: community, isLoading: isCommunityLoading } = useDoc<Community>(communityDocRef);
   const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsColRef);
+  const { data: members } = useCollection(membersColRef);
 
   const isLoading = isCommunityLoading || arePostsLoading || isUserLoading;
 
@@ -84,6 +90,10 @@ export default function CommunityPage() {
           <div>
             <h1 className="text-3xl font-bold">{community.name}</h1>
             <p className="text-muted-foreground">{community.description}</p>
+            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+              <User className="h-4 w-4" />
+              <span>{members?.length || 0} {members?.length === 1 ? 'członek' : 'członków'}</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <JoinButton communityId={communityId} communityName={community.name} />

@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo } from 'react';
+import { useFirestore, useCollection } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Users, TrendingUp } from 'lucide-react';
 
@@ -17,7 +20,16 @@ interface CommunityCardProps {
 }
 
 export function CommunityCard({ community }: CommunityCardProps) {
-    const memberCount = community.memberCount || Math.floor(Math.random() * 500) + 50;
+    const firestore = useFirestore();
+
+    // Real-time member count from Firebase
+    const membersQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'communities', community.id, 'members'));
+    }, [firestore, community.id]);
+
+    const { data: members } = useCollection(membersQuery);
+    const memberCount = members?.length || community.memberCount || 0;
 
     return (
         <Link href={`/community/${community.id}`} className="block hover:no-underline group h-full">
@@ -43,7 +55,7 @@ export function CommunityCard({ community }: CommunityCardProps) {
                         <div className="flex items-center gap-1.5">
                             <Users className="w-4 h-4" />
                             <span className="font-medium">{memberCount.toLocaleString()}</span>
-                            <span>członków</span>
+                            <span>{memberCount === 1 ? 'członek' : 'członków'}</span>
                         </div>
                     </div>
                 </CardContent>

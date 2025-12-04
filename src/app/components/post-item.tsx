@@ -14,12 +14,23 @@ import { PostItemActions } from './post-item-actions';
 import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from './share-button';
 import { SaveButton } from './save-button';
+import { ReactionPicker } from './reaction-picker';
+import { ReactionDisplay } from './reaction-display';
+import { useReactions } from '@/hooks/use-reactions';
 
 import { Post } from '@/lib/types';
 
 export const PostItem = ({ post }: { post: Post }) => {
     const { t, language } = useLanguage();
     const { user } = useUser();
+
+    const { reactionCounts, userReaction, isReacting, toggleReaction } = useReactions({
+        targetType: 'post',
+        targetId: post.id,
+        creatorId: post.creatorId,
+        communityId: post.communityId,
+        initialReactionCounts: post.reactionCounts || {},
+    });
 
     const formatDate = (timestamp: any) => {
         if (!timestamp) return '';
@@ -84,15 +95,22 @@ export const PostItem = ({ post }: { post: Post }) => {
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className='flex-col items-start gap-4 pl-4 pr-4 pb-4 mt-auto border-t pt-4 bg-black/5 dark:bg-white/5'>
+                <CardFooter className='flex-col items-start gap-3 pl-4 pr-4 pb-4 mt-auto border-t pt-4 bg-black/5 dark:bg-white/5'>
                     <div className="flex items-center justify-between w-full text-sm text-muted-foreground">
-                        <VoteButtons
-                            targetType="post"
-                            targetId={post.id}
-                            creatorId={post.creatorId}
-                            communityId={post.communityId}
-                            initialVoteCount={post.voteCount || 0}
-                        />
+                        <div className="flex items-center gap-2">
+                            <VoteButtons
+                                targetType="post"
+                                targetId={post.id}
+                                creatorId={post.creatorId}
+                                communityId={post.communityId}
+                                initialVoteCount={post.voteCount || 0}
+                            />
+                            <ReactionPicker
+                                onReact={toggleReaction}
+                                currentReaction={userReaction}
+                                disabled={isReacting}
+                            />
+                        </div>
                         <div className="flex items-center gap-2">
                             <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
                                 <Button variant="ghost" size="sm" className="rounded-full h-8 px-3 text-xs flex items-center gap-1.5">
@@ -103,6 +121,9 @@ export const PostItem = ({ post }: { post: Post }) => {
                             <ShareButton post={post} />
                         </div>
                     </div>
+                    {reactionCounts && Object.keys(reactionCounts).length > 0 && (
+                        <ReactionDisplay reactionCounts={reactionCounts} compact />
+                    )}
                 </CardFooter>
             </div>
         </Card>

@@ -19,6 +19,7 @@ import {
 import { User as UserIcon } from 'lucide-react';
 import { NotificationBell } from './notification-bell';
 import { SearchBar } from './search-bar';
+import { ThemeToggle } from './theme-toggle';
 
 export function TopNavBar() {
   const { t } = useLanguage();
@@ -48,6 +49,7 @@ export function TopNavBar() {
         <SearchBar />
       </div>
       <div className="flex items-center gap-4">
+        <ThemeToggle />
         {isUserLoading ? (
           <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
         ) : user ? (
