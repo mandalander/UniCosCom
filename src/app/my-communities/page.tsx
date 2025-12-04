@@ -28,32 +28,60 @@ export default function MyCommunitiesPage() {
 
     const [joinedCommunities, setJoinedCommunities] = useState<Community[]>([]);
     const [isLoadingJoinedCommunities, setIsLoadingJoinedCommunities] = useState(true);
+    const [membershipError, setMembershipError] = useState<string | null>(null);
 
     // Query for memberships
     const membershipsQuery = useMemo(() => {
-        if (!user || !firestore) return null;
+        if (!user || !firestore) {
+            console.log('[MyCommunitiesPage] No user or firestore:', { user: !!user, firestore: !!firestore });
+            return null;
+        }
+        console.log('[MyCommunitiesPage] Creating memberships query for user:', user.uid);
         return query(collection(firestore, 'users', user.uid, 'communityMemberships'), orderBy('joinedAt', 'desc'));
     }, [user, firestore]);
 
-    const { data: memberships, isLoading: isLoadingMemberships } = useCollection<{ communityName: string }>(membershipsQuery);
+    const { data: memberships, isLoading: isLoadingMemberships, error: membershipsQueryError } = useCollection<{ communityName: string }>(membershipsQuery);
 
     useEffect(() => {
+        console.log('[MyCommunitiesPage] Memberships effect triggered:', {
+            memberships: memberships?.length,
+            isLoadingMemberships,
+            error: membershipsQueryError
+        });
+
+        if (membershipsQueryError) {
+            console.error('[MyCommunitiesPage] Error loading memberships:', membershipsQueryError);
+            setMembershipError(membershipsQueryError.message || 'Error loading memberships');
+            setIsLoadingJoinedCommunities(false);
+            return;
+        }
+
         if (memberships) {
-            const joined = memberships.map(m => ({
-                id: m.id,
-                name: m.communityName
-            }));
+            console.log('[MyCommunitiesPage] Raw memberships data:', memberships);
+            const joined = memberships.map(m => {
+                console.log('[MyCommunitiesPage] Processing membership:', { id: m.id, data: m });
+                return {
+                    id: m.id,
+                    name: m.communityName
+                };
+            });
+            console.log('[MyCommunitiesPage] Processed joined communities:', joined);
             setJoinedCommunities(joined);
             setIsLoadingJoinedCommunities(false);
         } else if (!isLoadingMemberships) {
+            console.log('[MyCommunitiesPage] No memberships found and not loading');
             setJoinedCommunities([]);
             setIsLoadingJoinedCommunities(false);
         }
-    }, [memberships, isLoadingMemberships]);
+    }, [memberships, isLoadingMemberships, membershipsQueryError]);
 
     // Query for created communities
     const createdCommunitiesQuery = useMemo(() => {
-        if (!user || !firestore) return null;
+        if (!user || !firestore) {
+            console.log('[MyCommunitiesPage] No user or firestore for created communities:', { user: !!user, firestore: !!firestore });
+            return null;
+        }
+        console.log('[MyCommunitiesPage] Creating query for created communities, user:', user.uid);
         return query(
             collection(firestore, 'communities'),
             where('creatorId', '==', user.uid),
@@ -61,7 +89,16 @@ export default function MyCommunitiesPage() {
         );
     }, [user, firestore]);
 
-    const { data: createdCommunities, isLoading: isLoadingCreatedCommunities } = useCollection<Community>(createdCommunitiesQuery);
+    const { data: createdCommunities, isLoading: isLoadingCreatedCommunities, error: createdCommunitiesError } = useCollection<Community>(createdCommunitiesQuery);
+
+    useEffect(() => {
+        console.log('[MyCommunitiesPage] Created communities:', {
+            count: createdCommunities?.length,
+            isLoading: isLoadingCreatedCommunities,
+            error: createdCommunitiesError,
+            data: createdCommunities
+        });
+    }, [createdCommunities, isLoadingCreatedCommunities, createdCommunitiesError]);
 
     if (!user) {
         router.push('/login');
@@ -98,7 +135,16 @@ export default function MyCommunitiesPage() {
                 </TabsList>
 
                 <TabsContent value="joined" className="mt-6">
-                    {isLoadingJoinedCommunities ? (
+                    {membershipError ? (
+                        <Card>
+                            <CardContent className="flex flex-col items-center justify-center py-12">
+                                <p className="text-destructive text-center mb-2">
+                                    {t('error') || 'Error'}
+                                </p>
+                                <p className="text-sm text-muted-foreground">{membershipError}</p>
+                            </CardContent>
+                        </Card>
+                    ) : isLoadingJoinedCommunities ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <Skeleton className="h-32 w-full" />
                             <Skeleton className="h-32 w-full" />
@@ -142,7 +188,16 @@ export default function MyCommunitiesPage() {
                 </TabsContent>
 
                 <TabsContent value="created" className="mt-6">
-                    {isLoadingCreatedCommunities ? (
+                    {createdCommunitiesError ? (
+                        <Card>
+                            <CardContent className="flex flex-col items-center justify-center py-12">
+                                <p className="text-destructive text-center mb-2">
+                                    {t('error') || 'Error'}
+                                </p>
+                                <p className="text-sm text-muted-foreground">{createdCommunitiesError.message}</p>
+                            </CardContent>
+                        </Card>
+                    ) : isLoadingCreatedCommunities ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <Skeleton className="h-32 w-full" />
                             <Skeleton className="h-32 w-full" />

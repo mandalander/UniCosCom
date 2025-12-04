@@ -76,7 +76,6 @@ export function AppSidebar() {
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
-    { href: '/notifications', label: t('notificationsTitle') || "Powiadomienia", icon: Bell, requiresAuth: true },
     { href: '/saved', label: t('savedPosts') || "Saved Posts", icon: Bookmark, requiresAuth: true },
   ];
 
