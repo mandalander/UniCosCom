@@ -122,7 +122,13 @@ export const PostItem = ({ post }: { post: Post }) => {
                         </div>
                     </div>
                     {reactionCounts && Object.keys(reactionCounts).length > 0 && (
-                        <ReactionDisplay reactionCounts={reactionCounts} compact />
+                        <ReactionDisplay
+                            reactionCounts={reactionCounts}
+                            compact
+                            targetType="post"
+                            targetId={post.id}
+                            communityId={post.communityId}
+                        />
                     )}
                 </CardFooter>
             </div>

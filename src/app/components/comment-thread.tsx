@@ -129,7 +129,14 @@ export function CommentThread({
                         </Button>
                     </div>
                     {reactionCounts && Object.keys(reactionCounts).length > 0 && (
-                        <ReactionDisplay reactionCounts={reactionCounts} compact />
+                        <ReactionDisplay
+                            reactionCounts={reactionCounts}
+                            compact
+                            targetType="comment"
+                            targetId={comment.id}
+                            communityId={communityId}
+                            postId={postId}
+                        />
                     )}
                 </CardFooter>
 
