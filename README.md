@@ -1,79 +1,212 @@
-# Unicoscom - Aplikacja społecznościowa na Next.js i Firebase
+# UniCosCom - Nowoczesna Platforma Społecznościowa
 
-Witaj w **Unicoscom** (Unikalny Kosmos Komunikacji i Społeczności) - bogatej w funkcje aplikacji społecznościowej zbudowanej przy użyciu nowoczesnych technologii internetowych. Ten projekt służy jako punkt wyjścia do budowy własnej platformy typu Reddit, gdzie użytkownicy mogą tworzyć społeczności, publikować treści, komentować i głosować.
+**UniCosCom** (Unikalny Kosmos Komunikacji i Społeczności) to zaawansowana aplikacja społecznościowa zbudowana przy użyciu najnowszych technologii webowych. Platforma łączy funkcjonalność Reddit z nowoczesnym, eleganckim interfejsem użytkownika.
 
-## ✨ Funkcje
+🌐 **Demo na żywo**: [uni-cos-com.vercel.app](https://uni-cos-com.vercel.app)
 
-*   **Tworzenie społeczności**: Użytkownicy mogą tworzyć własne społeczności.
-*   **System postów i komentarzy**: Pełna funkcjonalność CRUD (Tworzenie, Odczyt, Aktualizacja, Usuwanie) dla postów i komentarzy.
-*   **System głosowania**: Głosowanie "za" i "przeciw" na posty i komentarze.
-*   **Profile użytkowników**: Publiczne profile użytkowników wyświetlające ich aktywność.
-*   **Uwierzytelnianie**: Bezpieczne uwierzytelnianie użytkowników (E-mail/Hasło i Google) oparte na Firebase Auth.
-*   **Aktualizacje w czasie rzeczywistym**: Synchronizacja danych w czasie rzeczywistym z Firestore.
-*   **Powiadomienia**: Użytkownicy otrzymują powiadomienia o głosach na ich treści.
-*   **Motywy**: Wsparcie dla trybu jasnego i ciemnego.
-*   **Lokalizacja**: Wsparcie dla języka polskiego i angielskiego.
+## ✨ Kluczowe Funkcje
 
-## 🚀 Stos technologiczny
+### 🎨 Nowoczesny Design
+- **Animowane Logo SVG**: Interaktywne logo z efektami 3D, animowanymi gradientami, orbitami i planetami
+- **Glassmorphism UI**: Nowoczesne efekty szkła i rozmazania
+- **Motyw Ciemny/Jasny**: Pełne wsparcie dla trybów jasnego i ciemnego
+- **Responsive Design**: Doskonałe działanie na wszystkich urządzeniach
+- **Gradient Branding**: Spójny system kolorów cyjan-niebieski-fiolet
 
-*   **Framework**: [Next.js](https://nextjs.org/) (App Router)
-*   **Baza danych**: [Firebase Firestore](https://firebase.google.com/docs/firestore)
-*   **Uwierzytelnianie**: [Firebase Authentication](https://firebase.google.com/docs/auth)
-*   **Komponenty UI**: [ShadCN UI](https://ui.shadcn.com/)
-*   **Stylizacja**: [Tailwind CSS](https://tailwindcss.com/)
-*   **Zarządzanie stanem**: React Context & niestandardowe Hooki
-*   **Formularze**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+### 👥 Społeczności
+- **Tworzenie społeczności**: Użytkownicy mogą zakładać własne społeczności
+- **Zarządzanie społecznościami**: Panel moderacji dla twórców
+- **Moje społeczności**: Dedykowana strona z zakładkami:
+  - "Dołączone" - społeczności do których dołączyłeś
+  - "Utworzone" - społeczności które sam utworzyłeś
+- **Dołączanie/Opuszczanie**: Łatwe zarządzanie członkostwem
 
-## 🏁 Pierwsze kroki
+### 📝 Posty i Komentarze
+- **Tworzenie postów**: Bogaty edytor z obsługą społeczności
+- **System komentarzy**: Wielopoziomowe komentarze z edycją
+- **Wyświetlanie**: Responsywne karty postów z podglądem
+- **Edycja/Usuwanie**: Pełna kontrola nad własnymi treściami
 
-Aby uruchomić projekt lokalnie, postępuj zgodnie z poniższymi instrukcjami:
+### 👍 Reakcje i Głosowanie
+- **System głosowania**: Upvote/downvote dla postów i komentarzy z animacjami
+- **Emoji Reactions**: Pełny system reakcji emoji (❤️ 😂 😮 😢 😡 👍)
+- **Who Reacted Modal**: Zobacz kto zareagował na post/komentarz
+- **Liczniki w czasie rzeczywistym**: Natychmiastowa synchronizacja
 
-### Wymagania wstępne
+### 👤 Profile Użytkowników
+- **Publiczne profile**: Wyświetlanie aktywności użytkownika
+- **Edycja profilu**: Bio, lokalizacja, social media, zdjęcie profilowe
+- **Posty użytkownika**: Historia wszystkich postów
+- **Bezpośrednie wiadomości**: Chat 1-na-1 z innymi użytkownikami
 
-*   [Node.js](https://nodejs.org/) (wersja 18 lub nowsza)
-*   Menedżer pakietów `npm`
+### 🔔 Powiadomienia
+- **Powiadomienia w czasie rzeczywistym**: O głosach, reakcjach, komentarzach
+- **Panel powiadomień**: Centrum wszystkich powiadomień
+- **Oznaczanie jako przeczytane**: Zarządzanie statusem
+
+### 💾 Zapisane Posty
+- **Zapisywanie**: Dodawaj posty do zakładek
+- **Przeglądanie**: Dedykowana strona zapisanych postów
+- **Usuwanie**: Łatwe zarządzanie zapisami
+
+### 🔐 Uwierzytelnianie i Bezpieczeństwo
+- **Firebase Auth**: Email/hasło i Google Sign-In
+- **Bezpieczne reguły**: Firestore Security Rules
+- **Zmiana hasła**: Panel ustawień bezpieczeństwa
+- **Usuwanie konta**: Pełna kontrola nad danymi
+
+### 🌍 Międzynarodowość
+- **Wielojęzyczność**: Polski i angielski
+- **Łatwa zmiana**: Przełącznik języka w ustawieniach
+- **Pełne tłumaczenia**: Wszystkie elementy UI
+
+### 📱 Dodatkowe Funkcje
+- **Wyszukiwarka**: Globalne wyszukiwanie postów i użytkowników
+- **Eksploracja**: Przeglądaj wszystkie społeczności
+- **Moderacja**: Narzędzia dla moderatorów społeczności
+- **Panel ustawień**: Zarządzanie kontem i preferencjami
+- **PWA**: Wsparcie Progressive Web App
+
+## 🚀 Stos Technologiczny
+
+### Frontend
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router z Turbopack)
+- **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
+- **Stylizacja**: [Tailwind CSS](https://tailwindcss.com/)
+- **Ikony**: [Lucide React](https://lucide.dev/)
+- **Formularze**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **Animacje**: CSS Animations + Framer Motion
+
+### Backend
+- **Database**: [Firebase Firestore](https://firebase.google.com/docs/firestore)
+- **Authentication**: [Firebase Authentication](https://firebase.google.com/docs/auth)
+- **Storage**: [Firebase Storage](https://firebase.google.com/docs/storage)
+- **Hosting**: [Vercel](https://vercel.com/)
+
+### AI
+- **Genkit**: [Google Genkit](https://firebase.google.com/docs/genkit) dla funkcji AI
+
+## 🏁 Pierwsze Kroki
+
+### Wymagania
+- Node.js 18+ 
+- npm lub yarn
+- Konto Firebase
 
 ### Instalacja
 
-1.  Sklonuj repozytorium (jeśli jeszcze tego nie zrobiłeś):
-    ```bash
-    git clone https://github.com/twoje-repo/unicoscom.git
-    cd unicoscom
-    ```
+1. **Sklonuj repozytorium**
+   ```bash
+   git clone https://github.com/twoje-repo/unicoscom.git
+   cd unicoscom
+   ```
 
-2.  Zainstaluj zależności:
-    ```bash
-    npm install
-    ```
+2. **Zainstaluj zależności**
+   ```bash
+   npm install
+   ```
 
-### Uruchamianie w trybie deweloperskim
+3. **Skonfiguruj Firebase**
+   - Utwórz projekt w [Firebase Console](https://console.firebase.google.com/)
+   - Dodaj aplikację webową
+   - Skopiuj konfigurację do `.env.local`:
+   ```env
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+   ```
 
-Aby uruchomić serwer deweloperski:
+4. **Wdróż Firestore Rules**
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
 
+### Uruchomienie
+
+**Tryb deweloperski:**
 ```bash
 npm run dev
 ```
+Aplikacja dostępna na [http://localhost:3000](http://localhost:3000)
 
-Aplikacja będzie dostępna pod adresem [http://localhost:3000](http://localhost:3000).
-
-### Budowanie wersji produkcyjnej
-
-Aby zbudować aplikację do produkcji:
-
+**Build produkcyjny:**
 ```bash
 npm run build
-```
-
-Następnie możesz ją uruchomić za pomocą:
-
-```bash
 npm start
 ```
 
-### Linting
-
-Aby sprawdzić kod pod kątem błędów:
-
+**Linting:**
 ```bash
 npm run lint
 ```
+
+**Type checking:**
+```bash
+npm run typecheck
+```
+
+## 📁 Struktura Projektu
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── components/        # Komponenty React
+│   ├── community/         # Strony społeczności
+│   ├── profile/           # Profile użytkowników
+│   ├── my-communities/   # Strona moich społeczności
+│   ├── messages/          # Wiadomości
+│   ├── notifications/     # Powiadomienia
+│   └── ...
+├── components/            # Komponenty UI (ShadCN)
+├── firebase/              # Konfiguracja Firebase
+├── hooks/                 # Custom React Hooks
+├── lib/                   # Utilities i helpers
+└── public/                # Zasoby statyczne
+```
+
+## 🎨 Highlights Designu
+
+- **Animowane Logo**: Kosmiczne logo z orbitami, planetami i efektami blasku
+- **Nowoczesne Gradienty**: Spójny system kolorów throughout
+- **Smooth Animations**: Micro-interakcje dla lepszej UX
+- **Glassmorphism**: Efekty przezroczystości i rozmazania
+- **Dark Mode**: Pięknie zaprojektowany tryb ciemny
+
+## 🔒 Bezpieczeństwo
+
+- Firestore Security Rules dla ochrony danych
+- Firebase Auth dla bezpiecznego logowania  
+- Walidacja danych po stronie klienta i serwera
+- Rate limiting dla API
+- Sanityzacja input użytkownika
+
+## 📈 Roadmap
+
+- [ ] Integracja AI dla moderacji treści
+- [ ] Webowe notyfikacje push
+- [ ] Streaming wideo na żywo
+- [ ] Rozbudowany system raportowania
+- [ ] Analytics dashboard
+- [ ] API publiczne
+
+## 🤝 Wkład
+
+Projekt otwarty na współpracę! Wszystkie pull requesty mile widziane.
+
+## 📄 Licencja
+
+MIT License - szczegóły w pliku LICENSE
+
+## 🙏 Podziękowania
+
+- Next.js team za świetny framework
+- Firebase za backend infrastructure
+- ShadCN za piękne komponenty UI
+- Społeczność open source
+
+---
+
+**Zbudowane z ❤️ używając Next.js i Firebase**
