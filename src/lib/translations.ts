@@ -15,6 +15,7 @@ export const translations = {
     myCommunities: 'Moje społeczności',
     joinedCommunities: 'Dołączone',
     createdCommunities: 'Utworzone',
+    myCommunitiesPageDescription: 'Zarządzaj społecznościami, do których dołączyłeś lub które utworzyłeś',
 
     // Top Nav Bar
     login: 'Zaloguj się',
@@ -333,6 +334,7 @@ export const translations = {
     myCommunities: 'My Communities',
     joinedCommunities: 'Joined',
     createdCommunities: 'Created',
+    myCommunitiesPageDescription: 'Manage communities you joined or created',
 
     // Top Nav Bar
     login: 'Log in',

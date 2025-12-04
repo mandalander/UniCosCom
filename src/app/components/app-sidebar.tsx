@@ -18,7 +18,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSkeleton
 } from '@/components/ui/sidebar';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
 import { useEffect, useState, useMemo } from 'react';
@@ -74,18 +73,6 @@ export function AppSidebar() {
       setIsLoadingJoinedCommunities(false);
     }
   }, [memberships, isLoadingMemberships]);
-
-  // Query for communities created by the user
-  const createdCommunitiesQuery = useMemo(() => {
-    if (!user || !firestore) return null;
-    return query(
-      collection(firestore, 'communities'),
-      where('creatorId', '==', user.uid),
-      orderBy('createdAt', 'desc')
-    );
-  }, [user, firestore]);
-
-  const { data: createdCommunities, isLoading: isLoadingCreatedCommunities } = useCollection<Community>(createdCommunitiesQuery);
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
@@ -146,68 +133,32 @@ export function AppSidebar() {
         </SidebarMenu>
         <SidebarGroup>
           <SidebarGroupLabel asChild>
-            <Link href="/explore" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/my-communities" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               <Users className="h-4 w-4 group-hover:text-primary transition-colors" />
               <span>{t('myCommunities') || "My Communities"}</span>
             </Link>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <Tabs defaultValue="joined" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-2">
-                <TabsTrigger value="joined" className="text-xs">
-                  {t('joinedCommunities')}
-                </TabsTrigger>
-                <TabsTrigger value="created" className="text-xs">
-                  {t('createdCommunities')}
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="joined" className="mt-0">
-                <SidebarMenuSub>
-                  {isLoadingJoinedCommunities ? (
-                    <>
-                      <SidebarMenuSkeleton showIcon={false} />
-                      <SidebarMenuSkeleton showIcon={false} />
-                    </>
-                  ) : joinedCommunities && joinedCommunities.length > 0 ? (
-                    joinedCommunities.map((community) => (
-                      <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
-                        <Link href={`/community/${community.id}`}>
-                          <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
-                            {community.name}
-                          </span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    ))
-                  ) : (
-                    <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
-                  )}
-                </SidebarMenuSub>
-              </TabsContent>
-
-              <TabsContent value="created" className="mt-0">
-                <SidebarMenuSub>
-                  {isLoadingCreatedCommunities ? (
-                    <>
-                      <SidebarMenuSkeleton showIcon={false} />
-                      <SidebarMenuSkeleton showIcon={false} />
-                    </>
-                  ) : createdCommunities && createdCommunities.length > 0 ? (
-                    createdCommunities.map((community) => (
-                      <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
-                        <Link href={`/community/${community.id}`}>
-                          <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
-                            {community.name}
-                          </span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    ))
-                  ) : (
-                    <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
-                  )}
-                </SidebarMenuSub>
-              </TabsContent>
-            </Tabs>
+            <SidebarMenuSub>
+              {isLoadingJoinedCommunities ? (
+                <>
+                  <SidebarMenuSkeleton showIcon={false} />
+                  <SidebarMenuSkeleton showIcon={false} />
+                </>
+              ) : joinedCommunities && joinedCommunities.length > 0 ? (
+                joinedCommunities.slice(0, 5).map((community) => (
+                  <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
+                    <Link href={`/community/${community.id}`}>
+                      <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
+                        {community.name}
+                      </span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                ))
+              ) : (
+                <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
+              )}
+            </SidebarMenuSub>
           </SidebarGroupContent>
         </SidebarGroup>
 
