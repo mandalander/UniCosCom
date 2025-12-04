@@ -187,7 +187,9 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
-            <AdBanner dataAdSlot="0987654321" dataAdFormat="rectangle" className="mx-2" />
+            {!['/login', '/register', '/settings', '/notifications', '/messages', '/saved', '/privacy', '/terms'].some(path => pathname.startsWith(path)) && (
+              <AdBanner dataAdSlot="0987654321" dataAdFormat="rectangle" className="mx-2" />
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

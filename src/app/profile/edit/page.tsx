@@ -342,7 +342,7 @@ export default function EditProfilePage() {
       </header>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-1 h-auto sm:grid-cols-3">
           <TabsTrigger value="profile">{t('editProfileTabProfile')}</TabsTrigger>
           <TabsTrigger value="security">{t('editProfileTabSecurity')}</TabsTrigger>
           <TabsTrigger value="danger-zone">{t('editProfileTabDangerZone')}</TabsTrigger>

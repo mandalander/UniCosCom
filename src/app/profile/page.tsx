@@ -100,7 +100,7 @@ export default function ProfilePage() {
             </div>
           ) : user ? (
             <div className="space-y-8">
-              <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-20">
+              <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-20 relative z-20">
                 <Avatar className="h-32 w-32 border-4 border-background shadow-xl">
                   <AvatarImage src={displayPhotoUrl ?? undefined} alt={displayName} />
                   <AvatarFallback className="text-4xl bg-gradient-to-br from-violet-100 to-indigo-100 text-violet-600">
