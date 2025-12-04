@@ -1,7 +1,7 @@
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { initializeApp, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth'; // Import getAuth and Auth type
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
@@ -11,18 +11,27 @@ let auth: Auth;
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  if (getApps().length === 0) {
-    try {
-      // Attempt to initialize via Firebase App Hosting environment variables
-      firebaseApp = initializeApp();
-    } catch (e) {
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
+  if (typeof window !== 'undefined') {
+    const apps = getApps();
+    if (apps.length === 0) {
+      try {
+        // Attempt to initialize via Firebase App Hosting environment variables
+        firebaseApp = initializeApp();
+      } catch (e) {
+        if (process.env.NODE_ENV === "production") {
+          console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
+        }
+        firebaseApp = initializeApp(firebaseConfig);
       }
-      firebaseApp = initializeApp(firebaseConfig);
+    } else {
+      firebaseApp = getApp();
     }
   } else {
-    firebaseApp = getApp();
+    // On the server, we might not need a fully initialized app, 
+    // or we might handle it differently.
+    // For now, let's just make sure we don't crash.
+    const apps = getApps();
+    firebaseApp = apps.length > 0 ? getApp() : initializeApp(firebaseConfig);
   }
 
   // Get auth instance
