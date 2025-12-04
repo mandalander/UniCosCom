@@ -106,7 +106,7 @@ export default function RootLayout({
                   <AppSidebar />
                   <SidebarInset>
                     <TopNavBar />
-                    <div className="p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem-60px)]">
+                    <div className="px-2 py-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem-60px)]">
                       <PageTransition>
                         {children}
                       </PageTransition>

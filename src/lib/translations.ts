@@ -210,19 +210,6 @@ export const translations = {
     update: 'Zaktualizuj',
     updating: 'Aktualizowanie...',
     editPostTitle: 'Edytuj post',
-    editCommentTitle: 'Edytuj komentarz',
-    updatePostSuccess: 'Post został zaktualizowany.',
-    updateCommentSuccess: 'Komentarz został usunięty.',
-    voteError: 'Błąd głosowania',
-    mustBeLoggedInToVote: 'Musisz być zalogowany, aby głosować.',
-    share: 'Udostępnij',
-    linkCopied: 'Link skopiowany do schowka!',
-    linkCopyFailed: 'Nie udało się skopiować linku.',
-    upvote: 'Głosuj w górę',
-    downvote: 'Głosuj w dół',
-    removeMedia: 'Usuń media',
-
-
 
     // Metadata
     metaTitle: 'Unicoscom',
@@ -534,20 +521,6 @@ export const translations = {
     update: 'Update',
     updating: 'Updating...',
     editPostTitle: 'Edit Post',
-    editCommentTitle: 'Edit Comment',
-    updatePostSuccess: 'Post updated successfully.',
-    updateCommentSuccess: 'Comment updated successfully.',
-    voteError: 'Vote Error',
-    mustBeLoggedInToVote: 'You must be logged in to vote.',
-    share: 'Share',
-    linkCopied: 'Link copied to clipboard!',
-    linkCopyFailed: 'Failed to copy link.',
-    upvote: 'Upvote',
-    downvote: 'Downvote',
-    removeMedia: 'Remove media',
-
-    // Notifications
-    notifications: 'Notifications',
     noNotifications: 'No new notifications.',
     markAllAsRead: 'Mark all as read',
     userUpvotedYourPost: '{{username}} upvoted your post: "{{postTitle}}"',

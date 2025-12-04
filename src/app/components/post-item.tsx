@@ -55,17 +55,17 @@ export const PostItem = ({ post }: { post: Post }) => {
                                 <AvatarImage src={post.creatorPhotoURL} />
                                 <AvatarFallback>{getInitials(post.creatorDisplayName)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0">
-                                <CardDescription className='text-xs truncate'>
-                                    <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold">{post.communityName || t('community')}</Link>
-                                    <span className='mx-1'>•</span>
-                                    <span>
+                            <div className="min-w-0 flex-1">
+                                <CardDescription className='text-xs flex items-center flex-wrap gap-1'>
+                                    <Link href={`/community/${post.communityId}`} className="text-primary hover:underline font-semibold truncate max-w-[150px] sm:max-w-none">{post.communityName || t('community')}</Link>
+                                    <span className='mx-0.5'>•</span>
+                                    <span className="truncate">
                                         {t('postedByPrefix')}{' '}
                                         <Link href={`/profile/${post.creatorId}`} className="text-primary hover:underline font-semibold">{post.creatorDisplayName}</Link>
                                     </span>
-                                    <span className='mx-1'>•</span>
-                                    <span>{formatDate(post.createdAt)}</span>
-                                    {post.updatedAt && <span className='text-muted-foreground italic text-xs'> ({t('edited')})</span>}
+                                    <span className='mx-0.5'>•</span>
+                                    <span className="whitespace-nowrap">{formatDate(post.createdAt)}</span>
+                                    {post.updatedAt && <span className='text-muted-foreground italic text-xs whitespace-nowrap'> ({t('edited')})</span>}
                                 </CardDescription>
                                 <CardTitle className='leading-tight text-lg mt-1 line-clamp-2'>
                                     <Link href={`/community/${post.communityId}/post/${post.id}`} className='hover:underline'>
@@ -77,8 +77,8 @@ export const PostItem = ({ post }: { post: Post }) => {
                         {(isOwner || isModerator) && <PostItemActions communityId={post.communityId} post={post} isOwner={isOwner} isModerator={isModerator} />}
                     </div>
                 </CardHeader>
-                <CardContent className='pl-4 pr-4 flex-1'>
-                    <p className="line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground mb-4">{post.content}</p>
+                <CardContent className='px-3 sm:px-4 flex-1'>
+                    <p className="line-clamp-3 whitespace-pre-wrap break-words text-sm text-muted-foreground mb-4">{post.content}</p>
                     {post.mediaUrl && (
                         <div className="rounded-lg overflow-hidden border bg-black/5 aspect-video relative">
                             {post.mediaType === 'image' ? (
@@ -95,7 +95,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className='flex-col items-start gap-3 pl-4 pr-4 pb-4 mt-auto border-t pt-4 bg-black/5 dark:bg-white/5'>
+                <CardFooter className='flex-col items-start gap-3 px-3 sm:px-4 pb-4 mt-auto border-t pt-4 bg-black/5 dark:bg-white/5'>
                     <div className="flex items-center justify-between w-full text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <VoteButtons
@@ -114,7 +114,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                         <div className="flex items-center gap-2">
                             <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
                                 <Button variant="ghost" size="sm" className="rounded-full h-8 px-3 text-xs flex items-center gap-1.5">
-                                    <MessageSquare className='h-4 w-4' /> <span>{t('commentsTitle')}</span>
+                                    <MessageSquare className='h-4 w-4' /> <span className="hidden sm:inline">{t('commentsTitle')}</span>
                                 </Button>
                             </Link>
                             <SaveButton postId={post.id} communityId={post.communityId} />

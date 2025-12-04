@@ -41,7 +41,7 @@ export function ReactionPicker({ onReact, currentReaction, disabled }: ReactionP
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-2" align="start">
-                <div className="flex gap-1">
+                <div className="flex flex-wrap gap-1 max-w-[280px] sm:max-w-none justify-center sm:justify-start">
                     {(Object.entries(REACTIONS) as [ReactionType, typeof REACTIONS[ReactionType]][]).map(([type, { emoji, label }]) => (
                         <button
                             key={type}

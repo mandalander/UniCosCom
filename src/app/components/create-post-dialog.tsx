@@ -123,7 +123,7 @@ export function CreatePostDialog({ children, communities }: CreatePostDialogProp
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[525px] max-w-[calc(100vw-2rem)]">
         <DialogHeader>
           <DialogTitle>{t('createNewPost')}</DialogTitle>
           <DialogDescription>{t('createPostDialogDescription')}</DialogDescription>

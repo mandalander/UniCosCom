@@ -69,7 +69,7 @@ export function CommentThread({
     const childReplies = allComments.filter(c => c.parentId === comment.id);
 
     return (
-        <div className={`space-y-4 ${depth > 0 ? 'ml-8 border-l-2 border-muted pl-4' : ''}`}>
+        <div className={`space-y-4 ${depth > 0 ? 'ml-2 md:ml-8 border-l-2 border-muted pl-2 md:pl-4' : ''}`}>
             <Card className="bg-muted/50">
                 <CardHeader className='flex-row items-center justify-between gap-3 space-y-0 pb-2'>
                     <div className="flex items-center gap-3">
@@ -95,15 +95,15 @@ export function CommentThread({
                         />
                     )}
                 </CardHeader>
-                <CardContent className="pl-14">
-                    <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
+                <CardContent className="pl-12 pr-3 sm:pl-14 sm:pr-4">
+                    <p className="text-sm whitespace-pre-wrap break-words">{comment.content}</p>
                     {comment.mediaUrl && comment.mediaType === 'image' && (
                         <div className="mt-2">
-                            <img src={comment.mediaUrl} alt="Comment attachment" className="rounded-md max-h-60 object-cover" />
+                            <img src={comment.mediaUrl} alt="Comment attachment" className="rounded-md max-h-60 max-w-full object-cover" />
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="pl-14 py-2 flex-col items-start gap-2">
+                <CardFooter className="pl-12 sm:pl-14 py-2 flex-col items-start gap-2">
                     <div className="flex items-center gap-4">
                         <VoteButtons
                             targetType="comment"

@@ -181,33 +181,44 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
   };
 
   return (
-    <div className="flex items-center gap-1 rounded-full bg-muted p-1">
+    <div className="flex items-center gap-1 rounded-full bg-muted/50 backdrop-blur-sm p-1 border border-white/10 shadow-sm transition-all duration-300 hover:bg-muted/80">
       <Button
         variant="ghost"
         size="icon"
         className={cn(
-          "h-7 w-7 rounded-full transition-transform duration-200 hover:scale-110 active:scale-95",
-          userVote === 1 && "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+          "h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
+          userVote === 1
+            ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md hover:from-green-600 hover:to-emerald-700 hover:text-white"
+            : "hover:bg-green-500/10 hover:text-green-600"
         )}
         onClick={() => handleVote(1)}
         disabled={isVoting}
         aria-label={t('upvote') || "Upvote"}
       >
-        <ArrowBigUp className={cn("h-5 w-5 transition-colors", userVote === 1 && "fill-current")} />
+        <ArrowBigUp className={cn("h-6 w-6 transition-all duration-300", userVote === 1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
       </Button>
-      <span className="text-sm font-bold min-w-[24px] text-center tabular-nums">{voteCount}</span>
+
+      <span className={cn(
+        "text-sm font-bold min-w-[24px] text-center tabular-nums transition-colors duration-300",
+        userVote === 1 ? "text-green-600" : userVote === -1 ? "text-red-600" : "text-muted-foreground"
+      )}>
+        {voteCount}
+      </span>
+
       <Button
         variant="ghost"
         size="icon"
         className={cn(
-          "h-7 w-7 rounded-full transition-transform duration-200 hover:scale-110 active:scale-95",
-          userVote === -1 && "bg-blue-600 text-white hover:bg-blue-600/90 hover:text-white"
+          "h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
+          userVote === -1
+            ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-md hover:from-red-600 hover:to-rose-700 hover:text-white"
+            : "hover:bg-red-500/10 hover:text-red-600"
         )}
         onClick={() => handleVote(-1)}
         disabled={isVoting}
         aria-label={t('downvote') || "Downvote"}
       >
-        <ArrowBigDown className={cn("h-5 w-5 transition-colors", userVote === -1 && "fill-current")} />
+        <ArrowBigDown className={cn("h-6 w-6 transition-all duration-300", userVote === -1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
       </Button>
     </div>
   );

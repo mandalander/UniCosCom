@@ -7,6 +7,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from './language-provider';
+import { cn } from '@/lib/utils';
 
 interface SaveButtonProps {
     postId: string;
@@ -85,12 +86,20 @@ export function SaveButton({ postId, communityId }: SaveButtonProps) {
         <Button
             variant="ghost"
             size="sm"
-            className="rounded-full h-8 px-3 text-xs"
+            className={cn(
+                "rounded-full h-8 px-3 text-xs flex items-center gap-1.5 transition-all duration-300",
+                isSaved
+                    ? "bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 hover:text-yellow-700"
+                    : "hover:bg-primary/10 hover:text-primary hover:scale-105"
+            )}
             onClick={handleToggleSave}
             disabled={isLoading}
         >
-            <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
-            <span className="ml-1.5">{isSaved ? t('saved') : t('save')}</span>
+            <Bookmark className={cn(
+                "h-4 w-4 transition-all duration-300",
+                isSaved ? "fill-current scale-110" : "scale-100"
+            )} />
+            <span className="ml-0.5 hidden sm:inline">{isSaved ? t('saved') : t('save')}</span>
         </Button>
     );
 }
