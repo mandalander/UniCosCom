@@ -31,11 +31,13 @@ export function PostFeed() {
     const firestore = useFirestore();
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<'latest' | 'top' | 'oldest'>('latest');
 
     useEffect(() => {
         if (!firestore) return;
         setIsLoading(true);
+        setError(null);
 
         let q;
         const postsRef = collectionGroup(firestore, 'posts');
@@ -94,6 +96,7 @@ export function PostFeed() {
             setIsLoading(false);
         }, (error: any) => {
             console.error("Error fetching posts:", error);
+            setError(error.message);
             setIsLoading(false);
         });
 
@@ -130,6 +133,15 @@ export function PostFeed() {
                 ))}
             </div>
         )
+    }
+
+    if (error) {
+        return (
+            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500">
+                <h3 className="font-bold mb-2">Error loading posts</h3>
+                <p>{error}</p>
+            </div>
+        );
     }
 
     return (
