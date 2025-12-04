@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, runTransaction, increment, collection, addDoc, serverTimestamp, getDocFromServer } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -70,7 +70,7 @@ export function useReactions({
         fetchUserReaction();
     }, [user, firestore, targetType, communityId, targetId, postId]);
 
-    const createNotification = async (reactionType: ReactionType) => {
+    const createNotification = useCallback(async (reactionType: ReactionType) => {
         if (!user || !firestore || user.uid === creatorId) {
             return;
         }
@@ -104,9 +104,9 @@ export function useReactions({
         } catch (error) {
             console.error('Error creating notification:', error);
         }
-    };
+    }, [user, firestore, creatorId, targetType, targetId, postId, communityId]);
 
-    const toggleReaction = async (reactionType: ReactionType) => {
+    const toggleReaction = useCallback(async (reactionType: ReactionType) => {
         if (!user) {
             toast({
                 variant: 'destructive',
@@ -215,7 +215,7 @@ export function useReactions({
         } finally {
             setIsReacting(false);
         }
-    };
+    }, [user, firestore, isReacting, userReaction, targetType, communityId, targetId, postId, creatorId, toast, router, createNotification]);
 
     return {
         reactionCounts,
