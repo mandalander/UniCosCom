@@ -39,20 +39,20 @@ export function ReactionDisplay({
         <>
             <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 text-sm hover:opacity-80 transition-opacity cursor-pointer"
+                className="flex items-center gap-2 text-sm hover:opacity-80 transition-all duration-300 cursor-pointer group"
                 title="See who reacted"
             >
                 {displayReactions.map(([type, count]) => (
                     <div
                         key={type}
-                        className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted/50 hover:bg-muted transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted/50 hover:bg-muted transition-all duration-300 hover:scale-105 hover:shadow-sm"
                     >
-                        <span className="text-base">{REACTIONS[type].emoji}</span>
+                        <span className="text-base transform transition-transform group-hover:scale-110 duration-300">{REACTIONS[type].emoji}</span>
                         <span className="text-xs font-medium text-muted-foreground">{count}</span>
                     </div>
                 ))}
                 {compact && sortedReactions.length > 3 && (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-300">
                         +{sortedReactions.length - 3}
                     </span>
                 )}
