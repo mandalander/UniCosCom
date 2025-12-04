@@ -13,6 +13,11 @@ service cloud.firestore {
     match /users/{userId} {
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       allow read, update, delete: if isOwner(userId);
+
+      // Allow owner to read their own community memberships
+      match /communityMemberships/{communityId} {
+        allow read: if isOwner(userId);
+      }
     }
 
     match /userProfiles/{userId} {
@@ -31,6 +36,11 @@ service cloud.firestore {
       allow list, get: if true;
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+
+      // Allow users to join/leave communities
+      match /members/{userId} {
+        allow write: if isOwner(userId);
+      }
 
       match /posts/{postId} {
         allow list, get: if true;
