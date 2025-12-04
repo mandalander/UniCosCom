@@ -75,6 +75,18 @@ export function AppSidebar() {
     }
   }, [memberships, isLoadingMemberships]);
 
+  // Query for communities created by the user
+  const createdCommunitiesQuery = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(
+      collection(firestore, 'communities'),
+      where('creatorId', '==', user.uid),
+      orderBy('createdAt', 'desc')
+    );
+  }, [user, firestore]);
+
+  const { data: createdCommunities, isLoading: isLoadingCreatedCommunities } = useCollection<Community>(createdCommunitiesQuery);
+
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
     { href: '/notifications', label: t('notificationsTitle') || "Powiadomienia", icon: Bell, requiresAuth: true },
@@ -140,26 +152,62 @@ export function AppSidebar() {
             </Link>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenuSub>
-              {isLoadingJoinedCommunities ? (
-                <>
-                  <SidebarMenuSkeleton showIcon={false} />
-                  <SidebarMenuSkeleton showIcon={false} />
-                </>
-              ) : joinedCommunities && joinedCommunities.length > 0 ? (
-                joinedCommunities.map((community) => (
-                  <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
-                    <Link href={`/community/${community.id}`}>
-                      <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
-                        {community.name}
-                      </span>
-                    </Link>
-                  </SidebarMenuSubButton>
-                ))
-              ) : (
-                <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
-              )}
-            </SidebarMenuSub>
+            <Tabs defaultValue="joined" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-2">
+                <TabsTrigger value="joined" className="text-xs">
+                  {t('joinedCommunities')}
+                </TabsTrigger>
+                <TabsTrigger value="created" className="text-xs">
+                  {t('createdCommunities')}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="joined" className="mt-0">
+                <SidebarMenuSub>
+                  {isLoadingJoinedCommunities ? (
+                    <>
+                      <SidebarMenuSkeleton showIcon={false} />
+                      <SidebarMenuSkeleton showIcon={false} />
+                    </>
+                  ) : joinedCommunities && joinedCommunities.length > 0 ? (
+                    joinedCommunities.map((community) => (
+                      <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
+                        <Link href={`/community/${community.id}`}>
+                          <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
+                            {community.name}
+                          </span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    ))
+                  ) : (
+                    <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
+                  )}
+                </SidebarMenuSub>
+              </TabsContent>
+
+              <TabsContent value="created" className="mt-0">
+                <SidebarMenuSub>
+                  {isLoadingCreatedCommunities ? (
+                    <>
+                      <SidebarMenuSkeleton showIcon={false} />
+                      <SidebarMenuSkeleton showIcon={false} />
+                    </>
+                  ) : createdCommunities && createdCommunities.length > 0 ? (
+                    createdCommunities.map((community) => (
+                      <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
+                        <Link href={`/community/${community.id}`}>
+                          <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
+                            {community.name}
+                          </span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    ))
+                  ) : (
+                    <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
+                  )}
+                </SidebarMenuSub>
+              </TabsContent>
+            </Tabs>
           </SidebarGroupContent>
         </SidebarGroup>
 
