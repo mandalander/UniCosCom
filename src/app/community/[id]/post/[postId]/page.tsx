@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, MessageSquare } from 'lucide-react';
+import { User, MessageSquare, Mail } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import { CommentList } from '@/app/components/comment-list';
@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { useMemo } from 'react';
+import { useStartConversation } from '@/hooks/use-start-conversation';
 
 import { Post } from '@/lib/types';
 import { AdBanner } from '@/app/components/ad-banner';
@@ -47,6 +48,17 @@ export default function PostPage() {
   };
 
   const isOwner = user && post && user.uid === post.creatorId;
+
+  const { startConversation, isStarting } = useStartConversation();
+
+  const handleMessageAuthor = () => {
+    if (!post) return;
+    startConversation({
+      targetUserId: post.creatorId,
+      targetUserDisplayName: post.creatorDisplayName,
+      targetUserPhotoURL: post.creatorPhotoURL
+    });
+  };
 
   if (isPostLoading) {
     return (
@@ -129,6 +141,17 @@ export default function PostPage() {
               </Button>
             </Link>
             <ShareButton post={{ ...post, communityId }} />
+            {user && !isOwner && (
+              <Button
+                variant="ghost"
+                className="rounded-full h-auto p-2 text-sm flex items-center gap-2"
+                onClick={handleMessageAuthor}
+                disabled={isStarting}
+              >
+                <Mail className='h-5 w-5' />
+                <span>{isStarting ? t('messagingUser') : t('messageAuthor')}</span>
+              </Button>
+            )}
           </div>
         </CardFooter>
       </Card>
