@@ -1,12 +1,13 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, collectionGroup, limit, orderBy } from 'firebase/firestore';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Post } from '@/lib/types';
 import { PostItem } from '@/app/components/post-item';
+import { AdBanner } from '@/app/components/ad-banner';
 import { CommunityCard } from '@/app/components/community-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -231,8 +232,18 @@ export default function SearchPage() {
 
                 <TabsContent value="posts" className="space-y-4">
                     {isLoading ? <Skeleton className="h-40 w-full" /> : posts.length > 0 ? (
-                        posts.map(post => (
-                            <PostItem key={post.id} post={post} />
+                        posts.map((post, index) => (
+                            <React.Fragment key={post.id}>
+                                <PostItem post={post} />
+                                {(index + 1) % 5 === 0 && (
+                                    <AdBanner
+                                        dataAdSlot="1234567890"
+                                        dataAdFormat="fluid"
+                                        dataFullWidthResponsive={true}
+                                        className="my-6"
+                                    />
+                                )}
+                            </React.Fragment>
                         ))
                     ) : <p className="text-center text-muted-foreground py-10">{t('noResults') || "No results found."}</p>}
                 </TabsContent>

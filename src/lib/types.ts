@@ -23,6 +23,7 @@ export interface UserProfile {
     settings?: UserSettings;
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
+    savedPosts?: string[]; // Post IDs
 }
 
 export interface Report {
@@ -36,6 +37,8 @@ export interface Report {
     postId?: string; // Optional, for comments to find parent post
     reason: string;
     status: 'pending' | 'resolved' | 'dismissed';
+    resolution?: string;
+    resolvedBy?: string;
     createdAt: any; // Timestamp
 }
 
@@ -106,6 +109,7 @@ export interface Community {
     creatorDisplayName: string;
     createdAt: Timestamp;
     membersCount?: number;
+    bannedUserIds?: string[];
 }
 
 export interface Notification {

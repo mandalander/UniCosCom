@@ -108,6 +108,7 @@ export function CommentItemActions({ communityId, postId, comment, isModerator, 
         targetType="comment"
         targetContent={comment.content}
         communityId={communityId}
+        postId={postId}
       />
     </>
   );

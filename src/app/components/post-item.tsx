@@ -13,6 +13,7 @@ import { useUser } from '@/firebase';
 import { PostItemActions } from './post-item-actions';
 import { VoteButtons } from '@/components/vote-buttons';
 import { ShareButton } from './share-button';
+import { SaveButton } from './save-button';
 
 import { Post } from '@/lib/types';
 
@@ -98,6 +99,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                                     <MessageSquare className='h-4 w-4' /> <span>{t('commentsTitle')}</span>
                                 </Button>
                             </Link>
+                            <SaveButton postId={post.id} communityId={post.communityId} />
                             <ShareButton post={post} />
                         </div>
                     </div>
