@@ -79,5 +79,8 @@ service cloud.firestore {
         }
       }
     }
+    match /{path=**}/posts/{postId} {
+      allow read: if true;
+    }
   }
 }
