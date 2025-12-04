@@ -21,7 +21,7 @@ export function initiateAnonymousSignIn(authInstance: Auth): void {
 /** Initiate email/password sign-up (non-blocking). */
 export function initiateEmailSignUp(authInstance: Auth, email: string, password: string): Promise<void> {
   return createUserWithEmailAndPassword(authInstance, email, password)
-    .then(() => {}) // Resolve to void on success
+    .then(() => { }) // Resolve to void on success
     .catch(error => {
       console.error("Email sign-up error:", error);
       throw error; // Re-throw to be caught by the caller
@@ -31,7 +31,7 @@ export function initiateEmailSignUp(authInstance: Auth, email: string, password:
 /** Initiate email/password sign-in (non-blocking). */
 export function initiateEmailSignIn(authInstance: Auth, email: string, password: string): Promise<void> {
   return signInWithEmailAndPassword(authInstance, email, password)
-    .then(() => {}) // Resolve to void on success
+    .then(() => { }) // Resolve to void on success
     .catch(error => {
       console.error("Email sign-in error:", error);
       throw error; // Re-throw to be caught by the caller
@@ -39,15 +39,15 @@ export function initiateEmailSignIn(authInstance: Auth, email: string, password:
 }
 
 /** Initiate sign-in with a provider (e.g., Google) via a popup (non-blocking). */
-export function initiateSignInWithProvider(authInstance: Auth, provider: AuthProvider): void {
-  signInWithPopup(authInstance, provider).catch(error => {
-    // Silently handle popup cancellation by the user.
-    if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
-      return;
-    }
-    console.error("Provider sign-in error:", error);
-    // The user might have closed the popup, which can be an error.
-    // We log it but don't re-throw to avoid unhandled promise rejections
-    // if the caller doesn't attach a .catch().
-  });
+export function initiateSignInWithProvider(authInstance: Auth, provider: AuthProvider): Promise<void> {
+  return signInWithPopup(authInstance, provider)
+    .then(() => { })
+    .catch(error => {
+      // Silently handle popup cancellation by the user.
+      if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+        return;
+      }
+      console.error("Provider sign-in error:", error);
+      throw error; // Re-throw so the caller knows it failed
+    });
 }
