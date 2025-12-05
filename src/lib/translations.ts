@@ -375,6 +375,41 @@ export const translations = {
     mustBeLoggedInToVote: 'Musisz być zalogowany, aby głosować',
     upvote: 'Głos w górę',
     downvote: 'Głos w dół',
+
+    // Profile Improvements
+    activity: 'Aktywność',
+    viewPost: 'Zobacz post',
+    noComments: 'Brak komentarzy',
+    noCommunities: 'Nie należysz do żadnej społeczności',
+    noRecentActivity: 'Brak ostatniej aktywności',
+    activityCreatedPost: 'Utworzył post',
+    activityAddedComment: 'Dodał komentarz',
+    profileCoverImage: 'Zdjęcie w tle',
+    noCoverImage: 'Brak zdjęcia w tle',
+    changeCoverImage: 'Zmień tło',
+    removeCover: 'Usuń',
+
+    // Badges
+    badgeEarlyAdopter: 'Pionier',
+    badgeEarlyAdopterDesc: 'Dołączył w fazie beta',
+    badgeVerified: 'Zweryfikowany',
+    badgeVerifiedDesc: 'Zweryfikowane konto',
+    badgeTopContributor: 'Top Kontrybutor',
+    badgeTopContributorDesc: 'Wysokiej jakości wkład',
+    badgeModerator: 'Moderator',
+    badgeModeratorDesc: 'Moderator społeczności',
+    badgeActiveMember: 'Aktywny Członek',
+    badgeActiveMemberDesc: 'Regularnie aktywny',
+    badgeHelpful: 'Pomocny',
+    badgeHelpfulDesc: 'Pomaga innym użytkownikom',
+
+    // Messaging Improvements
+    userIsTyping: 'pisze...',
+    messageDeleted: 'Wiadomość usunięta',
+    editingMessage: 'Edytowanie wiadomości',
+    today: 'Dzisiaj',
+    yesterday: 'Wczoraj',
+    noConversationsDescription: 'Rozpocznij rozmowę z kimś klikając przycisk + powyżej.',
   },
   en: {
     // App Sidebar
@@ -745,5 +780,40 @@ export const translations = {
     mustBeLoggedInToVote: 'You must be logged in to vote',
     upvote: 'Upvote',
     downvote: 'Downvote',
+
+    // Profile Improvements
+    activity: 'Activity',
+    viewPost: 'View post',
+    noComments: 'No comments yet',
+    noCommunities: 'Not a member of any communities',
+    noRecentActivity: 'No recent activity',
+    activityCreatedPost: 'Created a post',
+    activityAddedComment: 'Added a comment',
+    profileCoverImage: 'Cover Image',
+    noCoverImage: 'No cover image',
+    changeCoverImage: 'Change Cover',
+    removeCover: 'Remove',
+
+    // Badges
+    badgeEarlyAdopter: 'Early Adopter',
+    badgeEarlyAdopterDesc: 'Joined during beta',
+    badgeVerified: 'Verified',
+    badgeVerifiedDesc: 'Verified account',
+    badgeTopContributor: 'Top Contributor',
+    badgeTopContributorDesc: 'High quality contributions',
+    badgeModerator: 'Moderator',
+    badgeModeratorDesc: 'Community moderator',
+    badgeActiveMember: 'Active Member',
+    badgeActiveMemberDesc: 'Regularly active',
+    badgeHelpful: 'Helpful',
+    badgeHelpfulDesc: 'Helps other users',
+
+    // Messaging Improvements
+    userIsTyping: 'typing...',
+    messageDeleted: 'Message deleted',
+    editingMessage: 'Editing message',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    noConversationsDescription: 'Start a conversation with someone by clicking the + button above.',
   },
 };

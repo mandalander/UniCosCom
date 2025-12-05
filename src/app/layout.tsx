@@ -15,6 +15,7 @@ import Script from 'next/script';
 import { PageTransition } from './components/page-transition';
 import { GoogleAnalytics } from './components/google-analytics';
 import { ErrorBoundary } from './components/error-boundary';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
@@ -134,6 +135,7 @@ export default function RootLayout({
             </ErrorBoundary>
           </LanguageProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

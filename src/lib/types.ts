@@ -57,6 +57,7 @@ export interface Conversation {
     lastMessage: string;
     lastMessageAt: any; // Timestamp
     unreadCounts: { [userId: string]: number };
+    typing?: { [userId: string]: boolean }; // Typing indicators
     createdAt: any;
 }
 
@@ -64,11 +65,13 @@ export interface Message {
     id: string;
     conversationId: string;
     senderId: string;
-    voteCount: number;
-    parentId?: string | null;
     content: string;
     createdAt: any;
     readBy: string[]; // User IDs who read it
+    reactions?: { [emoji: string]: string[] }; // emoji -> userIds
+    imageUrl?: string; // For image messages
+    isEdited?: boolean;
+    isDeleted?: boolean;
 }
 
 export interface Comment {

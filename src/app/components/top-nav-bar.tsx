@@ -16,10 +16,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User as UserIcon } from 'lucide-react';
+import { User as UserIcon, MessageSquare } from 'lucide-react';
 import { NotificationBell } from './notification-bell';
 import { SearchBar } from './search-bar';
 import { ThemeToggle } from './theme-toggle';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function TopNavBar() {
   const { t } = useLanguage();
@@ -54,6 +55,20 @@ export function TopNavBar() {
           <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
         ) : user ? (
           <>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative" asChild>
+                    <Link href="/messages">
+                      <MessageSquare className="h-5 w-5" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('messages')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

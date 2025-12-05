@@ -74,7 +74,10 @@ export default function LoginPage() {
       router.push('/');
     } catch (e: any) {
       console.error('Google sign-in error:', e);
-      setError('Authentication error occurred.');
+      // Show detailed error for debugging
+      const errorCode = e.code || 'unknown';
+      const errorMessage = e.message || 'Unknown error';
+      setError(`Error: ${errorCode} - ${errorMessage}`);
     }
   };
 

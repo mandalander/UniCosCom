@@ -60,6 +60,8 @@ export default function EditProfilePage() {
   const [birthDate, setBirthDate] = useState<Date | undefined>();
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [newPhotoDataUrl, setNewPhotoDataUrl] = useState<string | null>(null);
+  const [coverURL, setCoverURL] = useState<string | null>(null);
+  const [newCoverDataUrl, setNewCoverDataUrl] = useState<string | null>(null);
   const [bio, setBio] = useState('');
   const [location, setLocation] = useState('');
   const [website, setWebsite] = useState('');
@@ -99,6 +101,9 @@ export default function EditProfilePage() {
       if (userProfile.photoURL) {
         setPhotoURL(userProfile.photoURL);
       }
+      if (userProfile.coverURL) {
+        setCoverURL(userProfile.coverURL);
+      }
       setBio(userProfile.bio || '');
       setLocation(userProfile.location || '');
       setWebsite(userProfile.website || '');
@@ -136,6 +141,18 @@ export default function EditProfilePage() {
     }
   };
 
+  const handleCoverFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setNewCoverDataUrl(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = async () => {
     if (!user || !firestore || !auth.currentUser || !storage) return;
 
@@ -143,11 +160,18 @@ export default function EditProfilePage() {
 
     try {
       let finalPhotoUrl = userProfile?.photoURL || user?.photoURL;
+      let finalCoverUrl = userProfile?.coverURL || null;
 
       if (newPhotoDataUrl) {
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
         const snapshot = await uploadString(storageRef, newPhotoDataUrl, 'data_url');
         finalPhotoUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      if (newCoverDataUrl) {
+        const coverStorageRef = ref(storage, `cover-images/${user.uid}`);
+        const coverSnapshot = await uploadString(coverStorageRef, newCoverDataUrl, 'data_url');
+        finalCoverUrl = await getDownloadURL(coverSnapshot.ref);
       }
 
       await updateProfile(auth.currentUser, {
@@ -167,6 +191,7 @@ export default function EditProfilePage() {
         gender: gender,
         birthDate: birthDate ? format(birthDate, 'yyyy-MM-dd') : null,
         photoURL: finalPhotoUrl,
+        coverURL: finalCoverUrl,
         bio,
         location,
         website,
@@ -180,6 +205,7 @@ export default function EditProfilePage() {
       const userPublicData = {
         displayName: displayName,
         photoURL: finalPhotoUrl,
+        coverURL: finalCoverUrl,
         bio: bio,
         location: location,
         website: website,
@@ -368,6 +394,51 @@ export default function EditProfilePage() {
                       accept="image/png, image/jpeg"
                       onChange={handleFileChange}
                     />
+                  </div>
+                </div>
+
+                {/* Cover Image Upload */}
+                <div className="grid gap-4">
+                  <Label>{t('profileCoverImage') || 'Cover Image'}</Label>
+                  <div className="relative w-full h-32 rounded-lg overflow-hidden border bg-muted/30">
+                    {(newCoverDataUrl || coverURL) ? (
+                      <img
+                        src={newCoverDataUrl || coverURL || ''}
+                        alt="Cover preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 flex items-center justify-center">
+                        <span className="text-white/70 text-sm">{t('noCoverImage') || 'No cover image'}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/png, image/jpeg';
+                        input.onchange = (e) => handleCoverFileChange(e as any);
+                        input.click();
+                      }}
+                      disabled={isSaving}
+                    >
+                      {t('changeCoverImage') || 'Change Cover'}
+                    </Button>
+                    {(newCoverDataUrl || coverURL) && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setNewCoverDataUrl(null);
+                          setCoverURL(null);
+                        }}
+                        disabled={isSaving}
+                      >
+                        {t('removeCover') || 'Remove'}
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="grid gap-2">
