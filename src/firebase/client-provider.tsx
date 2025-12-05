@@ -24,8 +24,8 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
       Promise.all([
         import('@/firebase'),
         import('@/firebase/provider')
-      ]).then(([firebaseModule, providerModule]) => {
-        const services = firebaseModule.initializeFirebase();
+      ]).then(async ([firebaseModule, providerModule]) => {
+        const services = await firebaseModule.initializeFirebase();
         setFirebaseServices(services);
         setFirebaseProvider(() => providerModule.FirebaseProvider);
       }).catch((error) => {

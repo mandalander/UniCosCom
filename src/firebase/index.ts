@@ -10,7 +10,7 @@ let firebaseApp: FirebaseApp;
 let auth: Auth;
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
-export function initializeFirebase() {
+export async function initializeFirebase() {
   if (typeof window !== 'undefined') {
     const apps = getApps();
     if (apps.length === 0) {
@@ -50,12 +50,15 @@ export function initializeFirebase() {
   if (typeof window !== 'undefined') {
     // Dynamically import messaging to avoid SSR issues
     const { getMessaging, isSupported } = require('firebase/messaging');
-    // Check if supported (e.g. Service Worker support)
-    isSupported().then((supported: boolean) => {
+    // Check if supported (e.g. Service Worker support) and wait for it
+    try {
+      const supported = await isSupported();
       if (supported) {
         messaging = getMessaging(firebaseApp);
       }
-    }).catch(console.error);
+    } catch (error) {
+      console.error('Error checking messaging support:', error);
+    }
   }
 
   return {
