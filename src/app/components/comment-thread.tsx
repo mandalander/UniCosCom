@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { User, MessageSquare } from 'lucide-react';
+import { User, MessageSquare, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
@@ -16,6 +16,7 @@ import { CreateCommentForm } from './create-comment-form';
 import { ReactionPicker } from './reaction-picker';
 import { ReactionDisplay } from './reaction-display';
 import { useReactions } from '@/hooks/use-reactions';
+import { useStartConversation } from '@/hooks/use-start-conversation';
 
 import { Comment } from '@/lib/types';
 
@@ -64,6 +65,16 @@ export function CommentThread({
     };
 
     const isOwner = user && user.uid === comment.creatorId;
+
+    const { startConversation, isStarting } = useStartConversation();
+
+    const handleMessageAuthor = () => {
+        startConversation({
+            targetUserId: comment.creatorId,
+            targetUserDisplayName: comment.creatorDisplayName,
+            targetUserPhotoURL: comment.creatorPhotoURL
+        });
+    };
 
     // Find replies to this comment
     const childReplies = allComments.filter(c => c.parentId === comment.id);
@@ -127,6 +138,18 @@ export function CommentThread({
                             <MessageSquare className="h-4 w-4 mr-1" />
                             {t('reply') || "Reply"}
                         </Button>
+                        {user && !isOwner && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-auto p-0 text-muted-foreground hover:text-primary"
+                                onClick={handleMessageAuthor}
+                                disabled={isStarting}
+                            >
+                                <Mail className="h-4 w-4 mr-1" />
+                                {isStarting ? t('messagingUser') : t('messageAuthor')}
+                            </Button>
+                        )}
                     </div>
                     {reactionCounts && Object.keys(reactionCounts).length > 0 && (
                         <ReactionDisplay

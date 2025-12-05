@@ -67,6 +67,8 @@ export default function UserProfilePage() {
     return doc(firestore, 'userProfiles', userId);
   }, [firestore, userId]);
 
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileDocRef);
+
   const [posts, setPosts] = useState<Post[]>([]);
   const [areCommunityDetailsLoading, setAreCommunityDetailsLoading] = useState(false);
   const [postsLimit, setPostsLimit] = useState(10);

@@ -101,7 +101,7 @@
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 dark:from-cyan-400 dark:via-blue-500 dark:to-violet-600;
   }
   
   .animate-float {

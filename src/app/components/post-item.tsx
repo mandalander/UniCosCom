@@ -3,7 +3,7 @@
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { User, MessageSquare } from 'lucide-react';
+import { User, MessageSquare, Mail } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
@@ -17,6 +17,7 @@ import { SaveButton } from './save-button';
 import { ReactionPicker } from './reaction-picker';
 import { ReactionDisplay } from './reaction-display';
 import { useReactions } from '@/hooks/use-reactions';
+import { useStartConversation } from '@/hooks/use-start-conversation';
 
 import { Post } from '@/lib/types';
 
@@ -32,6 +33,8 @@ export const PostItem = ({ post }: { post: Post }) => {
         initialReactionCounts: post.reactionCounts || {},
     });
 
+    const { startConversation, isStarting } = useStartConversation();
+
     const formatDate = (timestamp: any) => {
         if (!timestamp) return '';
         const date = timestamp.toDate();
@@ -44,6 +47,14 @@ export const PostItem = ({ post }: { post: Post }) => {
 
     const isOwner = !!(user && user.uid === post.creatorId);
     const isModerator = !!(user && user.uid === post.communityCreatorId);
+
+    const handleMessageAuthor = () => {
+        startConversation({
+            targetUserId: post.creatorId,
+            targetUserDisplayName: post.creatorDisplayName,
+            targetUserPhotoURL: post.creatorPhotoURL
+        });
+    };
 
     return (
         <Card className="flex flex-col h-full glass-card border-none transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
@@ -119,6 +130,18 @@ export const PostItem = ({ post }: { post: Post }) => {
                             </Link>
                             <SaveButton postId={post.id} communityId={post.communityId} />
                             <ShareButton post={post} />
+                            {user && !isOwner && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="rounded-full h-8 px-3 text-xs flex items-center gap-1.5"
+                                    onClick={handleMessageAuthor}
+                                    disabled={isStarting}
+                                >
+                                    <Mail className='h-4 w-4' />
+                                    <span className="hidden sm:inline">{isStarting ? t('messagingUser') : t('messageAuthor')}</span>
+                                </Button>
+                            )}
                         </div>
                     </div>
                     {reactionCounts && Object.keys(reactionCounts).length > 0 && (

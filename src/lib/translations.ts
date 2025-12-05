@@ -13,6 +13,11 @@ export const translations = {
     termsTitle: 'Regulamin Serwisu',
     loadMore: 'Załaduj więcej',
     myCommunities: 'Moje społeczności',
+    joinedCommunities: 'Dołączone',
+    createdCommunities: 'Utworzone',
+    myCommunitiesPageDescription: 'Zarządzaj społecznościami, do których dołączyłeś lub które utworzyłeś',
+    messageAuthor: 'Napisz wiadomość',
+    messagingUser: 'Rozpoczynanie rozmowy...',
 
     // Top Nav Bar
     login: 'Zaloguj się',
@@ -329,6 +334,11 @@ export const translations = {
     termsTitle: 'Terms of Service',
     loadMore: 'Load More',
     myCommunities: 'My Communities',
+    joinedCommunities: 'Joined',
+    createdCommunities: 'Created',
+    myCommunitiesPageDescription: 'Manage communities you joined or created',
+    messageAuthor: 'Message Author',
+    messagingUser: 'Starting conversation...',
 
     // Top Nav Bar
     login: 'Log in',

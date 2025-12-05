@@ -23,9 +23,9 @@ import { useLanguage } from './language-provider';
 import { useEffect, useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { CreateCommunityDialog } from './create-community-dialog';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
-import { AdBanner } from './ad-banner';
+import { UniCosComLogo } from './unicoscom-logo';
 
 type Community = {
   id: string;
@@ -76,7 +76,6 @@ export function AppSidebar() {
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
-    { href: '/notifications', label: t('notificationsTitle') || "Powiadomienia", icon: Bell, requiresAuth: true },
     { href: '/saved', label: t('savedPosts') || "Saved Posts", icon: Bookmark, requiresAuth: true },
   ];
 
@@ -99,17 +98,21 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar className="border-r-0" collapsible="icon">
+    <Sidebar className="border-r-0 flex flex-col h-full" collapsible="icon">
       <SidebarHeader className="glass border-b border-white/10 mb-2">
-        <Button variant="ghost" className="flex items-center gap-2 hover:bg-white/10 transition-colors">
-          <div className="relative h-8 w-8 overflow-hidden rounded-lg">
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-600 to-indigo-600 animate-pulse" />
-            <div className="absolute inset-0 flex items-center justify-center text-white font-bold">U</div>
+        <Button variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-start group">
+          <UniCosComLogo className="h-12 w-12 shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3" />
+          <div className="flex flex-col items-start text-left group-data-[collapsible=icon]:hidden overflow-hidden">
+            <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto]">
+              UniCosCom
+            </h2>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80 font-medium">
+              Social Platform
+            </span>
           </div>
-          <h2 className="text-lg font-semibold text-foreground group-data-[collapsible=icon]:hidden">{t('appNavigator')}</h2>
         </Button>
       </SidebarHeader>
-      <SidebarContent className="glass">
+      <SidebarContent className="glass flex-1 min-h-0 overflow-y-auto">
         <SidebarMenu className="px-2">
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.label}>
@@ -129,7 +132,7 @@ export function AppSidebar() {
         </SidebarMenu>
         <SidebarGroup>
           <SidebarGroupLabel asChild>
-            <Link href="/explore" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/my-communities" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               <Users className="h-4 w-4 group-hover:text-primary transition-colors" />
               <span>{t('myCommunities') || "My Communities"}</span>
             </Link>
@@ -142,7 +145,7 @@ export function AppSidebar() {
                   <SidebarMenuSkeleton showIcon={false} />
                 </>
               ) : joinedCommunities && joinedCommunities.length > 0 ? (
-                joinedCommunities.map((community) => (
+                joinedCommunities.slice(0, 5).map((community) => (
                   <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
                     <Link href={`/community/${community.id}`}>
                       <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
@@ -185,16 +188,9 @@ export function AppSidebar() {
             </SidebarMenuSub>
           </SidebarGroupContent>
         </SidebarGroup>
-        {/* Small sidebar ad - hidden when collapsed */}
-        <SidebarGroup className="mt-auto group-data-[collapsible=icon]:hidden">
-          <SidebarGroupContent>
-            {!['/login', '/register', '/settings', '/notifications', '/messages', '/saved', '/privacy', '/terms'].some(path => pathname.startsWith(path)) && (
-              <AdBanner dataAdSlot="0987654321" dataAdFormat="rectangle" className="mx-1 !my-1 !max-w-full [&>ins]:!max-h-20" />
-            )}
-          </SidebarGroupContent>
-        </SidebarGroup>
+
       </SidebarContent>
-      <SidebarFooter className="glass border-t border-white/10 p-2 shrink-0">
+      <SidebarFooter className="glass border-t border-white/10 p-2 flex-shrink-0 min-h-fit">
         <SidebarMenu>
           <SidebarMenuItem>
             <CreatePostDialog communities={communities || []}>
