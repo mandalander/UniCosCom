@@ -221,6 +221,73 @@ export function ChatWindow({ conversationId, onBack }: ChatWindowProps) {
         }
     };
 
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert(t('fileTooLarge') || 'File too large (max 5MB)');
+            return;
+        }
+
+        // Preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+        setImageFile(file);
+    };
+
+    const handleSendImage = async () => {
+        if (!imageFile || !user || !firestore || !storage) return;
+
+        setIsUploading(true);
+        try {
+            // Upload to Firebase Storage
+            const storageRef = ref(storage, `chat-images/${conversationId}/${Date.now()}_${imageFile.name}`);
+            await uploadBytes(storageRef, imageFile);
+            const imageUrl = await getDownloadURL(storageRef);
+
+            // Create message with image
+            const messagesRef = collection(firestore, 'conversations', conversationId, 'messages');
+            await addDocumentNonBlocking(messagesRef, {
+                conversationId,
+                senderId: user.uid,
+                content: '',
+                imageUrl,
+                createdAt: serverTimestamp(),
+                readBy: [user.uid]
+            });
+
+            // Update conversation
+            const otherId = conversation?.participants.find(p => p !== user.uid);
+            const convRef = doc(firestore, 'conversations', conversationId);
+            await updateDoc(convRef, {
+                lastMessage: '📷 ' + (t('sentImage') || 'Image'),
+                lastMessageAt: serverTimestamp(),
+                ...(otherId ? { [`unreadCounts.${otherId}`]: (conversation?.unreadCounts?.[otherId] || 0) + 1 } : {})
+            });
+
+            // Clear preview
+            setImagePreview(null);
+            setImageFile(null);
+        } catch (error) {
+            console.error("Error sending image:", error);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const cancelImagePreview = () => {
+        setImagePreview(null);
+        setImageFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
     const handleReaction = async (messageId: string, emoji: string) => {
         if (!user || !firestore) return;
 
