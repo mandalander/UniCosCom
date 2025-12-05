@@ -33,9 +33,6 @@ export function useReactions({
     const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
     const [isReacting, setIsReacting] = useState(false);
 
-    useEffect(() => {
-        setReactionCounts(initialReactionCounts);
-    }, [initialReactionCounts]);
 
     // Fetch user's current reaction
     useEffect(() => {

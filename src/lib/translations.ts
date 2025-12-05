@@ -320,6 +320,61 @@ export const translations = {
     fileTooLarge: 'Plik jest zbyt duży (maks. 5MB)',
     savedPosts: 'Zapisane posty',
     savedPostsDescription: 'Posty, które zapisałeś na później',
+
+    // Missing moderation keys
+    userBanned: 'Użytkownik zbanowany',
+    userUnbanned: 'Użytkownik odbanowany',
+    backToCommunity: 'Wróć do społeczności',
+    pendingReports: 'Oczekujące zgłoszenia',
+    resolvedReports: 'Rozwiązane zgłoszenia',
+    bannedUsers: 'Zbanowani użytkownicy',
+    noReports: 'Brak zgłoszeń',
+    banReporter: 'Zbanuj zgłaszającego',
+    noResolvedReports: 'Brak rozwiązanych zgłoszeń',
+    noBannedUsers: 'Brak zbanowanych użytkowników',
+    unban: 'Odbanuj',
+
+    // Sorting keys
+    sortBest: 'Najlepsze',
+    sortNewest: 'Najnowsze',
+
+    // Create post form
+    removeMedia: 'Usuń media',
+    draftSaved: 'Szkic zapisany',
+
+    // Edit forms
+    updateCommentSuccess: 'Komentarz zaktualizowany',
+    editCommentTitle: 'Edytuj komentarz',
+    updatePostSuccess: 'Post zaktualizowany',
+
+    // Join button
+    mustBeLoggedInToJoin: 'Musisz być zalogowany, aby dołączyć',
+    leftCommunity: 'Opuściłeś społeczność',
+    joinedCommunity: 'Dołączyłeś do społeczności',
+    leave: 'Opuść',
+    join: 'Dołącz',
+
+    // Save button
+    loginRequired: 'Wymagane logowanie',
+    postUnsaved: 'Usunięto z zapisanych',
+    postSaved: 'Dodano do zapisanych',
+    saved: 'Zapisane',
+    save: 'Zapisz',
+
+    // Share button
+    linkCopied: 'Link skopiowany',
+    linkCopyFailed: 'Nie udało się skopiować linku',
+    copied: 'Skopiowano',
+    share: 'Udostępnij',
+
+    // Saved page
+    noSavedPosts: 'Brak zapisanych postów',
+    noSavedPostsHint: 'Zapisuj posty, aby móc je łatwo znaleźć później',
+
+    // Vote buttons
+    mustBeLoggedInToVote: 'Musisz być zalogowany, aby głosować',
+    upvote: 'Głos w górę',
+    downvote: 'Głos w dół',
   },
   en: {
     // App Sidebar
@@ -635,5 +690,60 @@ export const translations = {
     fileTooLarge: 'File is too large (max 5MB)',
     savedPosts: 'Saved Posts',
     savedPostsDescription: 'Posts you have bookmarked for later',
+
+    // Missing moderation keys
+    userBanned: 'User banned',
+    userUnbanned: 'User unbanned',
+    backToCommunity: 'Back to community',
+    pendingReports: 'Pending reports',
+    resolvedReports: 'Resolved reports',
+    bannedUsers: 'Banned users',
+    noReports: 'No reports',
+    banReporter: 'Ban reporter',
+    noResolvedReports: 'No resolved reports',
+    noBannedUsers: 'No banned users',
+    unban: 'Unban',
+
+    // Sorting keys
+    sortBest: 'Best',
+    sortNewest: 'Newest',
+
+    // Create post form
+    removeMedia: 'Remove media',
+    draftSaved: 'Draft saved',
+
+    // Edit forms
+    updateCommentSuccess: 'Comment updated',
+    editCommentTitle: 'Edit comment',
+    updatePostSuccess: 'Post updated',
+
+    // Join button
+    mustBeLoggedInToJoin: 'You must be logged in to join',
+    leftCommunity: 'Left community',
+    joinedCommunity: 'Joined community',
+    leave: 'Leave',
+    join: 'Join',
+
+    // Save button
+    loginRequired: 'Login required',
+    postUnsaved: 'Post unsaved',
+    postSaved: 'Post saved',
+    saved: 'Saved',
+    save: 'Save',
+
+    // Share button
+    linkCopied: 'Link copied',
+    linkCopyFailed: 'Failed to copy link',
+    copied: 'Copied',
+    share: 'Share',
+
+    // Saved page
+    noSavedPosts: 'No saved posts',
+    noSavedPostsHint: 'Save posts to easily find them later',
+
+    // Vote buttons
+    mustBeLoggedInToVote: 'You must be logged in to vote',
+    upvote: 'Upvote',
+    downvote: 'Downvote',
   },
 };

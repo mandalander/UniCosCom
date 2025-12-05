@@ -107,7 +107,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                     )}
                 </CardContent>
                 <CardFooter className='flex-col items-start gap-3 px-3 sm:px-4 pb-4 mt-auto border-t pt-4 bg-black/5 dark:bg-white/5'>
-                    <div className="flex items-center justify-between w-full text-sm text-muted-foreground">
+                    <div className="flex items-center flex-wrap gap-2 w-full text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <VoteButtons
                                 targetType="post"
@@ -122,7 +122,7 @@ export const PostItem = ({ post }: { post: Post }) => {
                                 disabled={isReacting}
                             />
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                             <Link href={`/community/${post.communityId}/post/${post.id}`} passHref>
                                 <Button variant="ghost" size="sm" className="rounded-full h-8 px-3 text-xs flex items-center gap-1.5">
                                     <MessageSquare className='h-4 w-4' /> <span className="hidden sm:inline">{t('commentsTitle')}</span>
