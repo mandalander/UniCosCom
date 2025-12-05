@@ -54,7 +54,12 @@ export async function initializeFirebase() {
     try {
       const supported = await isSupported();
       if (supported) {
-        messaging = getMessaging(firebaseApp);
+        try {
+          messaging = getMessaging(firebaseApp);
+        } catch (messagingError) {
+          console.warn('Messaging is supported but could not be initialized:', messagingError);
+          // messaging remains null, app will work without push notifications
+        }
       }
     } catch (error) {
       console.error('Error checking messaging support:', error);
