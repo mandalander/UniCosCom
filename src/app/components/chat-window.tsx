@@ -389,15 +389,33 @@ export function ChatWindow({ conversationId, onBack }: ChatWindowProps) {
                                     ) : (
                                         <>
                                             <div className={cn(
-                                                "rounded-2xl px-4 py-2 shadow-sm",
+                                                "rounded-2xl overflow-hidden shadow-sm",
                                                 isMe
                                                     ? 'bg-primary text-primary-foreground rounded-br-sm'
-                                                    : 'bg-muted rounded-bl-sm'
+                                                    : 'bg-muted rounded-bl-sm',
+                                                msg.imageUrl ? 'p-0' : 'px-4 py-2'
                                             )}>
-                                                <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                                                {/* Image */}
+                                                {msg.imageUrl && (
+                                                    <a href={msg.imageUrl} target="_blank" rel="noopener noreferrer">
+                                                        <img
+                                                            src={msg.imageUrl}
+                                                            alt="Shared image"
+                                                            className="max-w-full max-h-64 rounded-t-2xl object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                                        />
+                                                    </a>
+                                                )}
+                                                {/* Text content */}
+                                                {msg.content && (
+                                                    <p className={cn(
+                                                        "text-sm whitespace-pre-wrap break-words",
+                                                        msg.imageUrl && "px-4 py-2"
+                                                    )}>{msg.content}</p>
+                                                )}
                                                 <div className={cn(
-                                                    "flex items-center gap-1 mt-1 text-[10px]",
-                                                    isMe ? 'justify-end text-primary-foreground/70' : 'text-muted-foreground'
+                                                    "flex items-center gap-1 text-[10px]",
+                                                    isMe ? 'justify-end text-primary-foreground/70' : 'text-muted-foreground',
+                                                    msg.imageUrl ? 'px-3 pb-2' : 'mt-1'
                                                 )}>
                                                     {msg.isEdited && <span>({t('edited') || 'edited'})</span>}
                                                     <span>{msg.createdAt?.toDate ? format(msg.createdAt.toDate(), 'HH:mm') : '...'}</span>
