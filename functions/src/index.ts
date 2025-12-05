@@ -7,26 +7,92 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {setGlobalOptions} from "firebase-functions";
-import {onRequest} from "firebase-functions/https";
-import * as logger from "firebase-functions/logger";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import * as admin from "firebase-admin";
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+admin.initializeApp();
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
-setGlobalOptions({ maxInstances: 10 });
+export const sendPushNotification = onDocumentCreated(
+    "userProfiles/{userId}/notifications/{notificationId}",
+    async (event) => {
+        const snapshot = event.data;
+        if (!snapshot) {
+            console.log("No data associated with the event");
+            return;
+        }
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+        const { userId } = event.params;
+        const notification = snapshot.data();
+
+        // Get user's FCM tokens
+        const userProfileRef = admin.firestore().doc(`userProfiles/${userId}`);
+        const userProfileSnap = await userProfileRef.get();
+
+        if (!userProfileSnap.exists) {
+            console.log(`User profile ${userId} not found`);
+            return;
+        }
+
+        const userData = userProfileSnap.data();
+        const fcmTokens = userData?.fcmTokens as string[];
+
+        if (!fcmTokens || fcmTokens.length === 0) {
+            console.log(`No FCM tokens found for user ${userId}`);
+            return;
+        }
+
+        // Construct notification payload
+        let title = "Nowe powiadomienie";
+        let body = "Masz nową wiadomość w UniCosCom";
+
+        // Logic for different notification types
+        if (notification.type === 'vote') {
+            title = "Ktoś zagłosował na Twój post";
+            body = `${notification.actorDisplayName || 'Ktoś'} dał w górę Twój ${notification.targetType === 'comment' ? 'komentarz' : 'post'}.`;
+        } else if (notification.type === 'reaction') {
+            title = `Nowa reakcja ${notification.reactionType || ''}`;
+            body = `${notification.actorDisplayName || 'Ktoś'} zareagował na Twój ${notification.targetType === 'comment' ? 'komentarz' : 'post'}.`;
+        } else if (notification.type === 'comment') {
+            title = "Nowy komentarz";
+            body = `${notification.actorDisplayName || 'Ktoś'} skomentował Twój post: "${notification.targetTitle || ''}"`;
+        }
+
+        const message: admin.messaging.MulticastMessage = {
+            tokens: fcmTokens,
+            notification: {
+                title: title,
+                body: body,
+            },
+            webpush: {
+                fcmOptions: {
+                    link: `/community/${notification.communityId}/post/${notification.postId}`
+                },
+                notification: {
+                    icon: '/icon.png'
+                }
+            }
+        };
+
+        // Send notifications to all tokens
+        const response = await admin.messaging().sendEachForMulticast(message);
+
+        // Cleanup invalid tokens
+        if (response.failureCount > 0) {
+            const failedTokens: string[] = [];
+            response.responses.forEach((resp, idx) => {
+                if (!resp.success) {
+                    failedTokens.push(fcmTokens[idx]);
+                }
+            });
+
+            if (failedTokens.length > 0) {
+                await userProfileRef.update({
+                    fcmTokens: admin.firestore.FieldValue.arrayRemove(...failedTokens)
+                });
+                console.log(`Removed ${failedTokens.length} invalid tokens`);
+            }
+        }
+
+        console.log(`Sent ${response.successCount} messages successfully`);
+    }
+);

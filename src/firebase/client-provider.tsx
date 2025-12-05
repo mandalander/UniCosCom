@@ -46,6 +46,7 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
       auth={firebaseServices.auth}
       firestore={firebaseServices.firestore}
       storage={firebaseServices.storage}
+      messaging={firebaseServices.messaging}
     >
       <FirebaseErrorListener />
       {children}

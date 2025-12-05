@@ -45,11 +45,25 @@ export function initializeFirebase() {
     });
   }
 
+  let messaging = null;
+
+  if (typeof window !== 'undefined') {
+    // Dynamically import messaging to avoid SSR issues
+    const { getMessaging, isSupported } = require('firebase/messaging');
+    // Check if supported (e.g. Service Worker support)
+    isSupported().then((supported: boolean) => {
+      if (supported) {
+        messaging = getMessaging(firebaseApp);
+      }
+    }).catch(console.error);
+  }
+
   return {
     firebaseApp,
     auth,
     firestore: getFirestore(firebaseApp),
-    storage: getStorage(firebaseApp)
+    storage: getStorage(firebaseApp),
+    messaging
   };
 }
 

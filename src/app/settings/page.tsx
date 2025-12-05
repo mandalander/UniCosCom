@@ -19,12 +19,13 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { UserProfile } from '@/lib/types';
 
+import { PushNotificationsToggle } from '@/app/components/settings/push-notifications-toggle';
+
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [pushNotifications, setPushNotifications] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -45,7 +46,6 @@ export default function SettingsPage() {
           const data = docSnap.data() as UserProfile;
           if (data.settings) {
             setEmailNotifications(data.settings.emailNotifications ?? true);
-            setPushNotifications(data.settings.pushNotifications ?? false);
           }
         }
       } catch (error) {
@@ -60,9 +60,8 @@ export default function SettingsPage() {
     }
   }, [user, firestore, mounted]);
 
-  const handleNotificationChange = async (type: 'email' | 'push', value: boolean) => {
-    if (type === 'email') setEmailNotifications(value);
-    if (type === 'push') setPushNotifications(value);
+  const handleNotificationChange = async (value: boolean) => {
+    setEmailNotifications(value);
 
     if (!user || !firestore) return;
 
@@ -70,8 +69,7 @@ export default function SettingsPage() {
       const userDocRef = doc(firestore, 'users', user.uid);
       await setDoc(userDocRef, {
         settings: {
-          emailNotifications: type === 'email' ? value : emailNotifications,
-          pushNotifications: type === 'push' ? value : pushNotifications,
+          emailNotifications: value,
         }
       }, { merge: true });
     } catch (error) {
@@ -81,9 +79,7 @@ export default function SettingsPage() {
         title: t('error'),
         description: t('errorSavingSettings'),
       });
-      // Revert state on error
-      if (type === 'email') setEmailNotifications(!value);
-      if (type === 'push') setPushNotifications(!value);
+      setEmailNotifications(!value);
     }
   };
 
@@ -103,94 +99,80 @@ export default function SettingsPage() {
               <Skeleton className="h-10 w-24" />
             </div>
           </div>
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-6 w-12" />
-            <div className="flex gap-2">
-              <Skeleton className="h-10 w-24" />
-              <Skeleton className="h-10 w-20" />
-            </div>
-          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('settingsTitle')}</CardTitle>
-        <CardDescription>
-          {t('settingsDescription')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6">
-        <div className="flex items-center justify-between">
-          <Label>{t('theme')}</Label>
-          <div className="flex gap-2">
-            <Button
-              variant={theme === 'light' ? 'default' : 'outline'}
-              onClick={() => setTheme('light')}
-            >
-              {t('light')}
-            </Button>
-            <Button
-              variant={theme === 'dark' ? 'default' : 'outline'}
-              onClick={() => setTheme('dark')}
-            >
-              {t('dark')}
-            </Button>
-            <Button
-              variant={theme === 'system' ? 'default' : 'outline'}
-              onClick={() => setTheme('system')}
-            >
-              {t('system')}
-            </Button>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settingsTitle')}</CardTitle>
+          <CardDescription>
+            {t('settingsDescription')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <div className="flex items-center justify-between">
+            <Label>{t('theme')}</Label>
+            <div className="flex gap-2">
+              <Button
+                variant={theme === 'light' ? 'default' : 'outline'}
+                onClick={() => setTheme('light')}
+              >
+                {t('light')}
+              </Button>
+              <Button
+                variant={theme === 'dark' ? 'default' : 'outline'}
+                onClick={() => setTheme('dark')}
+              >
+                {t('dark')}
+              </Button>
+              <Button
+                variant={theme === 'system' ? 'default' : 'outline'}
+                onClick={() => setTheme('system')}
+              >
+                {t('system')}
+              </Button>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center justify-between">
-          <Label>{t('language')}</Label>
-          <div className="flex gap-2">
-            <Button
-              variant={language === 'en' ? 'default' : 'outline'}
-              onClick={() => setLanguage('en')}
-            >
-              {t('english')}
-            </Button>
-            <Button
-              variant={language === 'pl' ? 'default' : 'outline'}
-              onClick={() => setLanguage('pl')}
-            >
-              {t('polish')}
-            </Button>
+          <div className="flex items-center justify-between">
+            <Label>{t('language')}</Label>
+            <div className="flex gap-2">
+              <Button
+                variant={language === 'en' ? 'default' : 'outline'}
+                onClick={() => setLanguage('en')}
+              >
+                {t('english')}
+              </Button>
+              <Button
+                variant={language === 'pl' ? 'default' : 'outline'}
+                onClick={() => setLanguage('pl')}
+              >
+                {t('polish')}
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-4 pt-4 border-t">
-          <h3 className="text-lg font-medium">{t('notificationsTitle')}</h3>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{t('emailNotifications')}</Label>
-              <p className="text-sm text-muted-foreground">{t('emailNotificationsDescription')}</p>
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="text-lg font-medium">{t('notificationsTitle')}</h3>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>{t('emailNotifications')}</Label>
+                <p className="text-sm text-muted-foreground">{t('emailNotificationsDescription')}</p>
+              </div>
+              <Switch
+                checked={emailNotifications}
+                onCheckedChange={handleNotificationChange}
+                disabled={loadingSettings || !user}
+              />
             </div>
-            <Switch
-              checked={emailNotifications}
-              onCheckedChange={(val) => handleNotificationChange('email', val)}
-              disabled={loadingSettings || !user}
-            />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{t('pushNotifications')}</Label>
-              <p className="text-sm text-muted-foreground">{t('pushNotificationsDescription')}</p>
-            </div>
-            <Switch
-              checked={pushNotifications}
-              onCheckedChange={(val) => handleNotificationChange('push', val)}
-              disabled={loadingSettings || !user}
-            />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <PushNotificationsToggle />
+    </div>
   );
 }

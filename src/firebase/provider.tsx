@@ -6,6 +6,7 @@ import { Firestore } from 'firebase/firestore';
 import type { Auth, User } from 'firebase/auth';
 
 import { FirebaseStorage } from 'firebase/storage';
+import type { Messaging } from 'firebase/messaging';
 
 // Internal state for user authentication
 interface UserAuthState {
@@ -21,6 +22,7 @@ export interface FirebaseContextState {
   firestore: Firestore | null;
   auth: Auth | null; // The Auth service instance
   storage: FirebaseStorage | null;
+  messaging: Messaging | null;
   // User authentication state
   user: User | null;
   isUserLoading: boolean; // True during initial auth check
@@ -33,6 +35,7 @@ export interface FirebaseServicesAndUser {
   firestore: Firestore;
   auth: Auth;
   storage: FirebaseStorage;
+  messaging: Messaging | null;
   user: User | null;
   isUserLoading: boolean;
   userError: Error | null;
@@ -57,6 +60,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   firestore,
   auth,
   storage,
+  messaging,
 }) => {
   const [userAuthState, setUserAuthState] = useState<UserAuthState>({
     user: null,
@@ -106,11 +110,12 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       firestore: servicesAvailable ? firestore : null,
       auth: servicesAvailable ? auth : null,
       storage: servicesAvailable ? storage : null,
+      messaging: servicesAvailable ? messaging : null,
       user: userAuthState.user,
       isUserLoading: userAuthState.isUserLoading,
       userError: userAuthState.userError,
     };
-  }, [firebaseApp, firestore, auth, storage, userAuthState]);
+  }, [firebaseApp, firestore, auth, storage, messaging, userAuthState]);
 
   return (
     <FirebaseContext.Provider value={contextValue}>
@@ -134,6 +139,7 @@ export const useFirebase = (): FirebaseServicesAndUser => {
       firestore: null as any,
       auth: null as any,
       storage: null as any,
+      messaging: null,
       user: null,
       isUserLoading: true,
       userError: null,
@@ -145,6 +151,7 @@ export const useFirebase = (): FirebaseServicesAndUser => {
     firestore: context.firestore!,
     auth: context.auth!,
     storage: context.storage!,
+    messaging: context.messaging,
     user: context.user,
     isUserLoading: context.isUserLoading,
     userError: context.userError,
@@ -175,6 +182,12 @@ export const useFirebaseApp = (): FirebaseApp => {
   return firebaseApp;
 };
 
+/** Hook to access Messaging instance. */
+export const useMessaging = (): Messaging | null => {
+  const { messaging } = useFirebase();
+  return messaging;
+};
+
 /**
  * React hook to subscribe to the authenticated user's state.
  * This provides the User object, loading status, and any auth errors.
@@ -193,4 +206,5 @@ interface FirebaseProviderProps {
   firestore: Firestore;
   auth: Auth;
   storage: FirebaseStorage;
+  messaging: Messaging | null;
 }

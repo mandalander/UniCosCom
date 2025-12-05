@@ -118,10 +118,11 @@ export interface Community {
 export interface Notification {
     id: string;
     recipientId: string;
-    type: 'vote' | 'comment';
+    type: 'vote' | 'comment' | 'reaction';
     targetType: 'post' | 'comment';
     targetId: string;
     targetTitle?: string;
+    reactionType?: string;
     communityId: string;
     postId: string;
     actorId: string;
