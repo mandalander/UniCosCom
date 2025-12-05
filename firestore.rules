@@ -86,5 +86,18 @@ service cloud.firestore {
     match /{path=**}/posts/{postId} {
       allow read: if true;
     }
+
+    // Direct messages / conversations
+    match /conversations/{conversationId} {
+      allow list: if isSignedIn() && request.auth.uid in resource.data.participants;
+      allow get: if isSignedIn() && request.auth.uid in resource.data.participants;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && request.auth.uid in resource.data.participants;
+
+      match /messages/{messageId} {
+        allow list, get: if isSignedIn();
+        allow create: if isSignedIn();
+      }
+    }
   }
 }
