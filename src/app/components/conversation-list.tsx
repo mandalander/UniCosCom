@@ -8,11 +8,12 @@ import { useLanguage } from './language-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 
 import { NewConversationDialog } from './new-conversation-dialog';
+import { EmptyState } from './empty-state';
 
 interface ConversationListProps {
     selectedId: string | null;
@@ -84,9 +85,11 @@ export function ConversationList({ selectedId, onSelect }: ConversationListProps
 
             <div className="flex-1 overflow-y-auto">
                 {filteredConversations.length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">
-                        {t('noConversations')}
-                    </div>
+                    <EmptyState
+                        icon={MessageSquare}
+                        title={t('noConversations') || "No conversations yet"}
+                        description={t('noConversationsDescription') || "Start a conversation with someone by clicking the + button above."}
+                    />
                 ) : (
                     <div className="divide-y">
                         {filteredConversations.map((conv) => {

@@ -55,6 +55,9 @@ export const sendPushNotification = onDocumentCreated(
         } else if (notification.type === 'comment') {
             title = "Nowy komentarz";
             body = `${notification.actorDisplayName || 'Ktoś'} skomentował Twój post: "${notification.targetTitle || ''}"`;
+        } else if (notification.type === 'message') {
+            title = "Nowa wiadomość";
+            body = `${notification.actorDisplayName || 'Ktoś'}: ${notification.targetTitle || 'Wysłał wiadomość'}`; // targetTitle used for message preview
         }
 
         const message: admin.messaging.MulticastMessage = {
@@ -65,7 +68,9 @@ export const sendPushNotification = onDocumentCreated(
             },
             webpush: {
                 fcmOptions: {
-                    link: `/community/${notification.communityId}/post/${notification.postId}`
+                    link: notification.type === 'message'
+                        ? `/messages?conversationId=${notification.targetId}`
+                        : `/community/${notification.communityId || ''}/post/${notification.postId || ''}`
                 },
                 notification: {
                     icon: '/icon.png'
@@ -94,5 +99,65 @@ export const sendPushNotification = onDocumentCreated(
         }
 
         console.log(`Sent ${response.successCount} messages successfully`);
+    }
+);
+
+export const onNewMessage = onDocumentCreated(
+    "conversations/{conversationId}/messages/{messageId}",
+    async (event) => {
+        const snapshot = event.data;
+        if (!snapshot) {
+            console.log("No data associated with the event");
+            return;
+        }
+
+        const { conversationId } = event.params;
+        const messageData = snapshot.data();
+        const senderId = messageData.senderId;
+
+        // Get conversation details to find participants
+        const conversationRef = admin.firestore().doc(`conversations/${conversationId}`);
+        const conversationSnap = await conversationRef.get();
+
+        if (!conversationSnap.exists) {
+            console.log(`Conversation ${conversationId} not found`);
+            return;
+        }
+
+        const conversationData = conversationSnap.data();
+        const participants = conversationData?.participants as string[];
+
+        if (!participants) {
+            console.log("No participants found in conversation");
+            return;
+        }
+
+        // Identify recipients (everyone except sender)
+        const recipients = participants.filter(uid => uid !== senderId);
+
+        // Get sender details for display name
+        const senderProfileSnap = await admin.firestore().doc(`userProfiles/${senderId}`).get();
+        const senderDisplayName = senderProfileSnap.data()?.displayName || 'Someone';
+
+        const batch = admin.firestore().batch();
+
+        for (const recipientId of recipients) {
+            const notificationRef = admin.firestore().collection(`userProfiles/${recipientId}/notifications`).doc();
+
+            batch.set(notificationRef, {
+                recipientId: recipientId,
+                type: 'message',
+                targetType: 'conversation',
+                targetId: conversationId,
+                targetTitle: messageData.content?.substring(0, 50) || 'Sent a photo',
+                actorId: senderId,
+                actorDisplayName: senderDisplayName,
+                read: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        await batch.commit();
+        console.log(`Created notifications for ${recipients.length} recipients`);
     }
 );
