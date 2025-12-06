@@ -98,7 +98,15 @@ export default function UserProfilePage() {
       const postsNeedingCommunityName = rawPostDocs.filter((p: any) => !p.communityName);
 
       // 2. Collect unique community IDs for those posts
-      const communityIdsToFetch = Array.from(new Set(postsNeedingCommunityName.map(p => p.ref.ref.parent.parent?.id).filter(Boolean))) as string[];
+      const communityIdsToFetch = Array.from(new Set(postsNeedingCommunityName.map(p => {
+        const parentCol = p.ref.ref.parent;
+        // Post is in communities/{communityId}/posts/{postId}, so parent (posts) parent is community doc
+        // BUT wait, this is collectionGroup query. 
+        // If p.ref is a QueryDocumentSnapshot, p.ref.ref is the DocumentReference.
+        // ref.parent is CollectionReference (posts).
+        // ref.parent.parent is DocumentReference (community).
+        return parentCol.parent?.id;
+      }).filter(Boolean))) as string[];
 
       // 3. Fetch missing communities (batch)
       const communityNameMap = new Map<string, string>();

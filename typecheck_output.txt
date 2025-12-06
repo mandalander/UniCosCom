@@ -1,0 +1,6 @@
+
+> unicoscom@0.1.0 typecheck
+> tsc --noEmit
+
+src/app/components/notifications-list.tsx(101,32): error TS2345: Argument of type '"noNotificationsDescription"' is not assignable to parameter of type '"Ostatnio" | "post" | "edited" | "comment" | "main" | "explore" | "profile" | "settings" | "appNavigator" | "createNewCommunity" | "loading" | "privacyPolicyTitle" | "termsTitle" | ... 329 more ... | "sending"'.
+src/app/components/post-feed.tsx(35,79): error TS2554: Expected 1 arguments, but got 2.

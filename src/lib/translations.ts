@@ -1,4 +1,6 @@
 
+export type TranslationKeys = keyof typeof translations.pl;
+
 export const translations = {
   pl: {
     // App Sidebar
@@ -296,6 +298,7 @@ export const translations = {
     userUpvotedYourComment: '{{username}} polubił(a) Twój komentarz do posta: "{{postTitle}}"',
     notificationsTitle: 'Powiadomienia',
     notificationsDescription: 'Tutaj zobaczysz powiadomienia o aktywności w Twoich postach i komentarzach.',
+    noNotificationsDescription: 'Gdy ktoś skomentuje Twój post lub zareaguje na niego, zobaczysz to tutaj.',
     notificationVoted: 'Głos',
     notificationCommented: 'Komentarz',
     post: 'post',
@@ -639,6 +642,7 @@ export const translations = {
     userUpvotedYourComment: '{{username}} upvoted your comment on: "{{postTitle}}"',
     notificationsTitle: 'Notifications',
     notificationsDescription: 'Here you will see notifications about activity on your posts and comments.',
+    noNotificationsDescription: 'When someone interacts with your posts or comments, you\'ll see notifications here.',
     notificationVoted: 'Vote',
     notificationCommented: 'Comment',
     post: 'post',
@@ -665,7 +669,6 @@ export const translations = {
     sortLatest: 'Latest',
     sortTop: 'Top',
     sortOldest: 'Oldest',
-
 
     // Settings & Profile
     changePassword: 'Change Password',
@@ -798,34 +801,5 @@ export const translations = {
     noRecentActivity: 'No recent activity',
     activityCreatedPost: 'Created a post',
     activityAddedComment: 'Added a comment',
-    profileCoverImage: 'Cover Image',
-    noCoverImage: 'No cover image',
-    changeCoverImage: 'Change Cover',
-    removeCover: 'Remove',
-
-    // Badges
-    badgeEarlyAdopter: 'Early Adopter',
-    badgeEarlyAdopterDesc: 'Joined during beta',
-    badgeVerified: 'Verified',
-    badgeVerifiedDesc: 'Verified account',
-    badgeTopContributor: 'Top Contributor',
-    badgeTopContributorDesc: 'High quality contributions',
-    badgeModerator: 'Moderator',
-    badgeModeratorDesc: 'Community moderator',
-    badgeActiveMember: 'Active Member',
-    badgeActiveMemberDesc: 'Regularly active',
-    badgeHelpful: 'Helpful',
-    badgeHelpfulDesc: 'Helps other users',
-
-    // Messaging Improvements
-    userIsTyping: 'typing...',
-    messageDeleted: 'Message deleted',
-    editingMessage: 'Editing message',
-    today: 'Today',
-    yesterday: 'Yesterday',
-    noConversationsDescription: 'Start a conversation with someone by clicking the + button above.',
-    sentImage: 'Image',
-    imageReady: 'Image ready to send',
-    sending: 'Sending...',
   },
 };

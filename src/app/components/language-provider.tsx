@@ -11,7 +11,7 @@ type TranslationVariables = { [key: string]: string | number };
 type LanguageContextType = {
   language: Language;
   setLanguage: (language: Language) => void;
-  t: (key: keyof typeof translations.pl, vars?: TranslationVariables) => string;
+  t: (key: import('@/lib/translations').TranslationKeys, vars?: TranslationVariables) => string;
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -37,7 +37,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguageState(lang);
   };
 
-  const t = useMemo(() => (key: keyof typeof translations.pl, vars?: TranslationVariables): string => {
+  const t = useMemo(() => (key: import('@/lib/translations').TranslationKeys, vars?: TranslationVariables): string => {
     const lang = translations[language];
     let translation = (lang[key as keyof typeof lang] as string) || key;
 

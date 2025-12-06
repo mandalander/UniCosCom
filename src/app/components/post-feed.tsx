@@ -32,9 +32,7 @@ export function PostFeed() {
 
     }, [firestore, sortBy]);
 
-    const { data: posts, isLoading, error } = useCollection<Post>(postsQuery, {
-        listen: true
-    });
+    const { data: posts, isLoading, error } = useCollection<Post>(postsQuery);
 
     if (isLoading) {
         return (
