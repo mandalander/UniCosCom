@@ -120,7 +120,22 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       router.push('/login');
       return;
     }
-    if (!firestore || isVoting || !voteDocRef) return;
+
+    // Debugging silent failures
+    if (!firestore) {
+      console.error("Vote failed: Firestore not initialized");
+      return;
+    }
+    if (!voteDocRef) {
+      console.error("Vote failed: voteDocRef is null. Missing communityId or targetId?", { communityId, targetId });
+      toast({
+        variant: 'destructive',
+        title: "Debug Error",
+        description: "Missing communityId or targetId. Check console.",
+      });
+      return;
+    }
+    if (isVoting) return;
 
     setIsVoting(true);
 
