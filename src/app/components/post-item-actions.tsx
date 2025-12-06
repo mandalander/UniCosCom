@@ -45,11 +45,12 @@ export function PostItemActions({ communityId, post, isModerator, isOwner }: Pos
       await deleteDocumentNonBlocking(postRef);
       toast({ description: t('deletePostSuccess') });
       setIsDeleteDialogOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting post:", error);
+      console.log("Delete debug info:", { communityId, postId: post.id, path: postRef.path });
       toast({
         variant: "destructive",
-        description: t('deletePostError') || "Failed to delete post.",
+        description: `Failed to delete: ${error.message || 'Unknown error'} (Comm: ${communityId})`,
       });
     }
   };
