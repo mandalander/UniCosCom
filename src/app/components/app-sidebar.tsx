@@ -110,7 +110,7 @@ export function AppSidebar() {
         <Button asChild variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-center group">
           <Link href="/" onClick={handleLogoClick}>
             <div className="flex flex-col items-center text-center group-data-[collapsible=icon]:hidden overflow-hidden">
-              <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto]">
+              <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-[gradient-x_3s_ease-in-out_infinite]">
                 UniCosCom
               </h2>
               <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80 font-medium">
