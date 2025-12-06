@@ -37,7 +37,10 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
   }, [initialVoteCount]);
 
   const voteDocRef = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
+    // Add checks to ensure all required IDs are present before creating the ref
+    if (!user || !firestore || !communityId || !targetId) {
+      return null;
+    }
     if (targetType === 'post') {
       return doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
     } else if (postId) {

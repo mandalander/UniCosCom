@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Settings, Compass, PlusCircle, Users, Pencil, Bell, Bookmark } from 'lucide-react';
+import { Home, Settings, Compass, PlusCircle, Users, Pencil, Bell, Bookmark, Clock } from 'lucide-react';
 import {
   Sidebar,
   SidebarHeader,
@@ -16,7 +16,8 @@ import {
   SidebarGroupLabel,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSkeleton
+  SidebarMenuSkeleton,
+  useSidebar
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
@@ -26,6 +27,7 @@ import { CreateCommunityDialog } from './create-community-dialog';
 import { collection, query, orderBy, where } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
 import { UniCosComLogo } from './unicoscom-logo';
+import { useRecentPosts } from '@/hooks/use-recent-posts';
 
 type Community = {
   id: string;
@@ -38,6 +40,14 @@ export function AppSidebar() {
   const [mounted, setMounted] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
+  const { isMobile, setOpen, setOpenMobile } = useSidebar();
+  const { recentPosts, isLoaded: recentsLoaded } = useRecentPosts();
+
+  const handleLogoClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   const communitiesQuery = useMemo(() => {
     if (!firestore) return null;
@@ -76,7 +86,7 @@ export function AppSidebar() {
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
-    { href: '/saved', label: t('savedPosts') || "Saved Posts", icon: Bookmark, requiresAuth: true },
+    { href: '/recents', label: 'Ostatnio', icon: Clock, requiresAuth: false },
   ];
 
   const settingsMenuItem = { href: '/settings', label: t('settings'), icon: Settings, requiresAuth: false };
@@ -100,16 +110,17 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r-0 flex flex-col h-full" collapsible="icon">
       <SidebarHeader className="glass border-b border-white/10 mb-2">
-        <Button variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-start group">
-          <UniCosComLogo className="h-12 w-12 shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3" />
-          <div className="flex flex-col items-start text-left group-data-[collapsible=icon]:hidden overflow-hidden">
-            <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto]">
-              UniCosCom
-            </h2>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80 font-medium">
-              Social Platform
-            </span>
-          </div>
+        <Button asChild variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-center group">
+          <Link href="/" onClick={handleLogoClick}>
+            <div className="flex flex-col items-center text-center group-data-[collapsible=icon]:hidden overflow-hidden">
+              <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-[gradient-x_3s_ease-in-out_infinite]">
+                UniCosCom
+              </h2>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80 font-medium">
+                Social Platform
+              </span>
+            </div>
+          </Link>
         </Button>
       </SidebarHeader>
       <SidebarContent className="glass flex-1 min-h-0 overflow-y-auto">
@@ -127,39 +138,22 @@ export function AppSidebar() {
                   <span className="font-medium">{item.label}</span>
                 </Link>
               </SidebarMenuButton>
+                 {item.href === '/recents' && recentsLoaded && recentPosts.length > 0 && (
+                <SidebarMenuSub>
+                  {recentPosts.slice(0, 2).map((post) => (
+                     <SidebarMenuSubButton key={post.id} asChild isActive={pathname === `/community/${post.communityId}/post/${post.id}`} className="hover:bg-white/5 transition-colors">
+                       <Link href={`/community/${post.communityId}/post/${post.id}`} title={post.title}>
+                         <span className={pathname === `/community/${post.communityId}/post/${post.id}` ? 'text-primary font-medium truncate' : 'text-muted-foreground truncate'}>
+                           {post.title}
+                         </span>
+                       </Link>
+                     </SidebarMenuSubButton>
+                  ))}
+                </SidebarMenuSub>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
-        <SidebarGroup>
-          <SidebarGroupLabel asChild>
-            <Link href="/my-communities" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              <Users className="h-4 w-4 group-hover:text-primary transition-colors" />
-              <span>{t('myCommunities') || "My Communities"}</span>
-            </Link>
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenuSub>
-              {isLoadingJoinedCommunities ? (
-                <>
-                  <SidebarMenuSkeleton showIcon={false} />
-                  <SidebarMenuSkeleton showIcon={false} />
-                </>
-              ) : joinedCommunities && joinedCommunities.length > 0 ? (
-                joinedCommunities.slice(0, 5).map((community) => (
-                  <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
-                    <Link href={`/community/${community.id}`}>
-                      <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
-                        {community.name}
-                      </span>
-                    </Link>
-                  </SidebarMenuSubButton>
-                ))
-              ) : (
-                <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
-              )}
-            </SidebarMenuSub>
-          </SidebarGroupContent>
-        </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel>

@@ -18,6 +18,9 @@ export const translations = {
     myCommunitiesPageDescription: 'Zarządzaj społecznościami, do których dołączyłeś lub które utworzyłeś',
     messageAuthor: 'Napisz wiadomość',
     messagingUser: 'Rozpoczynanie rozmowy...',
+    Ostatnio: "Ostatnio",
+    recentlyViewedPosts: "Ostatnio przeglądane posty",
+    noRecentPosts: "Nie przeglądałeś ostatnio żadnych postów.",
 
     // Top Nav Bar
     login: 'Zaloguj się',
@@ -432,6 +435,9 @@ export const translations = {
     myCommunitiesPageDescription: 'Manage communities you joined or created',
     messageAuthor: 'Message Author',
     messagingUser: 'Starting conversation...',
+    Ostatnio: "Recently",
+    recentlyViewedPosts: "Recently viewed posts",
+    noRecentPosts: "You haven't viewed any posts recently.",
 
     // Top Nav Bar
     login: 'Log in',

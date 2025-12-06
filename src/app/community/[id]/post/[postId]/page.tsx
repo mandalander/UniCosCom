@@ -18,8 +18,9 @@ import { ShareButton } from '@/app/components/share-button';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useStartConversation } from '@/hooks/use-start-conversation';
+import { useRecentPosts } from '@/hooks/use-recent-posts';
 
 import { Post } from '@/lib/types';
 import { AdBanner } from '@/app/components/ad-banner';
@@ -29,6 +30,7 @@ export default function PostPage() {
   const { t, language } = useLanguage();
   const { user } = useUser();
   const firestore = useFirestore();
+  const { addRecentPost } = useRecentPosts();
 
   const postDocRef = useMemo(() => {
     if (!firestore || !communityId || !postId) return null;
@@ -36,6 +38,13 @@ export default function PostPage() {
   }, [firestore, communityId, postId]);
 
   const { data: post, isLoading: isPostLoading } = useDoc<Post>(postDocRef);
+
+  useEffect(() => {
+    if (post) {
+      addRecentPost(post as Post);
+    }
+  }, [post, addRecentPost]);
+
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
@@ -141,17 +150,6 @@ export default function PostPage() {
               </Button>
             </Link>
             <ShareButton post={{ ...post, communityId }} />
-            {user && !isOwner && (
-              <Button
-                variant="ghost"
-                className="rounded-full h-auto p-2 text-sm flex items-center gap-2"
-                onClick={handleMessageAuthor}
-                disabled={isStarting}
-              >
-                <Mail className='h-5 w-5' />
-                <span>{isStarting ? t('messagingUser') : t('messageAuthor')}</span>
-              </Button>
-            )}
           </div>
         </CardFooter>
       </Card>

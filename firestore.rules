@@ -38,8 +38,9 @@ service cloud.firestore {
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
 
-      // Allow users to join/leave communities
+      // Allow users to join/leave communities, and anyone to read member list
       match /members/{userId} {
+        allow read: if true;
         allow write: if isOwner(userId);
       }
 

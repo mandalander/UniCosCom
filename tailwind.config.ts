@@ -87,6 +87,10 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.5' },
         },
+        'gradient-x': {
+          '0%, 100%': { 'background-position': '0% 50%' },
+          '50%': { 'background-position': '100% 50%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -95,6 +99,7 @@ export default {
         'slide-up': 'slide-up 0.5s ease-out',
         'shake': 'shake 0.5s ease-in-out',
         'pulse-slow': 'pulse-slow 3s infinite ease-in-out',
+        'gradient-x': 'gradient-x 3s ease-in-out infinite',
       },
     },
   },

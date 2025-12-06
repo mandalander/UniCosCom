@@ -130,18 +130,6 @@ export const PostItem = ({ post }: { post: Post }) => {
                             </Link>
                             <SaveButton postId={post.id} communityId={post.communityId} />
                             <ShareButton post={post} />
-                            {user && !isOwner && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="rounded-full h-8 px-3 text-xs flex items-center gap-1.5"
-                                    onClick={handleMessageAuthor}
-                                    disabled={isStarting}
-                                >
-                                    <Mail className='h-4 w-4' />
-                                    <span className="hidden sm:inline">{isStarting ? t('messagingUser') : t('messageAuthor')}</span>
-                                </Button>
-                            )}
                         </div>
                     </div>
                     {reactionCounts && Object.keys(reactionCounts).length > 0 && (

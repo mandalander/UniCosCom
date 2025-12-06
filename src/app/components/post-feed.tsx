@@ -1,108 +1,40 @@
 'use client';
 
-import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
-import { collectionGroup, query, getDocs, collection, limit, doc, getDoc, orderBy, onSnapshot } from 'firebase/firestore';
+import { useFirestore, useCollection } from '@/firebase';
+import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { User, MessageSquare } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { formatDistanceToNow } from 'date-fns';
-import { pl, enUS } from 'date-fns/locale';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { AdBanner } from './ad-banner';
-import { PostItemActions } from './post-item-actions';
-import { VoteButtons } from '@/components/vote-buttons';
-
-
 import { PostItem } from './post-item';
 import { Post } from '@/lib/types';
-
-
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// ... (previous imports)
 
 export function PostFeed() {
     const { t } = useLanguage();
     const firestore = useFirestore();
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<'latest' | 'top' | 'oldest'>('latest');
 
-    useEffect(() => {
-        if (!firestore) return;
-        setIsLoading(true);
-        setError(null);
+    const postsQuery = useMemo(() => {
+        if (!firestore) return null;
 
-        let q;
         const postsRef = collectionGroup(firestore, 'posts');
-
-        if (sortBy === 'latest') {
-            q = query(postsRef, orderBy('createdAt', 'desc'), limit(25));
-        } else if (sortBy === 'top') {
-            q = query(postsRef, orderBy('voteCount', 'desc'), limit(25));
-        } else {
-            q = query(postsRef, orderBy('createdAt', 'asc'), limit(25));
+        if (sortBy === 'top') {
+            return query(postsRef, orderBy('voteCount', 'desc'), limit(25));
         }
+        if (sortBy === 'oldest') {
+            return query(postsRef, orderBy('createdAt', 'asc'), limit(25));
+        }
+        // Default to 'latest'
+        return query(postsRef, orderBy('createdAt', 'desc'), limit(25));
 
-        const unsubscribe = onSnapshot(q, async (snapshot) => {
-            const postsData = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                communityId: doc.ref.parent.parent?.id
-            })) as Post[];
-
-            // Extract unique community IDs
-            const communityIds = Array.from(new Set(postsData.map(p => p.communityId).filter(Boolean)));
-
-            // Fetch communities in parallel (or use a cache if we had one, but simple batching here is better than N+1)
-            // Note: Firestore 'in' query is limited to 10, so we might need to chunk or just fetch individually but in parallel.
-            // For now, let's fetch individually but in parallel which is better than serial await in map.
-            // Actually, we can just fetch all unique communities.
-
-            const communityPromises = communityIds.map(async (id) => {
-                if (!id) return null;
-                const docRef = doc(firestore, 'communities', id);
-                const snap = await getDoc(docRef);
-                return { id, ...snap.data() } as { id: string, name: string, creatorId: string };
-            });
-
-            const communities = (await Promise.all(communityPromises)).filter(Boolean);
-            const communityMap = new Map(communities.map(c => [c!.id, c]));
-
-            const enrichedPosts = postsData.map(post => {
-                const community = communityMap.get(post.communityId);
-                return {
-                    ...post,
-                    communityName: community?.name || 'Unknown Community',
-                    communityCreatorId: community?.creatorId
-                };
-            }).filter(p => p.createdAt); // Filter out potential incomplete writes
-
-            if (sortBy === 'latest') {
-                enrichedPosts.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-            } else if (sortBy === 'top') {
-                enrichedPosts.sort((a, b) => b.voteCount - a.voteCount);
-            } else {
-                enrichedPosts.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
-            }
-
-            setPosts(enrichedPosts);
-            setIsLoading(false);
-        }, (error: any) => {
-            console.error("Error fetching posts:", error);
-            setError(error.message);
-            setIsLoading(false);
-        });
-
-        return () => unsubscribe();
     }, [firestore, sortBy]);
 
+    const { data: posts, isLoading, error } = useCollection<Post>(postsQuery, {
+        listen: true
+    });
 
     if (isLoading) {
         return (
@@ -139,7 +71,7 @@ export function PostFeed() {
         return (
             <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500">
                 <h3 className="font-bold mb-2">Error loading posts</h3>
-                <p>{error}</p>
+                <p>{error.message}</p>
             </div>
         );
     }
