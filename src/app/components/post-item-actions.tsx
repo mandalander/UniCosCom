@@ -42,11 +42,18 @@ export function PostItemActions({ communityId, post, isModerator, isOwner, postR
   const handleDelete = async () => {
     if (!firestore) return;
 
-    // 1. Close the dialog FIRST to ensure pointer-events are restored.
+    // 1. Close the dialog FIRST
     setIsDeleteDialogOpen(false);
 
-    // 2. Small delay to allow Dialog cleanup (focus return, body scroll unlock)
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // 2. Wait for animation to finish (Radix usually takes ~300ms)
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // 3. Force-unlock the body scroll/pointer-events in case Radix cleanup failed
+    // because the component is about to be unmounted instantly.
+    if (typeof document !== 'undefined') {
+      document.body.style.pointerEvents = '';
+      document.body.style.overflow = '';
+    }
 
     // Use provided ref or construct it (fallback)
     const targetRef = postRef || doc(firestore, 'communities', communityId, 'posts', post.id);
