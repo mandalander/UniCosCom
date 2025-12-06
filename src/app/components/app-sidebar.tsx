@@ -27,6 +27,7 @@ import { CreateCommunityDialog } from './create-community-dialog';
 import { collection, query, orderBy, where } from 'firebase/firestore';
 import { CreatePostDialog } from './create-post-dialog';
 import { UniCosComLogo } from './unicoscom-logo';
+import { useRecentPosts } from '@/hooks/use-recent-posts';
 
 type Community = {
   id: string;
@@ -40,6 +41,7 @@ export function AppSidebar() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { isMobile, setOpen, setOpenMobile } = useSidebar();
+  const { recentPosts, isLoaded: recentsLoaded } = useRecentPosts();
 
   const handleLogoClick = () => {
     if (isMobile) {
@@ -136,6 +138,19 @@ export function AppSidebar() {
                   <span className="font-medium">{item.label}</span>
                 </Link>
               </SidebarMenuButton>
+                 {item.href === '/recents' && recentsLoaded && recentPosts.length > 0 && (
+                <SidebarMenuSub>
+                  {recentPosts.slice(0, 2).map((post) => (
+                     <SidebarMenuSubButton key={post.id} asChild isActive={pathname === `/community/${post.communityId}/post/${post.id}`} className="hover:bg-white/5 transition-colors">
+                       <Link href={`/community/${post.communityId}/post/${post.id}`} title={post.title}>
+                         <span className={pathname === `/community/${post.communityId}/post/${post.id}` ? 'text-primary font-medium truncate' : 'text-muted-foreground truncate'}>
+                           {post.title}
+                         </span>
+                       </Link>
+                     </SidebarMenuSubButton>
+                  ))}
+                </SidebarMenuSub>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
