@@ -21,12 +21,11 @@ async function generate() {
         const source = await Jimp.read(sourcePath);
         console.log('Source image loaded.');
 
-        // Autocrop with higher tolerance
+        // Autocrop with higher tolerance, using object syntax
         console.log('Autocropping to remove transparent padding...');
         try {
-            // Using 5% tolerance
             if (source.autocrop) {
-                source.autocrop(0.05, false);
+                source.autocrop({ tolerance: 0.05 });
             }
             console.log(`Autocrop result: ${source.bitmap.width}x${source.bitmap.height}`);
         } catch (err) {
@@ -43,10 +42,10 @@ async function generate() {
 
                 if (addBackground) {
                     // Create background by resizing clone and filling with #0a0214FF
-                    const bg = source.clone().resize(w, h);
+                    // Use object argument for resize: { w, h }
+                    const bg = source.clone().resize({ w: w, h: h });
 
                     // Manually fill buffer
-                    // Jimp bitmap.data is a buffer of RGBA
                     bg.scan(0, 0, w, h, function (x, y, idx) {
                         this.bitmap.data.writeUInt32BE(0x0a0214FF, idx);
                     });
@@ -74,7 +73,7 @@ async function generate() {
         await save(192, 192, 'icon-192.png', false);
         await save(512, 512, 'icon-512.png', false);
         await save(512, 512, 'icon.png', false);
-        await save(184, 184, 'apple-touch-icon.png', false); // 180 or 184? Standard is 180 usually. Let's use 180.
+        await save(180, 180, 'apple-touch-icon.png', false);
 
         // Maskable Icons (With dark background)
         await save(192, 192, 'icon-maskable-192.png', true);
