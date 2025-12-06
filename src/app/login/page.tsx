@@ -90,86 +90,85 @@ export default function LoginPage() {
           errorMessage = t('invalidCredentials');
           break;
       }
+      setError(errorMessage);
     }
-    setError(errorMessage);
-  }
-};
+  };
 
-const handleGoogleSignIn = async () => {
-  setError(null);
-  try {
-    const provider = new GoogleAuthProvider();
-    await initiateSignInWithProvider(auth, provider);
-    // No need to route push here, correctly awaits but redirect happens
-  } catch (e: any) {
-    console.error('Google sign-in error:', e);
-    // Show detailed error for debugging
-    const errorCode = e.code || 'unknown';
-    const errorMessage = e.message || 'Unknown error';
-    setError(`Error: ${errorCode} - ${errorMessage}`);
-  }
-};
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    try {
+      const provider = new GoogleAuthProvider();
+      await initiateSignInWithProvider(auth, provider);
+      // No need to route push here, correctly awaits but redirect happens
+    } catch (e: any) {
+      console.error('Google sign-in error:', e);
+      // Show detailed error for debugging
+      const errorCode = e.code || 'unknown';
+      const errorMessage = e.message || 'Unknown error';
+      setError(`Error: ${errorCode} - ${errorMessage}`);
+    }
+  };
 
-return (
-  <div className="flex items-center justify-center">
-    <Card className="w-full max-w-sm">
-      <CardHeader className="flex flex-col items-center text-center">
-        <div className="mb-4 relative">
-          <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full animate-pulse-slow" />
-          <UniCosComLogo className="w-16 h-16 relative z-10" />
-        </div>
-        <CardTitle className="text-2xl">
-          {isRegistering ? t('register') : t('loginTitle')}
-        </CardTitle>
-        <CardDescription>
-          {isRegistering
-            ? t('registerDescription')
-            : t('loginDescription')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="email">{t('emailLabel')}</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">{t('passwordLabel')}</Label>
-          <Input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        {error && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
-        <Button onClick={handleAuthAction} className="w-full">
-          {isRegistering ? t('register') : t('login')}
-        </Button>
-        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-          {isRegistering ? t('signUpWithGoogle') : t('signInWithGoogle')}
-        </Button>
-        <div className="mt-4 text-center text-sm">
-          {isRegistering ? t('alreadyHaveAccount') : t('noAccount')}{' '}
-          <Button
-            variant="link"
-            onClick={() => setIsRegistering(!isRegistering)}
-            className="p-0"
-          >
-            {isRegistering ? t('login') : t('register')}
+  return (
+    <div className="flex items-center justify-center">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="flex flex-col items-center text-center">
+          <div className="mb-4 relative">
+            <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full animate-pulse-slow" />
+            <UniCosComLogo className="w-16 h-16 relative z-10" />
+          </div>
+          <CardTitle className="text-2xl">
+            {isRegistering ? t('register') : t('loginTitle')}
+          </CardTitle>
+          <CardDescription>
+            {isRegistering
+              ? t('registerDescription')
+              : t('loginDescription')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="email">{t('emailLabel')}</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">{t('passwordLabel')}</Label>
+            <Input
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
+          <Button onClick={handleAuthAction} className="w-full">
+            {isRegistering ? t('register') : t('login')}
           </Button>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-);
+          <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
+            {isRegistering ? t('signUpWithGoogle') : t('signInWithGoogle')}
+          </Button>
+          <div className="mt-4 text-center text-sm">
+            {isRegistering ? t('alreadyHaveAccount') : t('noAccount')}{' '}
+            <Button
+              variant="link"
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="p-0"
+            >
+              {isRegistering ? t('login') : t('register')}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
