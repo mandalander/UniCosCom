@@ -1,0 +1,83 @@
+Reading source from C:\Users\dawid\Desktop\UniCosCom\public\icon-512.png...
+Source image loaded.
+Autocropping to remove transparent padding...
+Autocrop result: 512x512
+Generating standardized icons...
+Starting icon-192.png...
+Saved icon-192.png (192x192)
+Starting icon-512.png...
+Saved icon-512.png (512x512)
+Starting icon.png...
+Saved icon.png (512x512)
+Starting apple-touch-icon.png...
+Saved apple-touch-icon.png (184x184)
+Starting icon-maskable-192.png...
+Error saving icon-maskable-192.png: [
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "number",
+            "path": [],
+            "message": "Expected object, received number"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "number",
+            "path": [],
+            "message": "Expected object, received number"
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+Script failed!
+Error: Failed to save icon-maskable-192.png: [
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "number",
+            "path": [],
+            "message": "Expected object, received number"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "number",
+            "path": [],
+            "message": "Expected object, received number"
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+    at save (C:\Users\dawid\Desktop\UniCosCom\scripts\generate-icons.js:69:23)
+    at generate (C:\Users\dawid\Desktop\UniCosCom\scripts\generate-icons.js:80:15)
