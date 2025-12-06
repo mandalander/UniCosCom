@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -14,10 +15,9 @@ import { useState } from 'react';
 import {
   useAuth,
   initiateEmailSignUp,
-  initiateEmailSignIn,
   initiateSignInWithProvider
 } from '@/firebase';
-import { GoogleAuthProvider } from 'firebase/auth';
+import { GoogleAuthProvider, getRedirectResult } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { UniCosComLogo } from '../components/unicoscom-logo';
 
@@ -29,6 +29,35 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const auth = useAuth();
   const router = useRouter();
+  const [isRedirectChecking, setIsRedirectChecking] = useState(true);
+
+  // Check for redirect result on mount
+  useEffect(() => {
+    if (auth) {
+      getRedirectResult(auth)
+        .then((result) => {
+          if (result) {
+            console.log("Redirect login success:", result.user.uid);
+            router.push('/');
+          }
+          setIsRedirectChecking(false);
+        })
+        .catch((e) => {
+          console.error("Redirect login error:", e);
+          let errorMessage = 'Login error';
+          if (t) {
+            // Reuse error mapping logic or simplify
+            const errorCode = e.code || 'unknown';
+            const errorMsg = e.message || 'Unknown error';
+            errorMessage = `Error: ${errorCode} - ${errorMsg}`;
+          }
+          setError(errorMessage);
+          setIsRedirectChecking(false);
+        });
+    } else {
+      setIsRedirectChecking(false);
+    }
+  }, [auth, router, t]);
 
   const handleAuthAction = async () => {
     setError(null);
@@ -71,7 +100,7 @@ export default function LoginPage() {
     try {
       const provider = new GoogleAuthProvider();
       await initiateSignInWithProvider(auth, provider);
-      router.push('/');
+      // No need to route push here, correctly awaits but redirect happens
     } catch (e: any) {
       console.error('Google sign-in error:', e);
       // Show detailed error for debugging

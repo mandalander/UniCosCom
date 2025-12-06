@@ -38,16 +38,18 @@ export function initiateEmailSignIn(authInstance: Auth, email: string, password:
     });
 }
 
-/** Initiate sign-in with a provider (e.g., Google) via a popup (non-blocking). */
+
+/** Initiate sign-in with a provider (e.g., Google) via a redirect (non-blocking). */
 export function initiateSignInWithProvider(authInstance: Auth, provider: AuthProvider): Promise<void> {
-  return signInWithPopup(authInstance, provider)
-    .then(() => { })
-    .catch(error => {
-      // Silently handle popup cancellation by the user.
-      if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
-        return;
-      }
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { signInWithRedirect } = require('firebase/auth');
+  return signInWithRedirect(authInstance, provider)
+    .then(() => {
+      // Redirect happens immediately, so this promise resolves but the page unloads.
+    })
+    .catch((error: any) => {
       console.error("Provider sign-in error:", error);
-      throw error; // Re-throw so the caller knows it failed
+      throw error;
     });
 }
+
