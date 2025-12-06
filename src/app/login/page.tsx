@@ -46,12 +46,10 @@ export default function LoginPage() {
         .catch((e) => {
           console.error("Redirect login error:", e);
           let errorMessage = 'Login error';
-          if (t) {
-            // Reuse error mapping logic or simplify
-            const errorCode = e.code || 'unknown';
-            const errorMsg = e.message || 'Unknown error';
-            errorMessage = `Error: ${errorCode} - ${errorMsg}`;
-          }
+          // Reuse error mapping logic or simplify
+          const errorCode = e.code || 'unknown';
+          const errorMsg = e.message || 'Unknown error';
+          errorMessage = `Error: ${errorCode} - ${errorMsg}`;
           setError(errorMessage);
           setIsRedirectChecking(false);
         });
