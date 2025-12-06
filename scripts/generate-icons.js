@@ -37,6 +37,7 @@ async function generate() {
             console.log('Autocropping to remove transparent padding...');
             try {
                 source.autocrop();
+                console.log(`Autocrop result: ${source.bitmap.width}x${source.bitmap.height}`);
             } catch (err) {
                 console.error('Autocrop failed:', err);
             }
