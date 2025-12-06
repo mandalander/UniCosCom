@@ -85,7 +85,15 @@ export const PostItem = ({ post }: { post: Post }) => {
                                 </CardTitle>
                             </div>
                         </div>
-                        {(isOwner || isModerator) && <PostItemActions communityId={post.communityId} post={post} isOwner={isOwner} isModerator={isModerator} />}
+                        {(isOwner || isModerator) && (
+                            <PostItemActions
+                                communityId={post.communityId}
+                                post={post}
+                                isOwner={isOwner}
+                                isModerator={isModerator}
+                                postRef={(post as any).ref} // Pass the underlying Firestore reference
+                            />
+                        )}
                     </div>
                 </CardHeader>
                 <CardContent className='px-3 sm:px-4 flex-1'>

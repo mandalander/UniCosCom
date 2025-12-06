@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
 import { useFirestore, deleteDocumentNonBlocking } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { doc, DocumentReference } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { DeleteConfirmationDialog } from './delete-confirmation-dialog';
 import { EditPostForm } from './edit-post-form';
@@ -28,9 +28,10 @@ interface PostItemActionsProps {
   post: Post;
   isModerator?: boolean;
   isOwner?: boolean;
+  postRef?: DocumentReference; // Optional direct reference
 }
 
-export function PostItemActions({ communityId, post, isModerator, isOwner }: PostItemActionsProps) {
+export function PostItemActions({ communityId, post, isModerator, isOwner, postRef }: PostItemActionsProps) {
   const { t } = useLanguage();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -40,9 +41,11 @@ export function PostItemActions({ communityId, post, isModerator, isOwner }: Pos
 
   const handleDelete = async () => {
     if (!firestore) return;
-    const postRef = doc(firestore, 'communities', communityId, 'posts', post.id);
+    // Use provided ref or construct it (fallback)
+    const targetRef = postRef || doc(firestore, 'communities', communityId, 'posts', post.id);
+
     try {
-      await deleteDocumentNonBlocking(postRef);
+      await deleteDocumentNonBlocking(targetRef);
       toast({ description: t('deletePostSuccess') });
       setIsDeleteDialogOpen(false);
     } catch (error: any) {
