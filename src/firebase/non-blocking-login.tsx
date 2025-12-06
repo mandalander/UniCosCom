@@ -4,9 +4,8 @@ import {
   signInAnonymously,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
   AuthProvider,
-  // Assume getAuth and app are initialized elsewhere
 } from 'firebase/auth';
 
 /** Initiate anonymous sign-in (non-blocking). */
@@ -41,8 +40,6 @@ export function initiateEmailSignIn(authInstance: Auth, email: string, password:
 
 /** Initiate sign-in with a provider (e.g., Google) via a redirect (non-blocking). */
 export function initiateSignInWithProvider(authInstance: Auth, provider: AuthProvider): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { signInWithRedirect } = require('firebase/auth');
   return signInWithRedirect(authInstance, provider)
     .then(() => {
       // Redirect happens immediately, so this promise resolves but the page unloads.
