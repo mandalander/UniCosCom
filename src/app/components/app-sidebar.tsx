@@ -16,7 +16,8 @@ import {
   SidebarGroupLabel,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSkeleton
+  SidebarMenuSkeleton,
+  useSidebar
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from './language-provider';
@@ -38,6 +39,13 @@ export function AppSidebar() {
   const [mounted, setMounted] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
+  const { isMobile, setOpen, setOpenMobile } = useSidebar();
+
+  const handleLogoClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   const communitiesQuery = useMemo(() => {
     if (!firestore) return null;
@@ -99,16 +107,18 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r-0 flex flex-col h-full" collapsible="icon">
       <SidebarHeader className="glass border-b border-white/10 mb-2">
-        <Button variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-start group">
-          <UniCosComLogo className="h-12 w-12 shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3" />
-          <div className="flex flex-col items-start text-left group-data-[collapsible=icon]:hidden overflow-hidden">
-            <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto]">
-              UniCosCom
-            </h2>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80 font-medium">
-              Social Platform
-            </span>
-          </div>
+        <Button asChild variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-start group">
+          <Link href="/" onClick={handleLogoClick}>
+            <UniCosComLogo className="h-12 w-12 shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3" />
+            <div className="flex flex-col items-start text-left group-data-[collapsible=icon]:hidden overflow-hidden">
+              <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto]">
+                UniCosCom
+              </h2>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80 font-medium">
+                Social Platform
+              </span>
+            </div>
+          </Link>
         </Button>
       </SidebarHeader>
       <SidebarContent className="glass flex-1 min-h-0 overflow-y-auto">
