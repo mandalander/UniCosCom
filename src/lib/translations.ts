@@ -410,6 +410,9 @@ export const translations = {
     today: 'Dzisiaj',
     yesterday: 'Wczoraj',
     noConversationsDescription: 'Rozpocznij rozmowę z kimś klikając przycisk + powyżej.',
+    sentImage: 'Zdjęcie',
+    imageReady: 'Zdjęcie gotowe do wysłania',
+    sending: 'Wysyłanie...',
   },
   en: {
     // App Sidebar
@@ -815,5 +818,8 @@ export const translations = {
     today: 'Today',
     yesterday: 'Yesterday',
     noConversationsDescription: 'Start a conversation with someone by clicking the + button above.',
+    sentImage: 'Image',
+    imageReady: 'Image ready to send',
+    sending: 'Sending...',
   },
 };
