@@ -41,16 +41,22 @@ export function PostItemActions({ communityId, post, isModerator, isOwner, postR
 
   const handleDelete = async () => {
     if (!firestore) return;
+
+    // 1. Close the dialog FIRST to ensure pointer-events are restored.
+    setIsDeleteDialogOpen(false);
+
+    // 2. Small delay to allow Dialog cleanup (focus return, body scroll unlock)
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     // Use provided ref or construct it (fallback)
     const targetRef = postRef || doc(firestore, 'communities', communityId, 'posts', post.id);
 
     try {
       await deleteDocumentNonBlocking(targetRef);
       toast({ description: t('deletePostSuccess') });
-      setIsDeleteDialogOpen(false);
     } catch (error: any) {
       console.error("Error deleting post:", error);
-      console.log("Delete debug info:", { communityId, postId: post.id, path: postRef.path });
+      console.log("Delete debug info:", { communityId, postId: post.id, path: postRef?.path });
       toast({
         variant: "destructive",
         description: `Failed to delete: ${error.message || 'Unknown error'} (Comm: ${communityId})`,
