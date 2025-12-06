@@ -172,6 +172,7 @@ export function CreatePostForm({ communityId, communityName }: CreatePostFormPro
         mediaUrl: mediaUrl,
         mediaType: mediaType,
         communityName: communityName, // Save community name
+        communityId: communityId, // Explicitly save communityId for collectionGroup queries
       };
 
       await addDocumentNonBlocking(postsColRef, postData);

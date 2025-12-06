@@ -89,21 +89,34 @@ export function PostFeed() {
 
             {posts && posts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {posts.map((post, index) => (
-                        <React.Fragment key={post.id}>
-                            <PostItem post={post} />
-                            {(index + 1) % 5 === 0 && (
-                                <div className="col-span-1 md:col-span-2 lg:col-span-3">
-                                    <AdBanner
-                                        dataAdSlot="1234567890"
-                                        dataAdFormat="fluid"
-                                        dataFullWidthResponsive={true}
-                                        className="my-6"
-                                    />
-                                </div>
-                            )}
-                        </React.Fragment>
-                    ))}
+                    {posts.map((post, index) => {
+                        // Fix for missing communityId in collectionGroup queries
+                        // We extract it from the document reference path: communities/{communityId}/posts/{postId}
+                        const effectivePost = {
+                            ...post,
+                            // post.ref is the QueryDocumentSnapshot.
+                            // post.ref.ref is the DocumentReference.
+                            // post.ref.ref.parent is CollectionReference 'posts'
+                            // post.ref.ref.parent.parent is DocumentReference 'communities/{id}'
+                            communityId: post.communityId || post.ref?.ref?.parent?.parent?.id || ''
+                        };
+
+                        return (
+                            <React.Fragment key={post.id}>
+                                <PostItem post={effectivePost} />
+                                {(index + 1) % 5 === 0 && (
+                                    <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                                        <AdBanner
+                                            dataAdSlot="1234567890"
+                                            dataAdFormat="fluid"
+                                            dataFullWidthResponsive={true}
+                                            className="my-6"
+                                        />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
                 </div>
             ) : (
                 <p className='text-center text-muted-foreground'>{t('noPostsGlobal')}</p>
