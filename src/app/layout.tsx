@@ -1,3 +1,4 @@
+// Deployment trigger
 import '@/lib/polyfill';
 import type { Metadata } from 'next';
 import Link from 'next/link';
