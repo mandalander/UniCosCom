@@ -92,152 +92,61 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
       const notificationData = {
         recipientId: targetAuthorId,
         type: 'vote',
-        targetType: targetType,
-        targetId: targetId,
-        targetTitle: postTitle,
-        communityId: communityId,
-        postId: actualPostId,
-        actorId: user.uid,
-        actorDisplayName: user.displayName || 'Someone',
-        read: false,
-        createdAt: serverTimestamp(),
-      };
-      addDoc(notificationsRef, notificationData).catch(e => {
-        // Non-critical, so just log the error if notification fails
-        console.error("Error creating notification: ", e);
-      });
-    }).catch(e => {
-      console.error("Error fetching post for notification: ", e);
-    });
-  }
 
-  const handleVote = async (newVote: 1 | -1) => {
-    if (!user) {
-      toast({
-        variant: 'destructive',
-        description: t('mustBeLoggedInToVote'),
-      });
-      router.push('/login');
-      return;
-    }
+        const permissionError = new FirestorePermissionError({
+          path: voteDocRef.path,
+          operation: operationType,
+          requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid },
+        } satisfies SecurityRuleContext);
 
-    // Debugging silent failures
-    if (!firestore) {
-      console.error("Vote failed: Firestore not initialized");
-      return;
-    }
-    if (!voteDocRef) {
-      console.error("Vote failed: voteDocRef is null. Missing communityId or targetId?", { communityId, targetId });
-      toast({
-        variant: 'destructive',
-        title: "Debug Error",
-        description: "Missing communityId or targetId. Check console.",
-      });
-      return;
-    }
-    if (isVoting) return;
+        // Emit the contextual error for the global listener to catch and throw.
+        errorEmitter.emit('permission-error', permissionError);
 
-    setIsVoting(true);
-
-    const voteValueBefore = userVote || 0;
-    const newVoteValue = userVote === newVote ? 0 : newVote; // If clicking the same button again, it's a "take back"
-    const voteChange = newVoteValue - voteValueBefore;
-
-    // Optimistic UI update
-    setVoteCount(prev => (prev || 0) + voteChange);
-    setUserVote(newVoteValue === 0 ? null : newVoteValue);
-
-    let targetRef;
-    if (targetType === 'post') {
-      targetRef = doc(firestore, 'communities', communityId, 'posts', targetId);
-    } else if (postId) {
-      targetRef = doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId);
-    } else {
-      setIsVoting(false);
-      return;
-    }
-
-    try {
-      await runTransaction(firestore, async (transaction: Transaction) => {
-        const voteDoc = await transaction.get(voteDocRef);
-        const currentVoteOnDb = voteDoc.exists() ? voteDoc.data().value : 0;
-        const voteDifference = newVoteValue - currentVoteOnDb;
-
-        transaction.update(targetRef, { voteCount: increment(voteDifference) });
-
-        if (newVoteValue === 0) {
-          transaction.delete(voteDocRef);
-        } else {
-          transaction.set(voteDocRef, { value: newVoteValue, userId: user.uid });
-        }
-      });
-
-      if (newVoteValue === 1 && creatorId !== user.uid) {
-        createNotification(creatorId);
+      } finally {
+        setIsVoting(false);
       }
+    };
 
-    } catch (e: any) {
-      // Revert optimistic UI update on error.
-      setVoteCount(prev => (prev || 0) - voteChange);
-      setUserVote(voteValueBefore === 0 ? null : voteValueBefore);
+    return (
+      <div className="flex items-center gap-1 rounded-full bg-muted/50 backdrop-blur-sm p-1 border border-white/10 shadow-sm transition-all duration-300 hover:bg-muted/80">
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
+            userVote === 1
+              ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md hover:from-green-600 hover:to-emerald-700 hover:text-white"
+              : "hover:bg-green-500/10 hover:text-green-600"
+          )}
+          onClick={() => handleVote(1)}
+          disabled={isVoting}
+          aria-label={t('upvote') || "Upvote"}
+        >
+          <ArrowBigUp className={cn("h-6 w-6 transition-all duration-300", userVote === 1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
+        </Button>
 
-      const isDeleteOperation = newVoteValue === 0;
-      const operationType = isDeleteOperation ? 'delete' : 'write';
+        <span className={cn(
+          "text-sm font-bold min-w-[24px] text-center tabular-nums transition-colors duration-300",
+          userVote === 1 ? "text-green-600" : userVote === -1 ? "text-red-600" : "text-muted-foreground"
+        )}>
+          {voteCount}
+        </span>
 
-      const permissionError = new FirestorePermissionError({
-        path: voteDocRef.path,
-        operation: operationType,
-        requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid },
-      } satisfies SecurityRuleContext);
-
-      // Emit the contextual error for the global listener to catch and throw.
-      errorEmitter.emit('permission-error', permissionError);
-
-    } finally {
-      setIsVoting(false);
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-1 rounded-full bg-muted/50 backdrop-blur-sm p-1 border border-white/10 shadow-sm transition-all duration-300 hover:bg-muted/80">
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          "h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
-          userVote === 1
-            ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md hover:from-green-600 hover:to-emerald-700 hover:text-white"
-            : "hover:bg-green-500/10 hover:text-green-600"
-        )}
-        onClick={() => handleVote(1)}
-        disabled={isVoting}
-        aria-label={t('upvote') || "Upvote"}
-      >
-        <ArrowBigUp className={cn("h-6 w-6 transition-all duration-300", userVote === 1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
-      </Button>
-
-      <span className={cn(
-        "text-sm font-bold min-w-[24px] text-center tabular-nums transition-colors duration-300",
-        userVote === 1 ? "text-green-600" : userVote === -1 ? "text-red-600" : "text-muted-foreground"
-      )}>
-        {voteCount}
-      </span>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          "h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
-          userVote === -1
-            ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-md hover:from-red-600 hover:to-rose-700 hover:text-white"
-            : "hover:bg-red-500/10 hover:text-red-600"
-        )}
-        onClick={() => handleVote(-1)}
-        disabled={isVoting}
-        aria-label={t('downvote') || "Downvote"}
-      >
-        <ArrowBigDown className={cn("h-6 w-6 transition-all duration-300", userVote === -1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
-      </Button>
-    </div>
-  );
-}
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
+            userVote === -1
+              ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-md hover:from-red-600 hover:to-rose-700 hover:text-white"
+              : "hover:bg-red-500/10 hover:text-red-600"
+          )}
+          onClick={() => handleVote(-1)}
+          disabled={isVoting}
+          aria-label={t('downvote') || "Downvote"}
+        >
+          <ArrowBigDown className={cn("h-6 w-6 transition-all duration-300", userVote === -1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
+        </Button>
+      </div>
+    );
+  }
