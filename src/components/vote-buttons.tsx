@@ -41,89 +41,21 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
     if (!user || !firestore || !communityId || !targetId) {
       return null;
     }
-    if (targetType === 'post') {
-      return doc(firestore, 'communities', communityId, 'posts', targetId, 'votes', user.uid);
-    } else if (postId) {
-      return doc(firestore, 'communities', communityId, 'posts', postId, 'comments', targetId, 'votes', user.uid);
-    }
-    return null;
-  }, [user, firestore, targetType, communityId, targetId, postId]);
-
-
-  useEffect(() => {
-    const fetchUserVote = async () => {
-      if (voteDocRef) {
-        try {
-          const voteSnap = await getDoc(voteDocRef);
-          if (voteSnap.exists()) {
-            setUserVote(voteSnap.data().value);
-          } else {
-            setUserVote(null);
-          }
-        } catch (e) {
-          // This might fail due to security rules on read, which is fine.
-          // We'll proceed assuming no vote.
-          setUserVote(null);
-        }
-      } else if (!user) {
-        setUserVote(null);
-      }
-    };
-    fetchUserVote();
-  }, [voteDocRef, user]);
-
-  const createNotification = (targetAuthorId: string) => {
-    if (!user || !firestore || user.uid === targetAuthorId) {
-      return;
-    }
-
-    // For posts, use targetId; for comments, use postId
-    const actualPostId = targetType === 'post' ? targetId : postId;
-    if (!actualPostId) {
-      console.error('Cannot create notification: missing postId');
-      return;
-    }
-
-    const postRef = doc(firestore, 'communities', communityId, 'posts', actualPostId);
-
-    getDocFromServer(postRef).then(postSnap => {
-      const postTitle = postSnap.exists() ? postSnap.data().title : 'a post';
-      const notificationsRef = collection(firestore, 'userProfiles', targetAuthorId, 'notifications');
-      const notificationData = {
-        recipientId: targetAuthorId,
-        type: 'vote',
-
-        const permissionError = new FirestorePermissionError({
-          path: voteDocRef.path,
-          operation: operationType,
-          requestResourceData: isDeleteOperation ? undefined : { value: newVoteValue, userId: user.uid },
-        } satisfies SecurityRuleContext);
-
-        // Emit the contextual error for the global listener to catch and throw.
-        errorEmitter.emit('permission-error', permissionError);
-
-      } finally {
-        setIsVoting(false);
-      }
-    };
-
-    return (
-      <div className="flex items-center gap-1 rounded-full bg-muted/50 backdrop-blur-sm p-1 border border-white/10 shadow-sm transition-all duration-300 hover:bg-muted/80">
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
+    size = "icon"
+    className = {
+      cn(
             "h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
-            userVote === 1
-              ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md hover:from-green-600 hover:to-emerald-700 hover:text-white"
-              : "hover:bg-green-500/10 hover:text-green-600"
-          )}
-          onClick={() => handleVote(1)}
-          disabled={isVoting}
-          aria-label={t('upvote') || "Upvote"}
+        userVote === 1
+      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md hover:from-green-600 hover:to-emerald-700 hover:text-white"
+      : "hover:bg-green-500/10 hover:text-green-600"
+          )
+}
+onClick = {() => handleVote(1)}
+disabled = { isVoting }
+aria - label={ t('upvote') || "Upvote" }
         >
-          <ArrowBigUp className={cn("h-6 w-6 transition-all duration-300", userVote === 1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
-        </Button>
+  <ArrowBigUp className={cn("h-6 w-6 transition-all duration-300", userVote === 1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
+        </Button >
 
         <span className={cn(
           "text-sm font-bold min-w-[24px] text-center tabular-nums transition-colors duration-300",
@@ -147,6 +79,6 @@ export function VoteButtons({ targetType, targetId, creatorId, communityId, post
         >
           <ArrowBigDown className={cn("h-6 w-6 transition-all duration-300", userVote === -1 ? "fill-white scale-110" : "stroke-[1.5px]")} />
         </Button>
-      </div>
+      </div >
     );
   }
