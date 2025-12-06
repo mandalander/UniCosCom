@@ -37,7 +37,7 @@ export function useReactions({
     // Fetch user's current reaction
     useEffect(() => {
         const fetchUserReaction = async () => {
-            if (!user || !firestore) {
+            if (!user || !firestore || !communityId || !targetId) {
                 setUserReaction(null);
                 return;
             }
@@ -113,7 +113,7 @@ export function useReactions({
             return;
         }
 
-        if (!firestore || isReacting) return;
+        if (!firestore || isReacting || !communityId || !targetId) return;
 
         setIsReacting(true);
 
