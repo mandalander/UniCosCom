@@ -150,17 +150,6 @@ export default function PostPage() {
               </Button>
             </Link>
             <ShareButton post={{ ...post, communityId }} />
-            {user && !isOwner && (
-              <Button
-                variant="ghost"
-                className="rounded-full h-auto p-2 text-sm flex items-center gap-2"
-                onClick={handleMessageAuthor}
-                disabled={isStarting}
-              >
-                <Mail className='h-5 w-5' />
-                <span>{isStarting ? t('messagingUser') : t('messageAuthor')}</span>
-              </Button>
-            )}
           </div>
         </CardFooter>
       </Card>

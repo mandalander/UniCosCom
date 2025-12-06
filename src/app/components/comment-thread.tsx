@@ -138,18 +138,6 @@ export function CommentThread({
                             <MessageSquare className="h-4 w-4 mr-1" />
                             {t('reply') || "Reply"}
                         </Button>
-                        {user && !isOwner && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-auto p-0 text-muted-foreground hover:text-primary"
-                                onClick={handleMessageAuthor}
-                                disabled={isStarting}
-                            >
-                                <Mail className="h-4 w-4 mr-1" />
-                                {isStarting ? t('messagingUser') : t('messageAuthor')}
-                            </Button>
-                        )}
                     </div>
                     {reactionCounts && Object.keys(reactionCounts).length > 0 && (
                         <ReactionDisplay
