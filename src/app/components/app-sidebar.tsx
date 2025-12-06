@@ -130,36 +130,6 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
-        <SidebarGroup>
-          <SidebarGroupLabel asChild>
-            <Link href="/my-communities" className="group flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              <Users className="h-4 w-4 group-hover:text-primary transition-colors" />
-              <span>{t('myCommunities') || "My Communities"}</span>
-            </Link>
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenuSub>
-              {isLoadingJoinedCommunities ? (
-                <>
-                  <SidebarMenuSkeleton showIcon={false} />
-                  <SidebarMenuSkeleton showIcon={false} />
-                </>
-              ) : joinedCommunities && joinedCommunities.length > 0 ? (
-                joinedCommunities.slice(0, 5).map((community) => (
-                  <SidebarMenuSubButton key={community.id} asChild isActive={pathname === `/community/${community.id}`} className="hover:bg-white/5 transition-colors">
-                    <Link href={`/community/${community.id}`}>
-                      <span className={pathname === `/community/${community.id}` ? 'text-primary font-medium' : 'text-muted-foreground'}>
-                        {community.name}
-                      </span>
-                    </Link>
-                  </SidebarMenuSubButton>
-                ))
-              ) : (
-                <p className="px-2 text-xs text-muted-foreground/70">{t('noCommunitiesYet')}</p>
-              )}
-            </SidebarMenuSub>
-          </SidebarGroupContent>
-        </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel>
