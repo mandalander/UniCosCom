@@ -1,11 +1,11 @@
 'use client';
 
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection } from '@/firebase';
 import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { AdBanner } from './ad-banner';
 import { PostItem } from './post-item';
 import { Post } from '@/lib/types';
@@ -17,7 +17,7 @@ export function PostFeed() {
     const firestore = useFirestore();
     const [sortBy, setSortBy] = useState<'latest' | 'top' | 'oldest'>('latest');
 
-    const postsQuery = useMemoFirebase(() => {
+    const postsQuery = useMemo(() => {
         if (!firestore) return null;
 
         const postsRef = collectionGroup(firestore, 'posts');
