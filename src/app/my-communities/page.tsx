@@ -100,8 +100,15 @@ export default function MyCommunitiesPage() {
         });
     }, [createdCommunities, isLoadingCreatedCommunities, createdCommunitiesError]);
 
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!user && !isLoadingMemberships) {
+            router.push('/login');
+        }
+    }, [user, isLoadingMemberships, router]);
+
+    // Show nothing while checking auth or redirecting
     if (!user) {
-        router.push('/login');
         return null;
     }
 

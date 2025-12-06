@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/app/components/language-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Heart, MessageSquare, Check } from 'lucide-react';
+import { User, Heart, MessageSquare, Check, Smile, Bell } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS } from 'date-fns/locale';
 import Link from 'next/link';
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import { Notification } from '@/lib/types';
+import { EmptyState } from './empty-state';
 
 export function NotificationsList() {
     const { t, language } = useLanguage();
@@ -94,9 +95,11 @@ export function NotificationsList() {
 
     if (!notifications || notifications.length === 0) {
         return (
-            <div className="text-center py-12 text-muted-foreground">
-                <p>{t('noNotifications') || "Brak powiadomień"}</p>
-            </div>
+            <EmptyState
+                icon={Bell}
+                title={t('noNotifications') || "No notifications"}
+                description={t('noNotificationsDescription') || "When someone interacts with your posts or comments, you'll see notifications here."}
+            />
         );
     }
 
@@ -128,6 +131,10 @@ export function NotificationsList() {
                                 <div className="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-500">
                                     <Heart size={16} className="fill-current" />
                                 </div>
+                            ) : notification.type === 'reaction' ? (
+                                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-full text-yellow-600">
+                                    <Smile size={16} />
+                                </div>
                             ) : (
                                 <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full text-blue-500">
                                     <MessageSquare size={16} />
@@ -141,6 +148,8 @@ export function NotificationsList() {
                                 {' '}
                                 {notification.type === 'vote' ? (
                                     <span>{t('notificationVoted') || "zagłosował(a) na Twój"}</span>
+                                ) : notification.type === 'reaction' ? (
+                                    <span>zareagował(a) {notification.reactionType || '😊'} na Twój</span>
                                 ) : (
                                     <span>{t('notificationCommented') || "skomentował(a) Twój"}</span>
                                 )}

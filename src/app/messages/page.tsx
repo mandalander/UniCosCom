@@ -43,8 +43,14 @@ function MessagesContent() {
         );
     }
 
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.push('/login');
+        }
+    }, [isUserLoading, user, router]);
+
     if (!user) {
-        router.push('/login');
         return null;
     }
 
