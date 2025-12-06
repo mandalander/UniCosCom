@@ -14,7 +14,6 @@ async function generate() {
 
         console.log(`Reading source from ${sourcePath}...`);
 
-
         if (typeof Jimp.read !== 'function') {
             throw new Error(`Jimp.read is not a function. It is: ${typeof Jimp.read}`);
         }
@@ -22,86 +21,70 @@ async function generate() {
         const source = await Jimp.read(sourcePath);
         console.log('Source image loaded.');
 
-        // Debug: Check if autocrop exists
-        if (typeof source.autocrop !== 'function') {
-            console.error('Error: source.autocrop is not a function.');
-            console.log('Available methods on source:', Object.keys(Object.getPrototypeOf(source)));
-            // Fallback: try autoCrop ?
-            if (typeof source.autoCrop === 'function') {
-                console.log('Found autoCrop instead of autocrop, using that.');
-                source.autoCrop();
-            } else {
-                console.warn('Skipping autocrop (method not found). Icon borders will remain.');
+        // Autocrop with higher tolerance
+        console.log('Autocropping to remove transparent padding...');
+        try {
+            // Using 5% tolerance
+            if (source.autocrop) {
+                source.autocrop(0.05, false);
             }
-        } else {
-            console.log('Autocropping to remove transparent padding...');
-            try {
-                source.autocrop();
-                console.log(`Autocrop result: ${source.bitmap.width}x${source.bitmap.height}`);
-            } catch (err) {
-                console.error('Autocrop failed:', err);
-            }
+            console.log(`Autocrop result: ${source.bitmap.width}x${source.bitmap.height}`);
+        } catch (err) {
+            console.error('Autocrop failed:', err);
         }
 
         console.log('Generating standardized icons...');
 
         // Helper to save resized icon
-        const save = async (w, h, name) => {
+        const save = async (w, h, name, addBackground = false) => {
             console.log(`Starting ${name}...`);
             try {
-                if (!source.clone) {
-                    console.error('source.clone missing');
-                    // Fallback for v1 if needed?
-                }
-                const img = source.clone();
-                console.log(`Cloned ${name}`);
+                let img = source.clone();
 
-                if (!img.contain) {
-                    console.error('img.contain missing');
+                if (addBackground) {
+                    // Create background by resizing clone and filling with #0a0214FF
+                    const bg = source.clone().resize(w, h);
+
+                    // Manually fill buffer
+                    // Jimp bitmap.data is a buffer of RGBA
+                    bg.scan(0, 0, w, h, function (x, y, idx) {
+                        this.bitmap.data.writeUInt32BE(0x0a0214FF, idx);
+                    });
+
+                    // Contain the icon within the background
+                    img.contain({ w, h });
+
+                    // Composite icon onto background
+                    bg.composite(img, 0, 0);
+                    img = bg;
+                } else {
+                    img.contain({ w, h });
                 }
-                img.contain({ w, h });
-                console.log(`Contained ${name}`);
 
                 const destPath = path.join(publicDir, name);
-                console.log(`Writing to ${destPath}...`);
                 await img.write(destPath);
                 console.log(`Saved ${name} (${w}x${h})`);
             } catch (err) {
-                console.log(`Error saving ${name}: ${err}`); // Use log instead of error to avoid inspect crash?
+                console.log(`Error saving ${name}: ${err}`);
                 throw new Error(`Failed to save ${name}: ${err}`);
             }
         };
 
-        // Standard Icons
-        await save(192, 192, 'icon-192.png');
-        await save(512, 512, 'icon-512.png');
+        // Standard Icons (Transparent)
+        await save(192, 192, 'icon-192.png', false);
+        await save(512, 512, 'icon-512.png', false);
+        await save(512, 512, 'icon.png', false);
+        await save(184, 184, 'apple-touch-icon.png', false); // 180 or 184? Standard is 180 usually. Let's use 180.
 
-        // Also update the main 'icon.png' to be consistent
-        await save(512, 512, 'icon.png');
+        // Maskable Icons (With dark background)
+        await save(192, 192, 'icon-maskable-192.png', true);
+        await save(512, 512, 'icon-maskable-512.png', true);
 
-        // Apple Touch Icon
-        await save(180, 180, 'apple-touch-icon.png');
-
-        // Maskable Icons (Same content, just enlarged via autocrop)
-        // This relies on the "fill" strategy requested.
-        await save(192, 192, 'icon-maskable-192.png');
-        await save(512, 512, 'icon-maskable-512.png');
-
-        // Favicon (small)
-        // Warning: Jimp might not support .ico write. 
-        // If it fails, we catch it.
+        // Favicon
         try {
-            // Providing a png as favicon.ico often works in practice for modern browsers/servers
-            // but jimp might complain about MIME type.
-            // We will create favicon-32x32.png instead as it's safer standard.
-            await save(32, 32, 'favicon-32x32.png');
-            console.log('Saved favicon-32x32.png');
-
-            // Copy to favicon.ico just in case (as a png)
-            // If jimp fails on .ico extension, we skip.
-            // await save(32, 32, 'favicon.ico'); 
+            await save(32, 32, 'favicon-32x32.png', false);
         } catch (e) {
-            console.warn('Skipping favicon.ico generation (Jimp limitation likely)');
+            console.warn('Skipping favicon generation');
         }
 
         console.log('Icon generation complete!');
