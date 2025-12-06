@@ -84,6 +84,9 @@ export function TopNavBar() {
                 <DropdownMenuItem asChild>
                   <Link href="/my-communities">{t('myCommunities')}</Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/saved">{t('savedPosts')}</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>
                   {t('logout')}
                 </DropdownMenuItem>

@@ -76,7 +76,6 @@ export function AppSidebar() {
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
-    { href: '/saved', label: t('savedPosts') || "Saved Posts", icon: Bookmark, requiresAuth: true },
   ];
 
   const settingsMenuItem = { href: '/settings', label: t('settings'), icon: Settings, requiresAuth: false };
