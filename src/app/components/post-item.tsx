@@ -91,7 +91,6 @@ export const PostItem = ({ post }: { post: Post }) => {
                                 post={post}
                                 isOwner={isOwner}
                                 isModerator={isModerator}
-                                postRef={(post as any).ref} // Pass the underlying Firestore reference
                             />
                         )}
                     </div>

@@ -28,10 +28,9 @@ interface PostItemActionsProps {
   post: Post;
   isModerator?: boolean;
   isOwner?: boolean;
-  postRef?: DocumentReference; // Optional direct reference
 }
 
-export function PostItemActions({ communityId, post, isModerator, isOwner, postRef }: PostItemActionsProps) {
+export function PostItemActions({ communityId, post, isModerator, isOwner }: PostItemActionsProps) {
   const { t } = useLanguage();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -55,15 +54,16 @@ export function PostItemActions({ communityId, post, isModerator, isOwner, postR
       document.body.style.overflow = '';
     }
 
-    // Use provided ref or construct it (fallback)
-    const targetRef = postRef || doc(firestore, 'communities', communityId, 'posts', post.id);
+    // Always construct a fresh reference to avoid issues with passed references being stripped or invalid
+    // properties (like _delegate which is needed by the SDK).
+    const targetRef = doc(firestore, 'communities', communityId, 'posts', post.id);
 
     try {
       await deleteDocumentNonBlocking(targetRef);
       toast({ description: t('deletePostSuccess') });
     } catch (error: any) {
       console.error("Error deleting post:", error);
-      console.log("Delete debug info:", { communityId, postId: post.id, path: postRef?.path });
+      console.log("Delete debug info:", { communityId, postId: post.id, path: targetRef.path });
       toast({
         variant: "destructive",
         description: `Failed to delete: ${error.message || 'Unknown error'} (Comm: ${communityId})`,
