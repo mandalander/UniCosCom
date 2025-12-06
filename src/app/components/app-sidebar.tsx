@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Settings, Compass, PlusCircle, Users, Pencil, Bell, Bookmark } from 'lucide-react';
+import { Home, Settings, Compass, PlusCircle, Users, Pencil, Bell, Bookmark, Clock } from 'lucide-react';
 import {
   Sidebar,
   SidebarHeader,
@@ -84,6 +84,7 @@ export function AppSidebar() {
 
   const allMenuItems = [
     { href: '/', label: t('main'), icon: Home, requiresAuth: false },
+    { href: '/recents', label: 'Ostatnio', icon: Clock, requiresAuth: false },
   ];
 
   const settingsMenuItem = { href: '/settings', label: t('settings'), icon: Settings, requiresAuth: false };
