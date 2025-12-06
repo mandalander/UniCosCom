@@ -538,8 +538,65 @@ export function ChatWindow({ conversationId, onBack }: ChatWindowProps) {
                 </div>
             )}
 
+            {/* Image Preview */}
+            {imagePreview && (
+                <div className="p-2 border-t bg-muted/30 flex items-center gap-2">
+                    <div className="relative">
+                        <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="h-16 w-16 object-cover rounded-lg"
+                        />
+                        <Button
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                            onClick={cancelImagePreview}
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </div>
+                    <div className="flex-1">
+                        <span className="text-sm text-muted-foreground">{t('imageReady') || 'Image ready to send'}</span>
+                    </div>
+                    <Button
+                        onClick={handleSendImage}
+                        disabled={isUploading}
+                        className="bg-primary"
+                    >
+                        {isUploading ? (
+                            <span className="animate-pulse">{t('sending') || 'Sending...'}</span>
+                        ) : (
+                            <>
+                                <Send className="h-4 w-4 mr-2" />
+                                {t('send') || 'Send'}
+                            </>
+                        )}
+                    </Button>
+                </div>
+            )}
+
+            {/* Hidden file input */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageSelect}
+            />
+
             {/* Input */}
             <form onSubmit={editingMessageId ? (e) => { e.preventDefault(); handleEditMessage(); } : handleSendMessage} className="p-4 border-t flex gap-2">
+                {!editingMessageId && !imagePreview && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        <ImageIcon className="h-5 w-5" />
+                    </Button>
+                )}
                 <Input
                     value={editingMessageId ? editContent : newMessage}
                     onChange={editingMessageId ? (e) => setEditContent(e.target.value) : handleInputChange}
