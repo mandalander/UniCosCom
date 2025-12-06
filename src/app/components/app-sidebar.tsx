@@ -107,9 +107,9 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r-0 flex flex-col h-full" collapsible="icon">
       <SidebarHeader className="glass border-b border-white/10 mb-2">
-        <Button asChild variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-start group">
+        <Button asChild variant="ghost" className="flex items-center gap-3 hover:bg-white/5 transition-all duration-300 h-auto py-3 px-2 w-full justify-center group">
           <Link href="/" onClick={handleLogoClick}>
-            <div className="flex flex-col items-start text-left group-data-[collapsible=icon]:hidden overflow-hidden">
+            <div className="flex flex-col items-center text-center group-data-[collapsible=icon]:hidden overflow-hidden">
               <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600 bg-clip-text text-transparent bg-[length:200%_auto]">
                 UniCosCom
               </h2>
